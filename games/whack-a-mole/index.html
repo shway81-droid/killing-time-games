@@ -18,16 +18,40 @@
     </header>
     <div class="intro-body">
       <div class="intro-illustration" aria-hidden="true">
-        <!-- CSS로 구현한 두더지 일러스트 -->
-        <div class="mole-preview">
-          <div class="mole-char">
-            <div class="mole-face">
-              <div class="mole-eye left"></div>
-              <div class="mole-eye right"></div>
-              <div class="mole-nose"></div>
-            </div>
-          </div>
-        </div>
+        <svg class="mole-preview-svg" viewBox="0 0 120 120" width="140" height="140">
+          <!-- 몸통 -->
+          <ellipse cx="60" cy="85" rx="38" ry="30" fill="#8D6E63"/>
+          <!-- 얼굴 -->
+          <ellipse cx="60" cy="58" rx="34" ry="32" fill="#A1887F"/>
+          <!-- 귀 왼쪽 -->
+          <circle cx="30" cy="38" r="12" fill="#8D6E63"/>
+          <circle cx="30" cy="38" r="7" fill="#D7837F"/>
+          <!-- 귀 오른쪽 -->
+          <circle cx="90" cy="38" r="12" fill="#8D6E63"/>
+          <circle cx="90" cy="38" r="7" fill="#D7837F"/>
+          <!-- 눈 왼쪽 -->
+          <ellipse cx="45" cy="52" rx="7" ry="8" fill="#FFFFFF"/>
+          <ellipse cx="46" cy="54" rx="4" ry="5" fill="#333"/>
+          <circle cx="47" cy="52" r="1.5" fill="#FFF"/>
+          <!-- 눈 오른쪽 -->
+          <ellipse cx="75" cy="52" rx="7" ry="8" fill="#FFFFFF"/>
+          <ellipse cx="76" cy="54" rx="4" ry="5" fill="#333"/>
+          <circle cx="77" cy="52" r="1.5" fill="#FFF"/>
+          <!-- 코 -->
+          <ellipse cx="60" cy="66" rx="6" ry="4.5" fill="#D7837F"/>
+          <!-- 입 -->
+          <path d="M52 72 Q60 80 68 72" fill="none" stroke="#6D4C41" stroke-width="2" stroke-linecap="round"/>
+          <!-- 볼 왼쪽 -->
+          <ellipse cx="36" cy="66" rx="8" ry="5" fill="#FFAB91" opacity="0.5"/>
+          <!-- 볼 오른쪽 -->
+          <ellipse cx="84" cy="66" rx="8" ry="5" fill="#FFAB91" opacity="0.5"/>
+          <!-- 수염 왼쪽 -->
+          <line x1="18" y1="60" x2="38" y2="63" stroke="#8D6E63" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="16" y1="68" x2="37" y2="68" stroke="#8D6E63" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- 수염 오른쪽 -->
+          <line x1="82" y1="63" x2="102" y2="60" stroke="#8D6E63" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="83" y1="68" x2="104" y2="68" stroke="#8D6E63" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
       </div>
       <p class="intro-text">나타나는 두더지를 빠르게 터치하세요!</p>
       <p class="intro-subtext">제한시간 30초 안에 최대한 많이 잡아보세요.</p>
@@ -56,15 +80,15 @@
     </header>
 
     <div class="mole-grid" id="moleGrid">
-      <div class="hole" data-index="0"><div class="mole"></div></div>
-      <div class="hole" data-index="1"><div class="mole"></div></div>
-      <div class="hole" data-index="2"><div class="mole"></div></div>
-      <div class="hole" data-index="3"><div class="mole"></div></div>
-      <div class="hole" data-index="4"><div class="mole"></div></div>
-      <div class="hole" data-index="5"><div class="mole"></div></div>
-      <div class="hole" data-index="6"><div class="mole"></div></div>
-      <div class="hole" data-index="7"><div class="mole"></div></div>
-      <div class="hole" data-index="8"><div class="mole"></div></div>
+      <div class="hole" data-index="0"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
+      <div class="hole" data-index="1"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
+      <div class="hole" data-index="2"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
+      <div class="hole" data-index="3"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
+      <div class="hole" data-index="4"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
+      <div class="hole" data-index="5"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
+      <div class="hole" data-index="6"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
+      <div class="hole" data-index="7"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
+      <div class="hole" data-index="8"><div class="mole"><svg viewBox="0 0 100 90"><ellipse cx="50" cy="65" rx="32" ry="22" fill="#8D6E63"/><ellipse cx="50" cy="42" rx="28" ry="26" fill="#A1887F"/><circle cx="26" cy="24" r="10" fill="#8D6E63"/><circle cx="26" cy="24" r="6" fill="#D7837F"/><circle cx="74" cy="24" r="10" fill="#8D6E63"/><circle cx="74" cy="24" r="6" fill="#D7837F"/><ellipse cx="38" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="39" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="40" cy="38" r="1.2" fill="#FFF"/><ellipse cx="62" cy="38" rx="6" ry="7" fill="#FFF"/><ellipse cx="63" cy="40" rx="3.5" ry="4.5" fill="#333"/><circle cx="64" cy="38" r="1.2" fill="#FFF"/><ellipse cx="50" cy="50" rx="5" ry="3.5" fill="#D7837F"/><path d="M43 56 Q50 63 57 56" fill="none" stroke="#6D4C41" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="28" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/><ellipse cx="72" cy="50" rx="7" ry="4" fill="#FFAB91" opacity="0.5"/></svg></div></div>
     </div>
 
     <button class="icon-btn close-btn" id="closeBtn" aria-label="홈으로">✕</button>

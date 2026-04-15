@@ -66,50 +66,9 @@ body {
   margin-bottom: var(--space-xl);
 }
 
-/* 두더지 프리뷰 일러스트 */
-.mole-preview {
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mole-char {
-  width: 80px;
-  height: 80px;
-  position: relative;
-}
-
-.mole-face {
-  width: 80px;
-  height: 80px;
-  background: #8D6E63;
-  border-radius: 50% 50% 45% 45%;
-  position: relative;
-}
-
-.mole-eye {
-  width: 12px;
-  height: 14px;
-  background: #333;
-  border-radius: 50%;
-  position: absolute;
-  top: 28px;
-}
-
-.mole-eye.left { left: 20px; }
-.mole-eye.right { right: 20px; }
-
-.mole-nose {
-  width: 16px;
-  height: 12px;
-  background: #D7837F;
-  border-radius: 50%;
-  position: absolute;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
+/* 두더지 프리뷰 일러스트 (SVG) */
+.mole-preview-svg {
+  display: block;
 }
 
 /* === 카운트다운 === */
@@ -213,43 +172,28 @@ body {
   z-index: 2;
 }
 
-/* 두더지 캐릭터 */
+/* 두더지 캐릭터 (SVG) */
 .mole {
-  width: 70%;
-  height: 70%;
+  width: 80%;
+  height: 80%;
   position: absolute;
-  bottom: -70%;
-  left: 15%;
+  bottom: -80%;
+  left: 10%;
   z-index: 1;
   transition: bottom 0.2s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.mole::before {
-  content: '';
-  display: block;
+.mole svg {
   width: 100%;
   height: 100%;
-  background: #8D6E63;
-  border-radius: 50% 50% 40% 40%;
-  position: relative;
-}
-
-/* 두더지 눈 */
-.mole::after {
-  content: '';
-  position: absolute;
-  top: 25%;
-  left: 22%;
-  width: 10px;
-  height: 12px;
-  background: #333;
-  border-radius: 50%;
-  box-shadow: 30px 0 0 0 #333;
 }
 
 /* 두더지 등장 */
 .hole.active .mole {
-  bottom: 20%;
+  bottom: 10%;
 }
 
 /* 터치 성공 이펙트 */
