@@ -103,6 +103,8 @@ let scores       = [];       // wins per player
 let roundResults = [];       // array of round records: { winner: idx|-1 (tie/timeout), dq: Set<idx> }
 let phase        = 'idle';   // idle | waiting | go | result
 let waitTimer    = null;
+let tickInterval = null;
+let nextRoundTimer = null;
 let roundActive  = false;
 
 // ── DOM references ───────────────────────────────────────────
@@ -286,7 +288,7 @@ function startWaitPhase() {
 
   // Tick a beep every second during the wait to build tension
   let elapsed = 0;
-  const tickInterval = setInterval(() => {
+  tickInterval = setInterval(() => {
     elapsed += 800;
     if (elapsed < delay) {
       sound.play('beep');
@@ -303,6 +305,14 @@ function clearWaitTimer() {
   if (waitTimer) {
     clearTimeout(waitTimer);
     waitTimer = null;
+  }
+  if (tickInterval) {
+    clearInterval(tickInterval);
+    tickInterval = null;
+  }
+  if (nextRoundTimer) {
+    clearTimeout(nextRoundTimer);
+    nextRoundTimer = null;
   }
 }
 
@@ -365,7 +375,8 @@ function recordRound(winnerIdx) {
 }
 
 function scheduleNextOrEnd() {
-  setTimeout(() => {
+  nextRoundTimer = setTimeout(() => {
+    nextRoundTimer = null;
     if (currentRound >= TOTAL_ROUNDS) {
       showResult();
     } else {
