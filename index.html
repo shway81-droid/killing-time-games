@@ -2,84 +2,217 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Touch Games</title>
-  <link rel="stylesheet" href="css/common.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>킬링타임 미니게임</title>
+  <link rel="stylesheet" href="shared/style.css">
   <style>
-    body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .launcher-header {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
+      justify-content: space-between;
+      padding: var(--space-md) var(--space-lg);
     }
 
-    h1 {
-      color: white;
-      font-size: 3rem;
-      margin-bottom: 40px;
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    .launcher-title {
+      font-size: var(--font-size-title);
+      font-weight: 700;
     }
 
-    .game-grid {
+    /* 학년 필터 */
+    .filter-bar {
       display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      justify-content: center;
-      padding: 20px;
+      gap: var(--space-sm);
+      padding: 0 var(--space-lg);
+      margin-bottom: var(--space-md);
+    }
+
+    .filter-btn {
+      padding: var(--space-sm) var(--space-md);
+      border: 2px solid #E0E0E0;
+      border-radius: var(--btn-radius);
+      background: var(--bg);
+      font-family: var(--font-family);
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    /* 게임 카드 그리드 */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--card-min-size), 1fr));
+      gap: var(--space-md);
+      padding: 0 var(--space-lg) var(--space-lg);
     }
 
     .game-card {
-      background: white;
-      border-radius: 24px;
-      width: 240px;
-      height: 280px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-      transition: transform 0.2s;
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
       text-decoration: none;
-      color: #1a1a2e;
-      padding: 20px;
+      color: inherit;
+      display: block;
     }
 
     .game-card:active {
-      transform: scale(0.95);
+      transform: scale(1.03);
+      box-shadow: var(--shadow-card-hover);
     }
 
-    .game-card img {
-      width: 120px;
-      height: 120px;
-      margin-bottom: 16px;
+    .game-card-thumb {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
     }
 
-    .game-card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-    }
-
-    .game-card p {
-      font-size: 0.9rem;
-      color: #666;
+    .game-card-info {
+      padding: var(--space-sm) var(--space-md);
       text-align: center;
+    }
+
+    .game-card-name {
+      font-size: var(--font-size-card);
+      font-weight: 700;
+    }
+
+    .game-card-time {
+      font-size: var(--font-size-small);
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    /* 카드 숨김 (필터) */
+    .game-card.hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div class="rotate-notice">화면을 가로로 돌려주세요</div>
 
-  <h1>Touch Games</h1>
-  <div class="game-grid">
-    <a href="games/i-spy/index.html" class="game-card touchable">
-      <img src="assets/icons/i-spy-icon.svg" alt="숨은 그림 찾기">
-      <h2>숨은 그림 찾기</h2>
-      <p>그림 속에 숨은 물건을 찾아보세요!</p>
-    </a>
-  </div>
+  <header class="launcher-header">
+    <h1 class="launcher-title">킬링타임 미니게임</h1>
+    <button class="sound-toggle" id="soundToggle" aria-label="사운드 토글">🔇</button>
+  </header>
 
-  <script src="js/common.js"></script>
+  <nav class="filter-bar">
+    <button class="filter-btn active" data-filter="all">전체</button>
+    <button class="filter-btn" data-filter="low">저학년</button>
+    <button class="filter-btn" data-filter="high">고학년</button>
+  </nav>
+
+  <main class="game-grid" id="gameGrid">
+    <!-- JS가 카드를 동적으로 삽입 -->
+  </main>
+
+  <script src="shared/engine.js"></script>
+  <script>
+    const FALLBACK_GAMES = [
+      {
+        folder: 'whack-a-mole',
+        name: '두더지 잡기',
+        description: '나타나는 두더지를 빠르게 터치하세요!',
+        icon: '🔨',
+        color: '#81C784',
+        grades: [1,2,3,4,5,6],
+        playTime: '1~2분'
+      }
+    ];
+
+    const grid = document.getElementById('gameGrid');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const soundToggle = document.getElementById('soundToggle');
+    let allGames = [];
+
+    // --- 사운드 토글 (런처에서는 상태만 관리) ---
+    function updateSoundIcon() {
+      const muted = sessionStorage.getItem('sound-muted') !== 'false';
+      soundToggle.textContent = muted ? '🔇' : '🔊';
+    }
+    soundToggle.addEventListener('click', function() {
+      const wasMuted = sessionStorage.getItem('sound-muted') !== 'false';
+      sessionStorage.setItem('sound-muted', !wasMuted);
+      updateSoundIcon();
+    });
+    updateSoundIcon();
+
+    // --- 카드 렌더링 ---
+    function renderCards(games) {
+      grid.innerHTML = '';
+      allGames = games;
+      games.forEach(function(game) {
+        var a = document.createElement('a');
+        a.className = 'game-card';
+        a.href = 'games/' + game.folder + '/index.html';
+        a.dataset.grades = JSON.stringify(game.grades);
+        a.innerHTML =
+          '<div class="game-card-thumb" style="background:' + game.color + '">' +
+            '<span>' + game.icon + '</span>' +
+          '</div>' +
+          '<div class="game-card-info">' +
+            '<div class="game-card-name">' + game.name + '</div>' +
+            '<div class="game-card-time">' + game.playTime + '</div>' +
+          '</div>';
+        grid.appendChild(a);
+      });
+    }
+
+    // --- 학년 필터 ---
+    filterBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        filterBtns.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        applyFilter(btn.dataset.filter);
+      });
+    });
+
+    function applyFilter(filter) {
+      var cards = grid.querySelectorAll('.game-card');
+      cards.forEach(function(card) {
+        var grades = JSON.parse(card.dataset.grades);
+        var show = true;
+        if (filter === 'low') {
+          show = grades.some(function(g) { return g >= 1 && g <= 3; });
+        } else if (filter === 'high') {
+          show = grades.some(function(g) { return g >= 4 && g <= 6; });
+        }
+        card.classList.toggle('hidden', !show);
+      });
+    }
+
+    // --- 게임 목록 로딩 (fetch → fallback) ---
+    async function loadGames() {
+      try {
+        var res = await fetch('games/registry.json');
+        var folders = await res.json();
+        var games = [];
+        for (var i = 0; i < folders.length; i++) {
+          var metaRes = await fetch('games/' + folders[i] + '/game.json');
+          var meta = await metaRes.json();
+          meta.folder = folders[i];
+          games.push(meta);
+        }
+        renderCards(games);
+      } catch (e) {
+        // file:// 프로토콜 등에서 fetch 실패 시 fallback
+        renderCards(FALLBACK_GAMES);
+      }
+    }
+
+    loadGames();
+  </script>
+
 </body>
 </html>
