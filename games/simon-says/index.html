@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>색깔 따라하기</title>
+  <link rel="stylesheet" href="../../shared/style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 화면 1: 인트로 -->
+  <section class="screen screen-intro active" id="introScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+      <h1 class="game-title">색깔 따라하기</h1>
+      <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
+    </header>
+
+    <div class="intro-body">
+      <div class="intro-preview" aria-hidden="true">
+        <div class="preview-grid">
+          <div class="preview-btn" style="background:#EF5350;"></div>
+          <div class="preview-btn" style="background:#29B6F6;"></div>
+          <div class="preview-btn" style="background:#66BB6A;"></div>
+          <div class="preview-btn" style="background:#FFEE58;"></div>
+        </div>
+      </div>
+
+      <p class="intro-text">색 순서를 기억하고 따라하세요!</p>
+      <p class="intro-subtext">빛나는 순서를 기억해서 똑같이 눌러요.<br>틀리면 탈락! 마지막까지 살아남으세요.</p>
+
+      <div class="player-count-section">
+        <p class="player-count-label">플레이어 수</p>
+        <div class="player-count-btns" id="playerCountBtns">
+          <button class="count-btn active" data-count="2">2명</button>
+          <button class="count-btn" data-count="3">3명</button>
+          <button class="count-btn" data-count="4">4명</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-play" id="playBtn">PLAY</button>
+  </section>
+
+  <!-- 화면 2: 게임 플레이 -->
+  <section class="screen screen-game" id="gameScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="closeBtn" aria-label="홈으로">←</button>
+      <div class="status-badge" id="statusBadge">
+        <span id="statusText">보여주는 중...</span>
+      </div>
+      <button class="sound-toggle" id="soundToggleGame" aria-label="사운드 토글">🔇</button>
+    </header>
+
+    <!-- 플레이어 상태 줄 -->
+    <div class="player-status-row" id="playerStatusRow"></div>
+
+    <!-- 라운드 표시 -->
+    <div class="round-indicator" id="roundIndicator">라운드 1</div>
+
+    <!-- 색깔 버튼 2x2 그리드 -->
+    <div class="color-grid-wrapper">
+      <div class="color-grid" id="colorGrid">
+        <button class="color-btn" id="btn-red"    data-color="red"    aria-label="빨강">
+          <span class="btn-label">빨강</span>
+        </button>
+        <button class="color-btn" id="btn-blue"   data-color="blue"   aria-label="파랑">
+          <span class="btn-label">파랑</span>
+        </button>
+        <button class="color-btn" id="btn-green"  data-color="green"  aria-label="초록">
+          <span class="btn-label">초록</span>
+        </button>
+        <button class="color-btn" id="btn-yellow" data-color="yellow" aria-label="노랑">
+          <span class="btn-label">노랑</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 입력 진행 표시 (플레이어 차례에 표시) -->
+    <div class="input-progress" id="inputProgress">
+      <div class="input-dots" id="inputDots"></div>
+    </div>
+  </section>
+
+  <!-- 화면 3: 결과 -->
+  <section class="screen screen-result" id="resultScreen">
+    <header class="game-header result-header">
+      <div></div>
+      <h2 class="game-title">게임 종료!</h2>
+      <div></div>
+    </header>
+    <div class="result-body">
+      <div class="result-emoji" id="resultEmoji">🏆</div>
+      <h3 class="result-winner" id="resultWinner"></h3>
+      <div class="result-ranking" id="resultRanking"></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" id="retryBtn">다시하기</button>
+      <button class="btn btn-secondary" id="homeBtn">홈으로</button>
+    </div>
+  </section>
+
+  <script src="../../shared/engine.js"></script>
+  <script src="game.js"></script>
+
+</body>
+</html>
