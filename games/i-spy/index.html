@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>숨은 그림 찾기 - Touch Games</title>
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="rotate-notice">화면을 가로로 돌려주세요</div>
+
+  <a href="../../index.html" class="back-button touchable">&larr;</a>
+
+  <!-- 테마 선택 화면 -->
+  <div class="theme-screen" id="themeScreen">
+    <h1>테마를 골라주세요!</h1>
+    <div class="theme-grid" id="themeGrid">
+      <!-- game.js에서 동적 생성 -->
+    </div>
+  </div>
+
+  <!-- 게임 플레이 화면 -->
+  <div class="game-screen" id="gameScreen">
+    <div class="game-viewport" id="gameViewport">
+      <div class="game-canvas" id="gameCanvas">
+        <!-- game.js에서 배경 + 히든 아이템 배치 -->
+      </div>
+    </div>
+    <div class="item-bar" id="itemBar">
+      <!-- game.js에서 찾아야 할 아이템 표시 -->
+    </div>
+  </div>
+
+  <!-- 축하 화면 -->
+  <div class="congrats-screen" id="congratsScreen">
+    <div class="congrats-emoji">🎉</div>
+    <h1>모두 찾았어요!</h1>
+    <div class="congrats-buttons">
+      <button id="btnRetry" class="touchable">다시 하기</button>
+      <button id="btnThemes" class="touchable">다른 테마</button>
+      <button id="btnHome" class="touchable">홈으로</button>
+    </div>
+  </div>
+
+  <script src="../../js/common.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
