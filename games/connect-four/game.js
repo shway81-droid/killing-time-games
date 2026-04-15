@@ -107,6 +107,10 @@
   var gameOver = false;
   var dropping = false; // 낙하 애니메이션 중 입력 차단
 
+  // 낙하 애니메이션 타이머 ID (네비게이션 시 취소용)
+  var dropTimerId = null;
+  var resultTimerId = null;
+
   // --- DOM 참조 ---
   var boardEl       = document.getElementById('board');
   var boardOuter    = document.getElementById('boardOuter');
@@ -305,7 +309,9 @@
 
         // 낙하 완료 후 체크
         var duration = row <= 1 ? 250 : row <= 3 ? 380 : 520;
-        setTimeout(function () {
+        dropTimerId = setTimeout(function () {
+          dropTimerId = null;
+          if (gameOver) return;
           dropping = false;
 
           var winCells = checkWin(currentPlayer);
@@ -314,8 +320,9 @@
             boardOuter.classList.add('board-done');
             highlightWin(winCells, currentPlayer);
             sounds.play('win');
-            setTimeout(function () {
-              showResult('win', currentPlayer);
+            resultTimerId = setTimeout(function () {
+              resultTimerId = null;
+              if (gameOver) showResult('win', currentPlayer);
             }, 900);
             return;
           }
@@ -324,8 +331,9 @@
             gameOver = true;
             boardOuter.classList.add('board-done');
             sounds.play('draw');
-            setTimeout(function () {
-              showResult('draw', null);
+            resultTimerId = setTimeout(function () {
+              resultTimerId = null;
+              if (gameOver) showResult('draw', null);
             }, 400);
             return;
           }
@@ -374,8 +382,22 @@
     showScreen('result');
   }
 
+  // --- 타이머 정리 ---
+  function clearAnimTimers() {
+    if (dropTimerId !== null) {
+      clearTimeout(dropTimerId);
+      dropTimerId = null;
+    }
+    if (resultTimerId !== null) {
+      clearTimeout(resultTimerId);
+      resultTimerId = null;
+    }
+    dropping = false;
+  }
+
   // --- 게임 초기화 ---
   function initGame() {
+    clearAnimTimers();
     initBoard();
     currentPlayer = 1;
     gameOver = false;
@@ -407,14 +429,17 @@
   });
 
   document.getElementById('homeBtn').addEventListener('click', function () {
+    clearAnimTimers();
     goHome();
   });
 
   document.getElementById('backBtn').addEventListener('click', function () {
+    clearAnimTimers();
     goHome();
   });
 
   document.getElementById('closeBtn').addEventListener('click', function () {
+    clearAnimTimers();
     goHome();
   });
 
