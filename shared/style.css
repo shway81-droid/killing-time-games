@@ -1,0 +1,138 @@
+/* shared/style.css */
+:root {
+  /* Colors */
+  --bg: #FFFFFF;
+  --card-bg: #FFFFFF;
+  --primary: #29B6F6;
+  --secondary: #66BB6A;
+  --danger: #EF5350;
+  --accent-orange: #FFA726;
+  --accent-yellow: #FFEE58;
+  --text: #333333;
+  --text-sub: #888888;
+
+  /* Typography */
+  --font-family: 'Pretendard Variable', -apple-system, 'Noto Sans KR', sans-serif;
+  --font-size-title: 1.5rem;
+  --font-size-body: 1rem;
+  --font-size-card: 0.9rem;
+  --font-size-small: 0.875rem;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Sizing */
+  --card-min-size: 140px;
+  --btn-min-touch: 48px;
+  --card-radius: 16px;
+  --btn-radius: 24px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.12);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow-x: hidden;
+}
+
+/* 터치 최적화 — 더블탭 줌 방지 */
+html {
+  touch-action: manipulation;
+}
+
+/* 공통 버튼 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--btn-min-touch);
+  min-height: var(--btn-min-touch);
+  padding: var(--space-sm) var(--space-lg);
+  border: none;
+  border-radius: var(--btn-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-primary {
+  background: var(--secondary);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(102,187,106,0.3);
+}
+
+.btn-primary:active {
+  box-shadow: 0 1px 4px rgba(102,187,106,0.3);
+}
+
+/* 사운드 토글 버튼 */
+.sound-toggle {
+  width: var(--btn-min-touch);
+  height: var(--btn-min-touch);
+  border-radius: 50%;
+  background: #F0F0F0;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 원형 아이콘 버튼 (닫기, 뒤로가기) */
+.icon-btn {
+  width: var(--btn-min-touch);
+  height: var(--btn-min-touch);
+  border-radius: 50%;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.9);
+  color: var(--text);
+  box-shadow: var(--shadow-card);
+}
+
+/* 프로그레스 바 */
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #E0E0E0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--secondary);
+  border-radius: 6px;
+  transition: width 1s linear;
+}
