@@ -390,6 +390,7 @@
   }
 
   function endGame() {
+    if (mainTimer) { mainTimer.stop(); mainTimer = null; }
     gameRunning = false;
     clearAllTimers();
 
