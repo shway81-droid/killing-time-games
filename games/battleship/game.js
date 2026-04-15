@@ -662,7 +662,7 @@
       sounds.play('explosion');
 
       if (isShipSunk(defState, ship)) {
-        // Mark all sunk cells
+        // Mark all sunk cells, then handle win or turn switch from within this branch only
         setTimeout(function () {
           sounds.play('sink');
           ship.cells.forEach(function (rc) {
@@ -678,12 +678,24 @@
             return;
           }
 
+          // Ship sunk but game not over — switch turn here, not at the bottom
+          currentAttackPlayer = 1 - currentAttackPlayer;
+          var nextPlayer = currentAttackPlayer;
           attackLocked = false;
+          showHandoff(
+            '화면을 상대에게 넘기세요',
+            '플레이어 ' + (nextPlayer + 1) + '의 차례입니다',
+            function () { startGameTurn(); }
+          );
         }, 300);
-      } else {
-        attackCell.className = 'grid-cell hit attacked';
-        attackLocked = false;
+
+        // Return so the turn-switch block at the bottom does not also fire
+        return;
       }
+
+      // Hit but ship not sunk — unlock and fall through to turn switch below
+      attackCell.className = 'grid-cell hit attacked';
+      attackLocked = false;
     } else {
       // Miss
       sounds.play('splash');
@@ -691,20 +703,16 @@
       attackLocked = false;
     }
 
-    // No win: switch turn after short delay
-    if (!allShipsSunk(defState)) {
-      setTimeout(function () {
-        if (!allShipsSunk(defState)) {
-          currentAttackPlayer = 1 - currentAttackPlayer;
-          var nextPlayer = currentAttackPlayer;
-          showHandoff(
-            '화면을 상대에게 넘기세요',
-            '플레이어 ' + (nextPlayer + 1) + '의 차례입니다',
-            function () { startGameTurn(); }
-          );
-        }
-      }, 600);
-    }
+    // Switch turn after short delay (hit-no-sink and miss paths only)
+    setTimeout(function () {
+      currentAttackPlayer = 1 - currentAttackPlayer;
+      var nextPlayer = currentAttackPlayer;
+      showHandoff(
+        '화면을 상대에게 넘기세요',
+        '플레이어 ' + (nextPlayer + 1) + '의 차례입니다',
+        function () { startGameTurn(); }
+      );
+    }, 600);
   }
 
   // ===== RESULT SCREEN =====
