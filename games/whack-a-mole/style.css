@@ -136,7 +136,7 @@ body {
 /* === 게임 플레이 화면 === */
 .screen-game {
   justify-content: space-between;
-  padding: var(--space-md);
+  padding: var(--space-lg);
   background: #81C784;
   position: relative;
 }
@@ -186,9 +186,9 @@ body {
 .mole-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-md);
+  gap: var(--space-lg);
   width: 100%;
-  max-width: 360px;
+  max-width: 600px;
   flex: 1;
   align-content: center;
 }
@@ -221,7 +221,7 @@ body {
   bottom: -70%;
   left: 15%;
   z-index: 1;
-  transition: bottom 0.15s ease-out;
+  transition: bottom 0.2s ease-out;
 }
 
 .mole::before {
@@ -234,22 +234,22 @@ body {
   position: relative;
 }
 
-/* 두더지 눈 - left */
+/* 두더지 눈 */
 .mole::after {
   content: '';
   position: absolute;
-  top: 30%;
-  left: 25%;
-  width: 12px;
-  height: 14px;
+  top: 25%;
+  left: 22%;
+  width: 10px;
+  height: 12px;
   background: #333;
   border-radius: 50%;
-  box-shadow: calc(100% - 50px) 0 0 0 #333; /* right eye via shadow */
+  box-shadow: 30px 0 0 0 #333;
 }
 
 /* 두더지 등장 */
 .hole.active .mole {
-  bottom: 15%;
+  bottom: 20%;
 }
 
 /* 터치 성공 이펙트 */
