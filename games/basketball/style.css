@@ -1,0 +1,561 @@
+/* games/basketball/style.css */
+
+body {
+  background: #D4874A;
+  overflow: hidden;
+}
+
+/* ===========================
+   화면 전환
+   =========================== */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ===========================
+   인트로 화면
+   =========================== */
+.screen-intro {
+  background: #FFFFFF;
+  justify-content: space-between;
+  padding: var(--space-lg);
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.game-title {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+}
+
+.intro-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 1;
+  justify-content: center;
+}
+
+.court-preview {
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+}
+
+.intro-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.intro-subtext {
+  font-size: var(--font-size-small);
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.player-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.player-select-label {
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.player-count-btns {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.player-count-btn {
+  width: 72px;
+  height: 56px;
+  border: 3px solid #E0E0E0;
+  border-radius: var(--btn-radius);
+  background: #F5F5F5;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-family);
+  color: var(--text-sub);
+}
+
+.player-count-btn.active {
+  background: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(255,167,38,0.4);
+}
+
+.player-count-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-play {
+  width: 80%;
+  max-width: 300px;
+  padding: var(--space-md) var(--space-xl);
+  font-size: 1.3rem;
+  margin-bottom: var(--space-xl);
+}
+
+/* ===========================
+   게임 화면
+   =========================== */
+.screen-game {
+  background: #D4874A;
+  justify-content: flex-start;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* HUD 상단 */
+.game-hud {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.hud-player {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  min-width: 48px;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hud-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hud-shots {
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  color: #FFEE58;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.hud-label-small {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hud-score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 48px;
+}
+
+.hud-score-value {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  line-height: 1;
+}
+
+.close-game-btn {
+  background: rgba(255,255,255,0.2);
+  color: #FFFFFF;
+  border: none;
+  flex-shrink: 0;
+}
+
+/* 코트 영역 */
+.court-area {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.court-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 점수 팝업 */
+.score-popup {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #FFEE58;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 20;
+  white-space: nowrap;
+}
+
+.score-popup.show-3 {
+  animation: scorePop3 0.8s ease-out forwards;
+}
+.score-popup.show-2 {
+  animation: scorePop2 0.8s ease-out forwards;
+}
+.score-popup.show-miss {
+  animation: scorePopMiss 0.8s ease-out forwards;
+}
+
+@keyframes scorePop3 {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  20%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+  60%  { opacity: 1; transform: translate(-50%, -80%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -110%) scale(0.9); }
+}
+@keyframes scorePop2 {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  20%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  60%  { opacity: 1; transform: translate(-50%, -80%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -110%) scale(0.9); }
+}
+@keyframes scorePopMiss {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  20%  { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+  60%  { opacity: 0.6; transform: translate(-50%, -70%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -90%) scale(0.9); }
+}
+
+/* 슛 결과 메시지 */
+.shot-result {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 20;
+  text-align: center;
+}
+
+.shot-result.show {
+  animation: resultPop 1s ease-out forwards;
+}
+
+@keyframes resultPop {
+  0%   { opacity: 0; transform: translate(-50%, -40%) scale(0.7); }
+  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  70%  { opacity: 1; transform: translate(-50%, -55%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -65%) scale(0.95); }
+}
+
+/* 림 통과 플래시 효과 */
+@keyframes rimFlash {
+  0%   { filter: brightness(1); }
+  25%  { filter: brightness(2.5) drop-shadow(0 0 8px #FFD54F); }
+  50%  { filter: brightness(1.5); }
+  75%  { filter: brightness(2) drop-shadow(0 0 4px #FFD54F); }
+  100% { filter: brightness(1); }
+}
+
+.hoop-flash {
+  animation: rimFlash 0.4s ease-out;
+}
+
+/* 플레이어 교체 오버레이 */
+.player-handoff {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.player-handoff.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.handoff-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  background: rgba(255,255,255,0.12);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  min-width: 260px;
+}
+
+.handoff-player {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #FFEE58;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.handoff-scores {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.handoff-score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.handoff-score-row.current {
+  background: rgba(255,238,88,0.2);
+  color: #FFEE58;
+}
+
+.handoff-score-pts {
+  font-size: 1.3rem;
+}
+
+.handoff-btn {
+  min-width: 140px;
+  font-size: 1.1rem;
+}
+
+/* 점수판 바 (하단) */
+.scoreboard-bar {
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.3);
+}
+
+.scorebar-player {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-xs) var(--space-xs);
+  border-right: 1px solid rgba(255,255,255,0.15);
+  min-height: 48px;
+  justify-content: center;
+}
+
+.scorebar-player:last-child {
+  border-right: none;
+}
+
+.scorebar-player.active {
+  background: rgba(255,238,88,0.2);
+}
+
+.scorebar-name {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 700;
+}
+
+.scorebar-pts {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #FFFFFF;
+}
+
+.scorebar-player.active .scorebar-pts {
+  color: #FFEE58;
+}
+
+/* ===========================
+   결과 화면
+   =========================== */
+.screen-result {
+  background: #FFFFFF;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+}
+
+.result-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.result-trophy {
+  font-size: 4rem;
+  animation: trophyBounce 0.6s ease-out;
+}
+
+@keyframes trophyBounce {
+  0%   { transform: scale(0) rotate(-10deg); }
+  60%  { transform: scale(1.25) rotate(5deg); }
+  80%  { transform: scale(0.9) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.result-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.result-winner {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  text-align: center;
+}
+
+.result-scores {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 320px;
+}
+
+.result-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background: #F5F5F5;
+  border-radius: 12px;
+  gap: var(--space-md);
+}
+
+.result-score-row.winner {
+  background: #FFF9C4;
+  border: 2px solid #FFD54F;
+}
+
+.result-player-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  min-width: 32px;
+}
+
+.result-player-dots {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.result-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #BDBDBD;
+}
+
+.result-dot.pts3 { background: #FF7043; }
+.result-dot.pts2 { background: #FFA726; }
+.result-dot.pts0 { background: #E0E0E0; }
+
+.result-player-pts {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text);
+  min-width: 40px;
+  text-align: right;
+}
+
+.result-score-row.winner .result-player-pts {
+  color: #FF6F00;
+}
+
+.result-crown {
+  font-size: 1.2rem;
+}
+
+.result-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.btn-secondary {
+  background: #E0E0E0;
+  color: var(--text);
+}
+
+/* ===========================
+   볼 드래그 힌트
+   =========================== */
+.drag-hint {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9rem;
+  font-weight: 600;
+  pointer-events: none;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  transition: opacity 0.3s ease;
+}
+
+.drag-hint.hidden {
+  opacity: 0;
+}
+
+/* 볼 드래그 중 글로우 */
+@keyframes ballGlow {
+  0%   { filter: drop-shadow(0 0 0px #FF8A65); }
+  50%  { filter: drop-shadow(0 0 12px #FF8A65); }
+  100% { filter: drop-shadow(0 0 0px #FF8A65); }
+}
+
+.ball-ready {
+  animation: ballGlow 1.5s ease-in-out infinite;
+}
