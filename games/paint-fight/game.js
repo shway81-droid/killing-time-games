@@ -528,7 +528,8 @@
   });
 
   document.getElementById('closeBtn').addEventListener('click', function () {
-    if (timer) timer.stop();
+    if (timer) { timer.stop(); timer = null; }
+    gameOver = true;
     showScreen('intro');
   });
 
