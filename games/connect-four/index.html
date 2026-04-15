@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>사목</title>
+  <link rel="stylesheet" href="../../shared/style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 화면 1: 인트로 -->
+  <section class="screen screen-intro active" id="introScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+      <h1 class="game-title">사목</h1>
+      <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
+    </header>
+
+    <div class="intro-body">
+      <!-- 미니 보드 일러스트 -->
+      <div class="intro-preview" aria-hidden="true">
+        <svg viewBox="0 0 160 120" width="160" height="120">
+          <!-- 보드 배경 -->
+          <rect x="4" y="4" width="152" height="112" rx="10" fill="#1565C0"/>
+          <!-- 구멍들 (4x3 미니 그리드) -->
+          <!-- 행 1 -->
+          <circle cx="24" cy="28" r="12" fill="white" opacity="0.25"/>
+          <circle cx="56" cy="28" r="12" fill="#EF5350"/>
+          <circle cx="88" cy="28" r="12" fill="white" opacity="0.25"/>
+          <circle cx="120" cy="28" r="12" fill="#FFEE58"/>
+          <!-- 행 2 -->
+          <circle cx="24" cy="64" r="12" fill="#EF5350"/>
+          <circle cx="56" cy="64" r="12" fill="#FFEE58"/>
+          <circle cx="88" cy="64" r="12" fill="#EF5350"/>
+          <circle cx="120" cy="64" r="12" fill="#FFEE58"/>
+          <!-- 행 3 -->
+          <circle cx="24" cy="100" r="12" fill="#FFEE58"/>
+          <circle cx="56" cy="100" r="12" fill="#EF5350"/>
+          <circle cx="88" cy="100" r="12" fill="#FFEE58"/>
+          <circle cx="120" cy="100" r="12" fill="#EF5350"/>
+          <!-- 승리 강조 대각선 -->
+          <circle cx="24" cy="100" r="12" fill="none" stroke="#fff" stroke-width="3" opacity="0.9"/>
+          <circle cx="56" cy="64" r="12" fill="none" stroke="#fff" stroke-width="3" opacity="0.9"/>
+          <circle cx="88" cy="28" r="12" fill="none" stroke="#fff" stroke-width="3" opacity="0.9"/>
+          <!-- 오른쪽 마지막 열 (약간 다른 칸) -->
+          <circle cx="140" cy="28" r="12" fill="white" opacity="0.25"/>
+          <circle cx="140" cy="64" r="12" fill="white" opacity="0.25"/>
+          <circle cx="140" cy="100" r="12" fill="white" opacity="0.25"/>
+        </svg>
+      </div>
+
+      <p class="intro-text">열을 선택해 말을 떨어뜨리세요</p>
+      <p class="intro-subtext">가로, 세로, 대각선으로 4개를 먼저 연결하면 이겨요!</p>
+
+      <div class="intro-rules">
+        <div class="rule-item">
+          <span class="rule-piece piece-red"></span>
+          <span>플레이어 1</span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-piece piece-yellow"></span>
+          <span>플레이어 2</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-play" id="playBtn">PLAY</button>
+  </section>
+
+  <!-- 화면 2: 게임 플레이 -->
+  <section class="screen screen-game" id="gameScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="closeBtn" aria-label="홈으로">←</button>
+      <div class="turn-indicator" id="turnIndicator">
+        <span class="turn-piece" id="turnPiece"></span>
+        <span class="turn-text" id="turnText">플레이어 1 차례</span>
+      </div>
+      <button class="sound-toggle" id="soundToggleGame" aria-label="사운드 토글">🔇</button>
+    </header>
+
+    <!-- 고스트 피스 미리보기 행 -->
+    <div class="ghost-row" id="ghostRow">
+      <!-- 7개 고스트 슬롯 - JS로 생성 -->
+    </div>
+
+    <!-- 보드 래퍼 -->
+    <div class="board-wrapper">
+      <div class="board-outer" id="boardOuter">
+        <!-- 열 클릭 오버레이 -->
+        <div class="column-overlay" id="columnOverlay">
+          <!-- 7개 열 터치 영역 - JS로 생성 -->
+        </div>
+        <!-- 보드 그리드 -->
+        <div class="board" id="board">
+          <!-- 42개 셀 - JS로 생성 -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 화면 3: 결과 -->
+  <section class="screen screen-result" id="resultScreen">
+    <div class="result-body">
+      <div class="result-emoji" id="resultEmoji">🎉</div>
+      <h2 class="result-title" id="resultTitle">플레이어 1 승리!</h2>
+      <p class="result-sub" id="resultSub">4개를 연결했어요!</p>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" id="retryBtn">다시하기</button>
+      <button class="btn btn-secondary" id="homeBtn">홈으로</button>
+    </div>
+  </section>
+
+  <script src="../../shared/engine.js"></script>
+  <script src="game.js"></script>
+
+</body>
+</html>
