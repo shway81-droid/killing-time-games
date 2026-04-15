@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude /plugin install superpowers@claude-plugins-official)",
+      "Bash(where claude:*)",
+      "Bash(/c/Users/User/.claude/bin/claude --version)",
+      "Bash(cmd.exe /c \"C:\\\\Users\\\\User\\\\.claude\\\\bin\\\\claude.cmd --version\")",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__computer",
+      "Bash(bash .claude/skills/brainstorming/scripts/start-server.sh --project-dir \"C:/Users/User/Desktop/claude\")",
+      "Bash(where node:*)"
+    ]
+  }
+}
