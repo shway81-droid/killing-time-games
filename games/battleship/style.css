@@ -1,0 +1,621 @@
+/* games/battleship/style.css */
+
+body {
+  background: #E3F2FD;
+  overflow: hidden;
+}
+
+/* ===== SCREEN TRANSITIONS ===== */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ===== COMMON HEADER ===== */
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  flex-shrink: 0;
+}
+
+.game-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* ===== INTRO SCREEN ===== */
+.screen-intro {
+  justify-content: space-between;
+  background: var(--bg);
+}
+
+.intro-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 1;
+  justify-content: center;
+  padding: var(--space-md);
+}
+
+.intro-preview {
+  filter: drop-shadow(0 6px 18px rgba(21,101,192,0.4));
+  border-radius: 12px;
+}
+
+.intro-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+}
+
+.intro-rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  background: #F0F7FF;
+  border-radius: var(--card-radius);
+  padding: var(--space-md);
+  width: 100%;
+  max-width: 320px;
+}
+
+.rule-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  font-weight: 600;
+}
+
+.rule-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.ship-icon {
+  background: #455A64;
+  border-radius: 4px;
+}
+
+.hit-icon {
+  background: #EF5350;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 900;
+  border-radius: 50%;
+}
+
+.miss-icon {
+  background: white;
+  border: 2px solid #B0BEC5;
+  border-radius: 50%;
+}
+
+.btn-play {
+  width: 80%;
+  max-width: 300px;
+  padding: var(--space-md) var(--space-xl);
+  font-size: 1.3rem;
+  margin-bottom: var(--space-xl);
+}
+
+/* ===== SETUP SCREEN ===== */
+.screen-setup {
+  background: #E3F2FD;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.setup-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md) var(--space-md);
+  width: 100%;
+  overflow: hidden;
+}
+
+.ship-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: rgba(255,255,255,0.9);
+  border-radius: var(--btn-radius);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  box-shadow: var(--shadow-card);
+  flex-shrink: 0;
+}
+
+.ship-preview {
+  display: flex;
+  gap: 3px;
+}
+
+.ship-cell-dot {
+  width: 14px;
+  height: 14px;
+  background: #455A64;
+  border-radius: 3px;
+}
+
+/* ===== GRID LAYOUT ===== */
+.grid-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.col-labels {
+  display: grid;
+  /* columns set by JS */
+  margin-left: 20px; /* row-label width offset */
+  width: calc(100%);
+}
+
+.col-label {
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.75);
+  line-height: 16px;
+  height: 16px;
+}
+
+.grid-row-wrap {
+  display: flex;
+}
+
+.row-labels {
+  display: flex;
+  flex-direction: column;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.row-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.75);
+}
+
+/* ===== SEA GRID ===== */
+.sea-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  background: #1565C0;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+  box-shadow: 0 4px 16px rgba(21,101,192,0.5), inset 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* Size is set via JS based on viewport */
+
+/* ===== GRID CELLS ===== */
+.grid-cell {
+  background: #1976D2;
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.grid-cell:active {
+  transform: scale(0.92);
+}
+
+/* Water ripple hover */
+.grid-cell.water:hover {
+  background: #1E88E5;
+}
+
+/* Ship placed on this cell */
+.grid-cell.ship {
+  background: #37474F;
+  border-radius: 3px;
+}
+
+/* Preview cell during placement */
+.grid-cell.preview-valid {
+  background: #66BB6A;
+  opacity: 0.85;
+}
+
+.grid-cell.preview-invalid {
+  background: #EF5350;
+  opacity: 0.75;
+}
+
+/* Hit: red with X */
+.grid-cell.hit {
+  background: #C62828;
+  cursor: default;
+}
+
+.grid-cell.hit::before,
+.grid-cell.hit::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+  transform-origin: center;
+}
+
+.grid-cell.hit::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.grid-cell.hit::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Miss: white dot */
+.grid-cell.miss {
+  cursor: default;
+}
+
+.grid-cell.miss::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 35%;
+  aspect-ratio: 1;
+  background: rgba(255,255,255,0.8);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Sunk ship: dark red all cells */
+.grid-cell.sunk {
+  background: #B71C1C;
+  cursor: default;
+  animation: sunkFlash 0.5s ease;
+}
+
+.grid-cell.sunk::before,
+.grid-cell.sunk::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;
+  height: 3px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 2px;
+  transform-origin: center;
+}
+
+.grid-cell.sunk::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.grid-cell.sunk::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+@keyframes sunkFlash {
+  0%   { filter: brightness(2); }
+  100% { filter: brightness(1); }
+}
+
+/* Already attacked — no pointer events */
+.grid-cell.attacked {
+  pointer-events: none;
+}
+
+/* ===== SETUP ACTIONS ===== */
+.setup-actions {
+  display: flex;
+  gap: var(--space-md);
+  flex-shrink: 0;
+  margin-top: var(--space-xs);
+}
+
+.btn-rotate {
+  background: #29B6F6;
+  color: white;
+  font-weight: 700;
+  min-width: 120px;
+  min-height: var(--btn-min-touch);
+  border-radius: var(--btn-radius);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(41,182,246,0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-rotate:active {
+  transform: scale(0.95);
+}
+
+.btn-confirm {
+  background: var(--secondary);
+  color: white;
+  font-weight: 700;
+  min-width: 120px;
+  min-height: var(--btn-min-touch);
+  border-radius: var(--btn-radius);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(102,187,106,0.3);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-confirm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-confirm:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+/* ===== HANDOFF SCREEN ===== */
+.screen-handoff {
+  background: #0D47A1;
+  justify-content: center;
+}
+
+.handoff-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.handoff-icon {
+  font-size: 5rem;
+  animation: handoffBounce 1s ease infinite alternate;
+}
+
+@keyframes handoffBounce {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-10px); }
+}
+
+.handoff-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: white;
+}
+
+.handoff-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.btn-handoff {
+  font-size: 1.1rem;
+  padding: var(--space-md) var(--space-xl);
+  min-width: 200px;
+}
+
+/* ===== GAME SCREEN ===== */
+.screen-game {
+  background: #1A237E;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.screen-game .game-header {
+  background: rgba(0,0,0,0.2);
+}
+
+.turn-badge {
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--btn-radius);
+  padding: var(--space-xs) var(--space-md);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.game-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  width: 100%;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  overflow: hidden;
+  justify-content: center;
+}
+
+.grid-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.grid-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  text-align: center;
+}
+
+.enemy-label {
+  color: #EF9A9A;
+}
+
+.my-label {
+  color: #A5D6A7;
+}
+
+.grid-divider {
+  width: 80%;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
+}
+
+/* Game grids are slightly smaller than setup */
+.attack-grid,
+.my-grid {
+  cursor: crosshair;
+}
+
+.my-grid .grid-cell {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Hide ship on attack grid (opponent's ships not visible) */
+.attack-grid .grid-cell.ship-hidden {
+  background: #1976D2;
+}
+
+/* ===== RESULT SCREEN ===== */
+.screen-result {
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-md);
+  background: var(--bg);
+  overflow-y: auto;
+  gap: var(--space-md);
+}
+
+.result-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  flex: 1;
+  justify-content: center;
+  width: 100%;
+}
+
+.result-emoji {
+  font-size: 4rem;
+  animation: resultBounce 0.5s ease;
+}
+
+@keyframes resultBounce {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.25); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.result-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.result-title.p1-win { color: #EF5350; }
+.result-title.p2-win { color: #1565C0; }
+
+.result-sub {
+  font-size: 0.95rem;
+  color: var(--text-sub);
+}
+
+.result-grids {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: var(--space-sm);
+}
+
+.result-grid-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.result-grid-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+.result-grid {
+  cursor: default !important;
+}
+
+.result-grid .grid-cell {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.result-actions {
+  display: flex;
+  gap: var(--space-md);
+  flex-shrink: 0;
+}
+
+.btn-secondary {
+  background: #E0E0E0;
+  color: var(--text);
+  box-shadow: none;
+  min-width: var(--btn-min-touch);
+  min-height: var(--btn-min-touch);
+  border-radius: var(--btn-radius);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: var(--space-sm) var(--space-lg);
+}
+
+/* ===== ATTACK ANIMATION ===== */
+@keyframes hitPop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.grid-cell.hit,
+.grid-cell.sunk {
+  animation: hitPop 0.3s ease;
+}
