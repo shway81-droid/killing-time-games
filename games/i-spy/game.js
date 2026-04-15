@@ -289,6 +289,20 @@
   });
 
   // =====================
+  // 난이도 선택
+  // =====================
+  var difficultyBar = document.getElementById('difficultyBar');
+  var diffBtns = difficultyBar.querySelectorAll('.difficulty-btn');
+
+  diffBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      diffBtns.forEach(function (b) { b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      difficulty = btn.dataset.diff;
+    });
+  });
+
+  // =====================
   // 초기화
   // =====================
   renderThemeGrid();

@@ -174,3 +174,31 @@
   font-size: 1.3rem;
   padding: 16px 32px;
 }
+
+/* 난이도 선택 */
+.difficulty-bar {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.difficulty-btn {
+  padding: 12px 28px;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 3px solid transparent;
+  background: rgba(255,255,255,0.8);
+  color: #333;
+  transition: all 0.2s;
+}
+
+.difficulty-btn.selected {
+  border-color: white;
+  background: white;
+  color: #ff6f61;
+}
+
+.difficulty-btn:active {
+  transform: scale(0.95);
+}
