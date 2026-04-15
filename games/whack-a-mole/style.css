@@ -1,0 +1,337 @@
+/* games/whack-a-mole/style.css */
+
+body {
+  background: #81C784;
+  overflow: hidden;
+}
+
+/* === 화면 전환 === */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* === 설명 화면 === */
+.screen-intro {
+  justify-content: space-between;
+  padding: var(--space-lg);
+  background: var(--bg);
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.game-title {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+}
+
+.intro-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 1;
+  justify-content: center;
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.intro-subtext {
+  font-size: var(--font-size-small);
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.btn-play {
+  width: 80%;
+  max-width: 300px;
+  padding: var(--space-md) var(--space-xl);
+  font-size: 1.3rem;
+  margin-bottom: var(--space-xl);
+}
+
+/* 두더지 프리뷰 일러스트 */
+.mole-preview {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mole-char {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+
+.mole-face {
+  width: 80px;
+  height: 80px;
+  background: #8D6E63;
+  border-radius: 50% 50% 45% 45%;
+  position: relative;
+}
+
+.mole-eye {
+  width: 12px;
+  height: 14px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 28px;
+}
+
+.mole-eye.left { left: 20px; }
+.mole-eye.right { right: 20px; }
+
+.mole-nose {
+  width: 16px;
+  height: 12px;
+  background: #D7837F;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* === 카운트다운 === */
+.screen-countdown {
+  justify-content: center;
+  align-items: center;
+  background: #81C784;
+}
+
+.countdown-number {
+  font-size: 8rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: countPop 0.5s ease;
+}
+
+@keyframes countPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* === 게임 플레이 화면 === */
+.screen-game {
+  justify-content: space-between;
+  padding: var(--space-md);
+  background: #81C784;
+  position: relative;
+}
+
+.game-hud {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.hud-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.hud-label {
+  font-size: var(--font-size-small);
+  color: rgba(255,255,255,0.8);
+  font-weight: 600;
+}
+
+.hud-value {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #FFFFFF;
+}
+
+.hud-timer {
+  flex: 1;
+}
+
+.screen-game .progress-bar {
+  height: 16px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 8px;
+}
+
+.screen-game .progress-bar-fill {
+  background: var(--accent-yellow);
+  border-radius: 8px;
+}
+
+/* === 두더지 그리드 === */
+.mole-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 360px;
+  flex: 1;
+  align-content: center;
+}
+
+.hole {
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* 구멍 (타원 하단) */
+.hole::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 30%;
+  background: #5D4037;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+/* 두더지 캐릭터 */
+.mole {
+  width: 70%;
+  height: 70%;
+  position: absolute;
+  bottom: -70%;
+  left: 15%;
+  z-index: 1;
+  transition: bottom 0.15s ease-out;
+}
+
+.mole::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #8D6E63;
+  border-radius: 50% 50% 40% 40%;
+  position: relative;
+}
+
+/* 두더지 눈 - left */
+.mole::after {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 25%;
+  width: 12px;
+  height: 14px;
+  background: #333;
+  border-radius: 50%;
+  box-shadow: calc(100% - 50px) 0 0 0 #333; /* right eye via shadow */
+}
+
+/* 두더지 등장 */
+.hole.active .mole {
+  bottom: 15%;
+}
+
+/* 터치 성공 이펙트 */
+.hole.hit .mole {
+  transform: scale(0.8);
+  opacity: 0.5;
+}
+
+/* 닫기 버튼 */
+.close-btn {
+  position: absolute;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+}
+
+/* === 결과 화면 === */
+.screen-result {
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  background: var(--bg);
+}
+
+.result-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.result-emoji {
+  font-size: 4rem;
+}
+
+.result-title {
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.result-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-score-label {
+  font-size: var(--font-size-small);
+  color: var(--text-sub);
+}
+
+.result-score-value {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.result-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.btn-secondary {
+  background: #E0E0E0;
+  color: var(--text);
+}
+
+/* === 히트 스타 이펙트 === */
+@keyframes starBurst {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.hit-effect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  font-size: 2rem;
+  z-index: 10;
+  pointer-events: none;
+  animation: starBurst 0.4s ease-out forwards;
+}
