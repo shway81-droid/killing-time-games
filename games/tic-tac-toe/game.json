@@ -1,0 +1,8 @@
+{
+  "name": "틱택토",
+  "description": "O와 X를 번갈아 놓아 3줄을 만드세요!",
+  "icon": "⭕",
+  "color": "#29B6F6",
+  "grades": [1, 2, 3, 4, 5, 6],
+  "playTime": "1~2분"
+}
