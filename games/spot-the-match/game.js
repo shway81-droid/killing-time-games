@@ -4,9 +4,11 @@
   'use strict';
 
   // ── Constants ─────────────────────────────────────────────────────────────
-  var TOTAL_ROUNDS = 10;
+  var TOTAL_ROUNDS   = 10;
+  var SUB_TIMER_SECS = 5;   // seconds to pick 2 cells after buzzing in
 
   var PLAYER_COLORS = ['#AB47BC', '#29B6F6', '#EF5350', '#66BB6A'];
+  var PLAYER_BG     = ['#7B1FA2', '#0277BD', '#C62828', '#2E7D32'];
   var PLAYER_NAMES  = ['플레이어 1', '플레이어 2', '플레이어 3', '플레이어 4'];
 
   // 32 unique emojis — enough to pick 24 for a 5x5 grid
@@ -32,6 +34,20 @@
 
   // ── Sound ─────────────────────────────────────────────────────────────────
   var sounds = createSoundManager({
+    // Buzzer press: sharp ascending blip
+    buzzer: function (ctx) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.18);
+    },
     // Tap / select: soft high click
     select: function (ctx) {
       var osc = ctx.createOscillator();
@@ -142,7 +158,7 @@
   });
 
   // ── Intro: difficulty selection ───────────────────────────────────────────
-  var roundSeconds = 10;  // default: 보통
+  var roundSeconds = 10;
   var difficultyBtns = document.querySelectorAll('.difficulty-btn');
 
   difficultyBtns.forEach(function (btn) {
@@ -155,24 +171,38 @@
 
   // ── DOM refs ──────────────────────────────────────────────────────────────
   var emojiGridEl    = document.getElementById('emojiGrid');
-  var scoreboardEl   = document.getElementById('scoreboard');
-  var turnDotEl      = document.getElementById('turnDot');
-  var turnTextEl     = document.getElementById('turnText');
+  var gridOverlayEl  = document.getElementById('gridOverlay');
+  var buzzerZonesEl  = document.getElementById('buzzerZones');
   var roundDisplayEl = document.getElementById('roundDisplay');
   var feedbackEl     = document.getElementById('feedbackMsg');
   var timerBarFill   = document.getElementById('timerBarFill');
   var timerNumber    = document.getElementById('timerNumber');
 
   // ── Game state ─────────────────────────────────────────────────────────────
+  //
+  // STATE MACHINE per round:
+  //   'LOOKING'   → all buzzers active, main timer counting
+  //   'ANSWERING' → one player buzzed in, 5s sub-timer, grid interactive for them
+  //   'TRANSITION'→ brief pause before next round
+  //
+  var STATE_LOOKING    = 'LOOKING';
+  var STATE_ANSWERING  = 'ANSWERING';
+  var STATE_TRANSITION = 'TRANSITION';
+
+  var roundState    = STATE_LOOKING;
   var cells         = [];   // array of { emoji, index, el }
   var selectedIndex = -1;   // index into cells[] of first selected cell, or -1
-  var locked        = false;
-  var currentPlayer = 0;
   var scores        = [];
-  var roundsFound   = 0;    // rounds completed so far (0..10)
+  var roundsPlayed  = 0;    // rounds completed (0..TOTAL_ROUNDS)
+  var lockedOut     = [];   // boolean[] — players locked out this round
+  var answeringPlayer = -1; // which player is currently answering (-1 = none)
 
-  // Round timer instance (from createTimer)
-  var roundTimer = null;
+  // Timers
+  var mainTimer = null;
+  var subTimer  = null;
+
+  // Zone UI elements per player
+  var zoneEls      = [];   // { zoneEl, btnEl, scoreEl, subTimerEl }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   function shuffle(arr) {
@@ -184,58 +214,211 @@
     return a;
   }
 
-  // ── Round timer UI ────────────────────────────────────────────────────────
-  function updateTimerUI(remaining) {
+  // ── Timer UI ──────────────────────────────────────────────────────────────
+  function updateMainTimerUI(remaining) {
     var pct = (remaining / roundSeconds) * 100;
     timerBarFill.style.width = pct + '%';
     timerNumber.textContent = remaining;
-
     var danger = remaining <= 3;
     timerBarFill.classList.toggle('danger', danger);
     timerNumber.classList.toggle('danger', danger);
   }
 
-  function stopRoundTimer() {
-    if (roundTimer) {
-      roundTimer.stop();
-      roundTimer = null;
+  function stopMainTimer() {
+    if (mainTimer) {
+      mainTimer.stop();
+      mainTimer = null;
     }
   }
 
-  function startRoundTimer() {
-    stopRoundTimer();
+  function stopSubTimer() {
+    if (subTimer) {
+      subTimer.stop();
+      subTimer = null;
+    }
+    // Clear all sub-timer displays
+    zoneEls.forEach(function (z) {
+      if (z.subTimerEl) z.subTimerEl.textContent = '';
+    });
+  }
 
-    // Reset bar appearance
+  function startMainTimer() {
+    stopMainTimer();
+
     timerBarFill.style.transition = 'none';
     timerBarFill.style.width = '100%';
     timerBarFill.classList.remove('danger');
     timerNumber.classList.remove('danger');
     timerNumber.textContent = roundSeconds;
 
-    // Allow layout to paint the full bar before animating
     setTimeout(function () {
       timerBarFill.style.transition = 'width 0.9s linear, background 0.3s ease';
 
-      roundTimer = createTimer(
+      mainTimer = createTimer(
         roundSeconds,
         function onTick(remaining) {
-          updateTimerUI(remaining);
+          updateMainTimerUI(remaining);
         },
         function onEnd() {
-          handleTimeout();
+          handleRoundTimeout();
         }
       );
-      roundTimer.start();
+      mainTimer.start();
     }, 50);
   }
 
-  // ── Build a new 5x5 grid: 24 unique + 1 duplicate = 25 ───────────────────
+  function startSubTimer(playerIdx) {
+    stopSubTimer();
+
+    var z = zoneEls[playerIdx];
+    if (z && z.subTimerEl) z.subTimerEl.textContent = SUB_TIMER_SECS;
+
+    subTimer = createTimer(
+      SUB_TIMER_SECS,
+      function onTick(remaining) {
+        if (z && z.subTimerEl) z.subTimerEl.textContent = remaining;
+      },
+      function onEnd() {
+        handleSubTimerExpired(playerIdx);
+      }
+    );
+    subTimer.start();
+  }
+
+  // ── Build buzzer zones ────────────────────────────────────────────────────
+  function buildBuzzerZones() {
+    buzzerZonesEl.innerHTML = '';
+    zoneEls = [];
+
+    for (var p = 0; p < playerCount; p++) {
+      (function (idx) {
+        var zone = document.createElement('div');
+        zone.className = 'buzzer-zone';
+        zone.id = 'buzzer-zone-' + idx;
+        zone.style.background = PLAYER_BG[idx];
+        zone.style.color = PLAYER_COLORS[idx];
+
+        var label = document.createElement('div');
+        label.className = 'buzzer-label';
+        label.textContent = PLAYER_NAMES[idx];
+
+        var score = document.createElement('div');
+        score.className = 'buzzer-score';
+        score.id = 'buzzer-score-' + idx;
+        score.textContent = '0점';
+
+        var btn = document.createElement('button');
+        btn.className = 'buzzer-btn';
+        btn.id = 'buzzer-btn-' + idx;
+        btn.textContent = '찾았다!';
+
+        var subTimerEl = document.createElement('div');
+        subTimerEl.className = 'sub-timer';
+        subTimerEl.id = 'sub-timer-' + idx;
+
+        zone.appendChild(label);
+        zone.appendChild(score);
+        zone.appendChild(btn);
+        zone.appendChild(subTimerEl);
+        buzzerZonesEl.appendChild(zone);
+
+        zoneEls.push({ zoneEl: zone, btnEl: btn, scoreEl: score, subTimerEl: subTimerEl });
+
+        onTap(btn, function () {
+          handleBuzzerPress(idx);
+        });
+      })(p);
+    }
+  }
+
+  function updateScoreUI(playerIdx) {
+    var z = zoneEls[playerIdx];
+    if (z && z.scoreEl) z.scoreEl.textContent = scores[playerIdx] + '점';
+  }
+
+  function updateRoundDisplay() {
+    var display = roundsPlayed + 1;
+    roundDisplayEl.textContent = display > TOTAL_ROUNDS ? TOTAL_ROUNDS : display;
+  }
+
+  // ── Feedback ──────────────────────────────────────────────────────────────
+  var feedbackTimer = null;
+
+  function showFeedback(msg, type) {
+    if (feedbackTimer) clearTimeout(feedbackTimer);
+    var cls = 'feedback-msg visible ';
+    if (type === 'correct')      cls += 'correct-msg';
+    else if (type === 'timeout') cls += 'timeout-msg';
+    else                         cls += 'wrong-msg';
+    feedbackEl.textContent = msg;
+    feedbackEl.className = cls;
+    feedbackTimer = setTimeout(function () {
+      feedbackEl.className = 'feedback-msg';
+    }, 1500);
+  }
+
+  // ── Grid overlay (blocks non-answering taps) ─────────────────────────────
+  function showGridOverlay(playerIdx) {
+    gridOverlayEl.innerHTML = '';
+    var lbl = document.createElement('div');
+    lbl.className = 'grid-overlay-label';
+    lbl.textContent = PLAYER_NAMES[playerIdx] + ' 선택 중...';
+    gridOverlayEl.appendChild(lbl);
+    gridOverlayEl.className = 'grid-overlay active';
+    gridOverlayEl.style.background = 'rgba(0,0,0,0)';  // transparent — label only
+  }
+
+  function hideGridOverlay() {
+    gridOverlayEl.className = 'grid-overlay';
+    gridOverlayEl.innerHTML = '';
+  }
+
+  // ── Zone state helpers ────────────────────────────────────────────────────
+  function setZoneLooking() {
+    // All non-locked-out players get active buzzers
+    for (var p = 0; p < playerCount; p++) {
+      var z = zoneEls[p];
+      if (!z) continue;
+      if (lockedOut[p]) {
+        z.btnEl.textContent = '❌';
+        z.btnEl.className = 'buzzer-btn locked-btn';
+        z.btnEl.disabled = true;
+        z.zoneEl.classList.add('locked');
+        z.zoneEl.classList.remove('answering');
+      } else {
+        z.btnEl.textContent = '찾았다!';
+        z.btnEl.className = 'buzzer-btn';
+        z.btnEl.disabled = false;
+        z.zoneEl.classList.remove('locked', 'answering');
+      }
+      if (z.subTimerEl) z.subTimerEl.textContent = '';
+    }
+  }
+
+  function setZoneAnswering(playerIdx) {
+    for (var p = 0; p < playerCount; p++) {
+      var z = zoneEls[p];
+      if (!z) continue;
+      if (p === playerIdx) {
+        z.btnEl.textContent = '선택 중...';
+        z.btnEl.className = 'buzzer-btn answering-btn';
+        z.btnEl.disabled = true;
+        z.zoneEl.classList.add('answering');
+        z.zoneEl.classList.remove('locked');
+      } else {
+        z.btnEl.textContent = lockedOut[p] ? '❌' : '대기 중';
+        z.btnEl.className = 'buzzer-btn locked-btn';
+        z.btnEl.disabled = true;
+        z.zoneEl.classList.remove('answering');
+        if (lockedOut[p]) z.zoneEl.classList.add('locked');
+      }
+    }
+  }
+
+  // ── Build a new 5x5 grid ──────────────────────────────────────────────────
   function buildGrid() {
-    // Pick 24 unique emojis from pool
-    var chosen = shuffle(EMOJI_POOL).slice(0, 24);
-    // Pick one to duplicate
+    var chosen   = shuffle(EMOJI_POOL).slice(0, 24);
     var dupEmoji = chosen[Math.floor(Math.random() * 24)];
-    // Build array of 25
     var emojiList = shuffle(chosen.concat([dupEmoji]));
 
     emojiGridEl.innerHTML = '';
@@ -255,125 +438,128 @@
       onTap(cell, function () { handleCellTap(cellData); });
       emojiGridEl.appendChild(cell);
     });
-
-    // Start the per-round countdown
-    startRoundTimer();
   }
 
-  // ── Timeout handler ───────────────────────────────────────────────────────
-  function handleTimeout() {
-    if (locked) return;  // a match/wrong animation is finishing — ignore
-    locked = true;
+  // ── Buzzer press ─────────────────────────────────────────────────────────
+  function handleBuzzerPress(playerIdx) {
+    if (roundState !== STATE_LOOKING) return;
+    if (lockedOut[playerIdx]) return;
 
-    sounds.play('timeout');
+    sounds.play('buzzer');
 
-    // Flash all non-solved cells
+    roundState = STATE_ANSWERING;
+    answeringPlayer = playerIdx;
+
+    // Pause main timer
+    if (mainTimer) mainTimer.pause();
+
+    // Update zones UI
+    setZoneAnswering(playerIdx);
+
+    // Show overlay (but allow THIS player to tap grid — overlay just shows label)
+    showGridOverlay(playerIdx);
+
+    // Clear any previous selection
+    selectedIndex = -1;
     cells.forEach(function (c) {
-      if (!c.el.classList.contains('solved')) {
-        c.el.classList.add('timeout-flash');
-        setTimeout(function () { c.el.classList.remove('timeout-flash'); }, 550);
-      }
+      c.el.classList.remove('selected');
+      c.el.style.borderColor = '';
     });
 
-    // Deselect any selection
+    // Start 5s sub-timer
+    startSubTimer(playerIdx);
+  }
+
+  // ── Sub-timer expired: player ran out of time to pick ─────────────────────
+  function handleSubTimerExpired(playerIdx) {
+    if (roundState !== STATE_ANSWERING) return;
+    if (answeringPlayer !== playerIdx) return;
+
+    sounds.play('wrong');
+
+    // Deselect
     if (selectedIndex !== -1) {
-      var sel = cells[selectedIndex];
-      sel.el.classList.remove('selected');
-      sel.el.style.borderColor = '';
+      cells[selectedIndex].el.classList.remove('selected');
+      cells[selectedIndex].el.style.borderColor = '';
       selectedIndex = -1;
     }
 
-    showFeedback('시간 초과! ⏰', 'timeout');
+    showFeedback(PLAYER_NAMES[playerIdx] + ' 시간 초과! -1점', 'wrong');
 
-    // Count this as a round (nobody scores), advance
-    roundsFound++;
+    scores[playerIdx] = Math.max(0, scores[playerIdx] - 1);
+    updateScoreUI(playerIdx);
+
+    // Lock out this player for the round
+    lockedOut[playerIdx] = true;
+
+    returnToLooking();
+  }
+
+  // ── Return to LOOKING state (others can buzz in) ──────────────────────────
+  function returnToLooking() {
+    stopSubTimer();
+    hideGridOverlay();
+    answeringPlayer = -1;
+    selectedIndex = -1;
+
+    // Check if all players locked out → skip round
+    var allLocked = true;
+    for (var p = 0; p < playerCount; p++) {
+      if (!lockedOut[p]) { allLocked = false; break; }
+    }
+
+    if (allLocked) {
+      handleRoundTimeout();
+      return;
+    }
+
+    roundState = STATE_LOOKING;
+    setZoneLooking();
+
+    // Resume main timer
+    if (mainTimer) mainTimer.start();
+  }
+
+  // ── Main timer timeout ────────────────────────────────────────────────────
+  function handleRoundTimeout() {
+    if (roundState === STATE_TRANSITION) return;
+    roundState = STATE_TRANSITION;
+
+    stopMainTimer();
+    stopSubTimer();
+    hideGridOverlay();
+    answeringPlayer = -1;
+
+    sounds.play('timeout');
+
+    // Flash cells
+    cells.forEach(function (c) {
+      c.el.classList.add('timeout-flash');
+      setTimeout(function () { c.el.classList.remove('timeout-flash'); }, 550);
+    });
+
+    showFeedback('시간 초과! ⏰ 아무도 못 찾았어요', 'timeout');
+
+    roundsPlayed++;
 
     setTimeout(function () {
-      if (roundsFound >= TOTAL_ROUNDS) {
+      if (roundsPlayed >= TOTAL_ROUNDS) {
         showResult();
       } else {
         updateRoundDisplay();
-        // Next player's turn on timeout
-        currentPlayer = (currentPlayer + 1) % playerCount;
-        updateTurnUI();
-        locked = false;
-        buildGrid();
+        startNewRound();
       }
-    }, 1500);
+    }, 1600);
   }
 
-  // ── Scoreboard UI ─────────────────────────────────────────────────────────
-  function buildScoreboard() {
-    scoreboardEl.innerHTML = '';
-    for (var p = 0; p < playerCount; p++) {
-      var chip = document.createElement('div');
-      chip.className = 'score-chip' + (p === 0 ? ' active-turn' : '');
-      chip.id = 'chip-' + p;
-      chip.style.color = PLAYER_COLORS[p];
-
-      var dot = document.createElement('span');
-      dot.className = 'score-dot';
-      dot.style.background = PLAYER_COLORS[p];
-
-      var label = document.createElement('span');
-      label.className = 'score-label';
-      label.textContent = 'P' + (p + 1);
-
-      var val = document.createElement('span');
-      val.className = 'score-val';
-      val.id = 'score-val-' + p;
-      val.textContent = '0';
-
-      chip.appendChild(dot);
-      chip.appendChild(label);
-      chip.appendChild(val);
-      scoreboardEl.appendChild(chip);
-    }
-  }
-
-  function updateScoreUI(playerIdx) {
-    var el = document.getElementById('score-val-' + playerIdx);
-    if (el) el.textContent = scores[playerIdx];
-  }
-
-  function updateTurnUI() {
-    turnDotEl.style.background = PLAYER_COLORS[currentPlayer];
-    turnTextEl.textContent = PLAYER_NAMES[currentPlayer] + '의 차례';
-    for (var p = 0; p < playerCount; p++) {
-      var chip = document.getElementById('chip-' + p);
-      if (chip) chip.classList.toggle('active-turn', p === currentPlayer);
-    }
-  }
-
-  function updateRoundDisplay() {
-    var display = roundsFound + 1;
-    roundDisplayEl.textContent = display > TOTAL_ROUNDS ? TOTAL_ROUNDS : display;
-  }
-
-  // ── Feedback message ───────────────────────────────────────────────────────
-  var feedbackTimer = null;
-
-  function showFeedback(msg, type) {
-    if (feedbackTimer) clearTimeout(feedbackTimer);
-    var cls = 'feedback-msg visible ';
-    if (type === 'correct')      cls += 'correct-msg';
-    else if (type === 'timeout') cls += 'timeout-msg';
-    else                         cls += 'wrong-msg';
-    feedbackEl.textContent = msg;
-    feedbackEl.className = cls;
-    feedbackTimer = setTimeout(function () {
-      feedbackEl.className = 'feedback-msg';
-    }, 1200);
-  }
-
-  // ── Cell tap handler ───────────────────────────────────────────────────────
+  // ── Cell tap handler ──────────────────────────────────────────────────────
   function handleCellTap(cellData) {
-    if (locked) return;
-    if (cellData.el.classList.contains('solved')) return;
+    if (roundState !== STATE_ANSWERING) return;
+    if (answeringPlayer === -1) return;
 
     var tapIdx = cellData.index;
 
-    // Tapping the already-selected cell → deselect
+    // Tapping already-selected cell → deselect
     if (selectedIndex === tapIdx) {
       cellData.el.classList.remove('selected');
       cellData.el.style.borderColor = '';
@@ -385,63 +571,65 @@
     if (selectedIndex === -1) {
       selectedIndex = tapIdx;
       cellData.el.classList.add('selected');
-      cellData.el.style.borderColor = PLAYER_COLORS[currentPlayer];
+      cellData.el.style.borderColor = PLAYER_COLORS[answeringPlayer];
       sounds.play('select');
       return;
     }
 
-    // Second selection
+    // Second selection — evaluate
     sounds.play('select');
     var firstCell  = cells[selectedIndex];
     var secondCell = cellData;
+    var player     = answeringPlayer;
 
-    // Visually select second
     secondCell.el.classList.add('selected');
-    secondCell.el.style.borderColor = PLAYER_COLORS[currentPlayer];
+    secondCell.el.style.borderColor = PLAYER_COLORS[player];
 
-    locked = true;
+    // Prevent further taps during animation
+    var prevState = roundState;
+    roundState = STATE_TRANSITION;
+    stopSubTimer();
 
     if (firstCell.emoji === secondCell.emoji) {
-      // ── Correct match ──
+      // ── Correct ──
       setTimeout(function () {
         sounds.play('match');
 
         firstCell.el.classList.add('correct');
         secondCell.el.classList.add('correct');
-        firstCell.el.style.borderColor  = PLAYER_COLORS[currentPlayer];
-        secondCell.el.style.borderColor = PLAYER_COLORS[currentPlayer];
+        firstCell.el.style.borderColor  = PLAYER_COLORS[player];
+        secondCell.el.style.borderColor = PLAYER_COLORS[player];
 
         setTimeout(function () {
           firstCell.el.classList.remove('selected', 'correct');
           secondCell.el.classList.remove('selected', 'correct');
-          firstCell.el.classList.add('solved');
-          secondCell.el.classList.add('solved');
-
-          // Stop the round timer — player found the pair
-          stopRoundTimer();
-
-          scores[currentPlayer]++;
-          updateScoreUI(currentPlayer);
-          roundsFound++;
-
-          showFeedback('정답! 🎉 한 번 더!', 'correct');
-
+          firstCell.el.style.borderColor  = '';
+          secondCell.el.style.borderColor = '';
           selectedIndex = -1;
-          locked = false;
 
-          if (roundsFound >= TOTAL_ROUNDS) {
-            setTimeout(showResult, 600);
-          } else {
-            updateRoundDisplay();
-            setTimeout(function () {
-              buildGrid();  // buildGrid also starts next round timer
-            }, 500);
-          }
+          stopMainTimer();
+          hideGridOverlay();
+          answeringPlayer = -1;
+
+          scores[player]++;
+          updateScoreUI(player);
+          showFeedback(PLAYER_NAMES[player] + ' 정답! +1점 🎉', 'correct');
+
+          roundsPlayed++;
+
+          setTimeout(function () {
+            if (roundsPlayed >= TOTAL_ROUNDS) {
+              showResult();
+            } else {
+              updateRoundDisplay();
+              startNewRound();
+            }
+          }, 1000);
         }, 400);
       }, 180);
 
     } else {
-      // ── Wrong guess ──
+      // ── Wrong ──
       setTimeout(function () {
         sounds.play('wrong');
 
@@ -453,23 +641,42 @@
           secondCell.el.classList.remove('selected', 'wrong');
           firstCell.el.style.borderColor  = '';
           secondCell.el.style.borderColor = '';
-
           selectedIndex = -1;
-          locked = false;
 
-          showFeedback('틀렸어요! 다음 플레이어 차례', 'wrong');
+          scores[player] = Math.max(0, scores[player] - 1);
+          updateScoreUI(player);
+          showFeedback(PLAYER_NAMES[player] + ' 틀렸어요! -1점', 'wrong');
 
-          // Next player — timer keeps running
-          currentPlayer = (currentPlayer + 1) % playerCount;
-          updateTurnUI();
+          // Lock out this player
+          lockedOut[player] = true;
+
+          // Back to LOOKING (others can try)
+          returnToLooking();
         }, 420);
       }, 200);
     }
   }
 
+  // ── Start a new round ────────────────────────────────────────────────────
+  function startNewRound() {
+    roundState = STATE_LOOKING;
+    answeringPlayer = -1;
+    selectedIndex = -1;
+    lockedOut = [];
+    for (var p = 0; p < playerCount; p++) {
+      lockedOut.push(false);
+    }
+
+    hideGridOverlay();
+    setZoneLooking();
+    buildGrid();
+    startMainTimer();
+  }
+
   // ── Result screen ──────────────────────────────────────────────────────────
   function showResult() {
-    stopRoundTimer();
+    stopMainTimer();
+    stopSubTimer();
     sounds.play('fanfare');
 
     var maxScore = Math.max.apply(null, scores);
@@ -492,7 +699,6 @@
       resultTitleEl.style.color = '#F9A825';
     }
 
-    // Build score rows sorted by score desc
     resultScoresEl.innerHTML = '';
     var order = [];
     for (var i = 0; i < playerCount; i++) { order.push(i); }
@@ -534,25 +740,23 @@
 
   // ── Init / reset game ──────────────────────────────────────────────────────
   function initGame() {
-    stopRoundTimer();
+    stopMainTimer();
+    stopSubTimer();
 
-    currentPlayer = 0;
-    roundsFound   = 0;
-    selectedIndex = -1;
-    locked        = false;
-    scores        = [];
+    roundsPlayed    = 0;
+    answeringPlayer = -1;
+    selectedIndex   = -1;
+    roundState      = STATE_LOOKING;
+    scores          = [];
 
     for (var p = 0; p < playerCount; p++) {
       scores.push(0);
     }
 
-    buildScoreboard();
-    updateTurnUI();
-    updateRoundDisplay();
-    buildGrid();  // also starts round timer
-
-    // Clear feedback
     feedbackEl.className = 'feedback-msg';
+    updateRoundDisplay();
+    buildBuzzerZones();
+    startNewRound();
 
     showScreen('game');
   }
@@ -567,17 +771,20 @@
   });
 
   document.getElementById('homeBtn').addEventListener('click', function () {
-    stopRoundTimer();
+    stopMainTimer();
+    stopSubTimer();
     goHome();
   });
 
   document.getElementById('backBtn').addEventListener('click', function () {
-    stopRoundTimer();
+    stopMainTimer();
+    stopSubTimer();
     goHome();
   });
 
   document.getElementById('closeBtn').addEventListener('click', function () {
-    stopRoundTimer();
+    stopMainTimer();
+    stopSubTimer();
     showScreen('intro');
   });
 
