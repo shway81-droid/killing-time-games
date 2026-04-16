@@ -498,6 +498,7 @@ var targetItem     = null;     // { id, label, fn }
 var roundDQ        = [];       // set-like array of DQ'd player indices
 var roundResolved  = false;
 var nextRoundTimer = null;
+var gameActive     = false;
 
 // ══════════════════════════════════════════════════════
 // DOM REFS
@@ -563,6 +564,11 @@ function clearNextRoundTimer() {
   }
 }
 
+function cleanup() {
+  gameActive = false;
+  clearNextRoundTimer();
+}
+
 // ══════════════════════════════════════════════════════
 // SOUND TOGGLE
 // ══════════════════════════════════════════════════════
@@ -591,11 +597,11 @@ document.querySelectorAll('.player-btn').forEach(function(btn) {
 // NAV BUTTONS
 // ══════════════════════════════════════════════════════
 
-onTap(backBtn,  function() { goHome(); });
+onTap(backBtn,  function() { cleanup(); goHome(); });
 onTap(playBtn,  function() { startGame(); });
-onTap(closeBtn, function() { clearNextRoundTimer(); goHome(); });
+onTap(closeBtn, function() { cleanup(); goHome(); });
 onTap(retryBtn, function() { startGame(); });
-onTap(homeBtn,  function() { goHome(); });
+onTap(homeBtn,  function() { cleanup(); goHome(); });
 
 // ══════════════════════════════════════════════════════
 // ZONE BUILDING
@@ -760,17 +766,21 @@ function handleItemTap(playerIdx, itemId, btn, e) {
     setDQ(playerIdx);
 
     btn.classList.add('item-wrong-flash');
-    setTimeout(function() { btn.classList.remove('item-wrong-flash'); }, 400);
+    setTimeout(function() {
+      if (gameActive) btn.classList.remove('item-wrong-flash');
+    }, 400);
 
     zone.classList.remove('state-active', 'state-correct', 'state-idle');
     zone.classList.add('state-dq', 'state-wrong');
-    setTimeout(function() { zone.classList.remove('state-wrong'); }, 420);
+    setTimeout(function() {
+      if (gameActive) zone.classList.remove('state-wrong');
+    }, 420);
 
     roundStatus.textContent = PLAYER_CONFIG[playerIdx].label + ' 오답! 실격';
     roundStatus.className   = 'round-status wrong';
 
     setTimeout(function() {
-      if (phase === 'active') {
+      if (gameActive && phase === 'active') {
         roundStatus.textContent = '';
         roundStatus.className   = 'round-status';
       }
@@ -796,6 +806,9 @@ function handleItemTap(playerIdx, itemId, btn, e) {
 // ══════════════════════════════════════════════════════
 
 function startGame() {
+  cleanup();
+  gameActive = true;
+
   scores = [];
   for (var i = 0; i < playerCount; i++) { scores.push(0); }
   currentRound  = 0;
