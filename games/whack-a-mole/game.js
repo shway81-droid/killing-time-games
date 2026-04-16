@@ -80,17 +80,8 @@
   });
   updateSoundBtn();
 
-  // ===== 인원 선택 =====
+  // ===== 인원 고정 (2인) =====
   var selectedCount = 2;
-  var playerBtns = document.querySelectorAll('.player-btn');
-
-  playerBtns.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      selectedCount = parseInt(btn.dataset.count, 10);
-      playerBtns.forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-    });
-  });
 
   // ===== 카운트다운 =====
   var countdownEl = document.getElementById('countdownNumber');
