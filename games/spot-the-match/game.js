@@ -213,7 +213,7 @@
     timerNumber.textContent = roundSeconds;
 
     // Allow layout to paint the full bar before animating
-    requestAnimationFrame(function () {
+    setTimeout(function () {
       timerBarFill.style.transition = 'width 0.9s linear, background 0.3s ease';
 
       roundTimer = createTimer(
@@ -226,7 +226,7 @@
         }
       );
       roundTimer.start();
-    });
+    }, 50);
   }
 
   // ── Build a new 5x5 grid: 24 unique + 1 duplicate = 25 ───────────────────
