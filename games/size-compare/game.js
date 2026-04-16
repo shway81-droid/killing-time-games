@@ -184,9 +184,9 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
 });
 
 // ── Nav ──────────────────────────────────────────────────────
-onTap(backBtn,  () => goHome());
+onTap(backBtn,  () => { clearAllTimers(); goHome(); });
 onTap(closeBtn, () => { clearAllTimers(); goHome(); });
-onTap(homeBtn,  () => goHome());
+onTap(homeBtn,  () => { clearAllTimers(); goHome(); });
 onTap(retryBtn, () => startGame());
 onTap(playBtn,  () => startGame());
 
@@ -295,6 +295,7 @@ function disqualifyPlayer(idx, zone) {
 
 // ── Game flow ─────────────────────────────────────────────────
 function startGame() {
+  clearAllTimers();
   scores       = new Array(playerCount).fill(0);
   roundResults = [];
   currentRound = 0;
