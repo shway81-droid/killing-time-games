@@ -102,7 +102,8 @@ let phase         = 'idle'; // idle | active | result
 let currentRoundData = null; // { correctId, displayColor }
 let roundDQ       = new Set();
 let roundResolved = false;
-let nextRoundTimer = null;
+let nextRoundTimer   = null;
+let pendingTimers    = [];   // tracks all non-nextRound timeouts for cleanup
 
 // ── DOM ───────────────────────────────────────────────────
 const introScreen   = document.getElementById('introScreen');
@@ -159,9 +160,9 @@ document.querySelectorAll('.player-btn').forEach(btn => {
 });
 
 // ── Nav buttons ───────────────────────────────────────────
-onTap(backBtn,  () => goHome());
-onTap(closeBtn, () => { clearNextRoundTimer(); goHome(); });
-onTap(homeBtn,  () => goHome());
+onTap(backBtn,  () => { clearAllTimers(); goHome(); });
+onTap(closeBtn, () => { clearAllTimers(); goHome(); });
+onTap(homeBtn,  () => { clearAllTimers(); goHome(); });
 onTap(retryBtn, () => startGame());
 onTap(playBtn,  () => startGame());
 
@@ -320,17 +321,17 @@ function handleColorTap(playerIdx, colorId, zone, e) {
     zone.classList.add('state-dq', 'state-wrong');
 
     // Remove wrong class after animation
-    setTimeout(() => zone.classList.remove('state-wrong'), 450);
+    pendingTimers.push(setTimeout(() => zone.classList.remove('state-wrong'), 450));
 
     roundStatus.textContent = PLAYER_CONFIG[playerIdx].label + ' 오답 실격!';
     roundStatus.className   = 'round-status wrong';
     // Reset status text shortly
-    setTimeout(() => {
+    pendingTimers.push(setTimeout(() => {
       if (phase === 'active') {
         roundStatus.textContent = '';
         roundStatus.className   = 'round-status';
       }
-    }, 800);
+    }, 800));
 
     // Check if all remaining players DQ'd
     const alive = Array.from({ length: playerCount }, (_, i) => i)
@@ -365,12 +366,13 @@ function setAllZonesIdle(exceptIdx) {
 
 // ── Game flow ─────────────────────────────────────────────
 function startGame() {
+  clearAllTimers();
   scores       = new Array(playerCount).fill(0);
   roundResults = [];
   currentRound = 0;
   showScreen(gameScreen);
   buildZones();
-  setTimeout(() => nextRound(), 300);
+  pendingTimers.push(setTimeout(() => nextRound(), 300));
 }
 
 function nextRound() {
@@ -396,7 +398,7 @@ function nextRound() {
 
   // Short pause, then reveal word
   sound.play('countdown');
-  setTimeout(() => {
+  pendingTimers.push(setTimeout(() => {
     currentRoundData = generateRound();
     showStroopWord(currentRoundData);
     roundStatus.textContent = '';
@@ -410,7 +412,7 @@ function nextRound() {
       }
     }
     phase = 'active';
-  }, 800);
+  }, 800));
 }
 
 function clearNextRoundTimer() {
@@ -418,6 +420,12 @@ function clearNextRoundTimer() {
     clearTimeout(nextRoundTimer);
     nextRoundTimer = null;
   }
+}
+
+function clearAllTimers() {
+  clearNextRoundTimer();
+  pendingTimers.forEach(id => clearTimeout(id));
+  pendingTimers = [];
 }
 
 function scheduleNextOrEnd() {
