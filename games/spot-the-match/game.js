@@ -9,11 +9,12 @@
   var PLAYER_COLORS = ['#AB47BC', '#29B6F6', '#EF5350', '#66BB6A'];
   var PLAYER_NAMES  = ['플레이어 1', '플레이어 2', '플레이어 3', '플레이어 4'];
 
-  // 30+ diverse emoji pool
+  // 32 unique emojis — enough to pick 24 for a 5x5 grid
   var EMOJI_POOL = [
     '🍎','🍊','🍋','🍇','🍓','🍒','🍑','🥝','🍌','🍉',
     '🥕','🌽','🍕','🍔','🍟','🧁','🍩','🎈','🎸','🚀',
-    '🌟','⚽','🎯','🏆','💎','🔔','🎵','🌸','🌺','🍀'
+    '🌟','⚽','🎯','🏆','💎','🔔','🎵','🌸','🌺','🍀',
+    '🦊','🐬'
   ];
 
   // ── Screen refs ───────────────────────────────────────────────────────────
@@ -75,6 +76,20 @@
       osc.start();
       osc.stop(ctx.currentTime + 0.36);
     },
+    // Timeout: descending buzz
+    timeout: function (ctx) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(400, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.5);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.55);
+    },
     // Fanfare: ascending arpeggio
     fanfare: function (ctx) {
       var notes = [523, 659, 784, 1047, 1319, 1568];
@@ -126,21 +141,38 @@
     });
   });
 
+  // ── Intro: difficulty selection ───────────────────────────────────────────
+  var roundSeconds = 10;  // default: 보통
+  var difficultyBtns = document.querySelectorAll('.difficulty-btn');
+
+  difficultyBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      roundSeconds = parseInt(btn.getAttribute('data-seconds'), 10);
+      difficultyBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+
+  // ── DOM refs ──────────────────────────────────────────────────────────────
+  var emojiGridEl    = document.getElementById('emojiGrid');
+  var scoreboardEl   = document.getElementById('scoreboard');
+  var turnDotEl      = document.getElementById('turnDot');
+  var turnTextEl     = document.getElementById('turnText');
+  var roundDisplayEl = document.getElementById('roundDisplay');
+  var feedbackEl     = document.getElementById('feedbackMsg');
+  var timerBarFill   = document.getElementById('timerBarFill');
+  var timerNumber    = document.getElementById('timerNumber');
+
   // ── Game state ─────────────────────────────────────────────────────────────
   var cells         = [];   // array of { emoji, index, el }
   var selectedIndex = -1;   // index into cells[] of first selected cell, or -1
   var locked        = false;
   var currentPlayer = 0;
   var scores        = [];
-  var roundsFound   = 0;    // how many pairs have been found so far (0..10)
+  var roundsFound   = 0;    // rounds completed so far (0..10)
 
-  // DOM refs
-  var emojiGridEl   = document.getElementById('emojiGrid');
-  var scoreboardEl  = document.getElementById('scoreboard');
-  var turnDotEl     = document.getElementById('turnDot');
-  var turnTextEl    = document.getElementById('turnText');
-  var roundDisplayEl = document.getElementById('roundDisplay');
-  var feedbackEl    = document.getElementById('feedbackMsg');
+  // Round timer instance (from createTimer)
+  var roundTimer = null;
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   function shuffle(arr) {
@@ -152,13 +184,58 @@
     return a;
   }
 
-  // ── Build a new 3x3 grid: 8 unique + 1 duplicate = 9 ─────────────────────
+  // ── Round timer UI ────────────────────────────────────────────────────────
+  function updateTimerUI(remaining) {
+    var pct = (remaining / roundSeconds) * 100;
+    timerBarFill.style.width = pct + '%';
+    timerNumber.textContent = remaining;
+
+    var danger = remaining <= 3;
+    timerBarFill.classList.toggle('danger', danger);
+    timerNumber.classList.toggle('danger', danger);
+  }
+
+  function stopRoundTimer() {
+    if (roundTimer) {
+      roundTimer.stop();
+      roundTimer = null;
+    }
+  }
+
+  function startRoundTimer() {
+    stopRoundTimer();
+
+    // Reset bar appearance
+    timerBarFill.style.transition = 'none';
+    timerBarFill.style.width = '100%';
+    timerBarFill.classList.remove('danger');
+    timerNumber.classList.remove('danger');
+    timerNumber.textContent = roundSeconds;
+
+    // Allow layout to paint the full bar before animating
+    requestAnimationFrame(function () {
+      timerBarFill.style.transition = 'width 0.9s linear, background 0.3s ease';
+
+      roundTimer = createTimer(
+        roundSeconds,
+        function onTick(remaining) {
+          updateTimerUI(remaining);
+        },
+        function onEnd() {
+          handleTimeout();
+        }
+      );
+      roundTimer.start();
+    });
+  }
+
+  // ── Build a new 5x5 grid: 24 unique + 1 duplicate = 25 ───────────────────
   function buildGrid() {
-    // Pick 8 unique emojis
-    var chosen = shuffle(EMOJI_POOL).slice(0, 8);
+    // Pick 24 unique emojis from pool
+    var chosen = shuffle(EMOJI_POOL).slice(0, 24);
     // Pick one to duplicate
-    var dupEmoji = chosen[Math.floor(Math.random() * 8)];
-    // Build array of 9
+    var dupEmoji = chosen[Math.floor(Math.random() * 24)];
+    // Build array of 25
     var emojiList = shuffle(chosen.concat([dupEmoji]));
 
     emojiGridEl.innerHTML = '';
@@ -178,6 +255,51 @@
       onTap(cell, function () { handleCellTap(cellData); });
       emojiGridEl.appendChild(cell);
     });
+
+    // Start the per-round countdown
+    startRoundTimer();
+  }
+
+  // ── Timeout handler ───────────────────────────────────────────────────────
+  function handleTimeout() {
+    if (locked) return;  // a match/wrong animation is finishing — ignore
+    locked = true;
+
+    sounds.play('timeout');
+
+    // Flash all non-solved cells
+    cells.forEach(function (c) {
+      if (!c.el.classList.contains('solved')) {
+        c.el.classList.add('timeout-flash');
+        setTimeout(function () { c.el.classList.remove('timeout-flash'); }, 550);
+      }
+    });
+
+    // Deselect any selection
+    if (selectedIndex !== -1) {
+      var sel = cells[selectedIndex];
+      sel.el.classList.remove('selected');
+      sel.el.style.borderColor = '';
+      selectedIndex = -1;
+    }
+
+    showFeedback('시간 초과! ⏰', 'timeout');
+
+    // Count this as a round (nobody scores), advance
+    roundsFound++;
+
+    setTimeout(function () {
+      if (roundsFound >= TOTAL_ROUNDS) {
+        showResult();
+      } else {
+        updateRoundDisplay();
+        // Next player's turn on timeout
+        currentPlayer = (currentPlayer + 1) % playerCount;
+        updateTurnUI();
+        locked = false;
+        buildGrid();
+      }
+    }, 1500);
   }
 
   // ── Scoreboard UI ─────────────────────────────────────────────────────────
@@ -224,7 +346,8 @@
   }
 
   function updateRoundDisplay() {
-    roundDisplayEl.textContent = roundsFound + 1 > TOTAL_ROUNDS ? TOTAL_ROUNDS : roundsFound + 1;
+    var display = roundsFound + 1;
+    roundDisplayEl.textContent = display > TOTAL_ROUNDS ? TOTAL_ROUNDS : display;
   }
 
   // ── Feedback message ───────────────────────────────────────────────────────
@@ -232,8 +355,12 @@
 
   function showFeedback(msg, type) {
     if (feedbackTimer) clearTimeout(feedbackTimer);
+    var cls = 'feedback-msg visible ';
+    if (type === 'correct')      cls += 'correct-msg';
+    else if (type === 'timeout') cls += 'timeout-msg';
+    else                         cls += 'wrong-msg';
     feedbackEl.textContent = msg;
-    feedbackEl.className = 'feedback-msg visible ' + (type === 'correct' ? 'correct-msg' : 'wrong-msg');
+    feedbackEl.className = cls;
     feedbackTimer = setTimeout(function () {
       feedbackEl.className = 'feedback-msg';
     }, 1200);
@@ -265,7 +392,7 @@
 
     // Second selection
     sounds.play('select');
-    var firstCell = cells[selectedIndex];
+    var firstCell  = cells[selectedIndex];
     var secondCell = cellData;
 
     // Visually select second
@@ -275,22 +402,23 @@
     locked = true;
 
     if (firstCell.emoji === secondCell.emoji) {
-      // Correct match!
+      // ── Correct match ──
       setTimeout(function () {
         sounds.play('match');
 
-        // Animate correct
         firstCell.el.classList.add('correct');
         secondCell.el.classList.add('correct');
-        firstCell.el.style.borderColor = PLAYER_COLORS[currentPlayer];
+        firstCell.el.style.borderColor  = PLAYER_COLORS[currentPlayer];
         secondCell.el.style.borderColor = PLAYER_COLORS[currentPlayer];
 
         setTimeout(function () {
-          // Mark as solved / dim
           firstCell.el.classList.remove('selected', 'correct');
           secondCell.el.classList.remove('selected', 'correct');
           firstCell.el.classList.add('solved');
           secondCell.el.classList.add('solved');
+
+          // Stop the round timer — player found the pair
+          stopRoundTimer();
 
           scores[currentPlayer]++;
           updateScoreUI(currentPlayer);
@@ -304,17 +432,16 @@
           if (roundsFound >= TOTAL_ROUNDS) {
             setTimeout(showResult, 600);
           } else {
-            // Same player keeps turn — build new grid after short delay
             updateRoundDisplay();
             setTimeout(function () {
-              buildGrid();
+              buildGrid();  // buildGrid also starts next round timer
             }, 500);
           }
         }, 400);
       }, 180);
 
     } else {
-      // Wrong!
+      // ── Wrong guess ──
       setTimeout(function () {
         sounds.play('wrong');
 
@@ -324,7 +451,7 @@
         setTimeout(function () {
           firstCell.el.classList.remove('selected', 'wrong');
           secondCell.el.classList.remove('selected', 'wrong');
-          firstCell.el.style.borderColor = '';
+          firstCell.el.style.borderColor  = '';
           secondCell.el.style.borderColor = '';
 
           selectedIndex = -1;
@@ -332,7 +459,7 @@
 
           showFeedback('틀렸어요! 다음 플레이어 차례', 'wrong');
 
-          // Next player
+          // Next player — timer keeps running
           currentPlayer = (currentPlayer + 1) % playerCount;
           updateTurnUI();
         }, 420);
@@ -342,6 +469,7 @@
 
   // ── Result screen ──────────────────────────────────────────────────────────
   function showResult() {
+    stopRoundTimer();
     sounds.play('fanfare');
 
     var maxScore = Math.max.apply(null, scores);
@@ -406,6 +534,8 @@
 
   // ── Init / reset game ──────────────────────────────────────────────────────
   function initGame() {
+    stopRoundTimer();
+
     currentPlayer = 0;
     roundsFound   = 0;
     selectedIndex = -1;
@@ -419,7 +549,7 @@
     buildScoreboard();
     updateTurnUI();
     updateRoundDisplay();
-    buildGrid();
+    buildGrid();  // also starts round timer
 
     // Clear feedback
     feedbackEl.className = 'feedback-msg';
@@ -437,14 +567,17 @@
   });
 
   document.getElementById('homeBtn').addEventListener('click', function () {
+    stopRoundTimer();
     goHome();
   });
 
   document.getElementById('backBtn').addEventListener('click', function () {
+    stopRoundTimer();
     goHome();
   });
 
   document.getElementById('closeBtn').addEventListener('click', function () {
+    stopRoundTimer();
     showScreen('intro');
   });
 

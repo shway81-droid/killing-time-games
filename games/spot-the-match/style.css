@@ -43,7 +43,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   flex: 1;
   justify-content: center;
   padding: var(--space-md);
@@ -89,12 +89,12 @@ body {
 }
 
 /* 플레이어 수 선택 */
-.player-select-area {
+.player-select-area,
+.difficulty-select-area {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
-  margin-top: var(--space-sm);
 }
 
 .player-select-label {
@@ -103,7 +103,8 @@ body {
   color: var(--text-sub);
 }
 
-.player-btns {
+.player-btns,
+.difficulty-btns {
   display: flex;
   gap: var(--space-sm);
 }
@@ -133,6 +134,44 @@ body {
   transform: scale(0.95);
 }
 
+/* 난이도 버튼 */
+.difficulty-btn {
+  min-width: 76px;
+  min-height: 56px;
+  border-radius: var(--btn-radius);
+  border: 2px solid #E0E0E0;
+  background: #F5F5F5;
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.difficulty-btn .diff-time {
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.difficulty-btn.active {
+  background: #F9A825;
+  border-color: #F9A825;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(249,168,37,0.4);
+}
+
+.difficulty-btn.active .diff-time {
+  opacity: 0.9;
+}
+
+.difficulty-btn:active {
+  transform: scale(0.95);
+}
+
 .btn-play {
   width: 80%;
   max-width: 300px;
@@ -147,7 +186,7 @@ body {
 .screen-game {
   background: #FFFDE7;
   justify-content: flex-start;
-  padding-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
   overflow: hidden;
 }
 
@@ -182,13 +221,57 @@ body {
   text-overflow: ellipsis;
 }
 
+/* === 라운드 타이머 바 === */
+.round-timer-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0 var(--space-md) 4px;
+  flex-shrink: 0;
+}
+
+.round-timer-bar-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 6px;
+  background: #E0E0E0;
+  overflow: hidden;
+}
+
+.round-timer-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: #F9A825;
+  width: 100%;
+  transition: width 0.9s linear, background 0.3s ease;
+}
+
+.round-timer-bar-fill.danger {
+  background: #E53935;
+}
+
+.round-timer-number {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--text);
+  min-width: 28px;
+  text-align: right;
+  transition: color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.round-timer-number.danger {
+  color: #E53935;
+}
+
 /* === 라운드 + 점수 바 === */
 .game-info-bar {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   width: 100%;
-  padding: 0 var(--space-md) var(--space-sm);
+  padding: 0 var(--space-md) var(--space-xs);
   flex-shrink: 0;
   flex-wrap: wrap;
   justify-content: center;
@@ -252,47 +335,47 @@ body {
   color: var(--text);
 }
 
-/* === 이모지 그리드 === */
+/* === 이모지 그리드 (5x5) === */
 .board-wrapper {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: var(--space-xs) var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
   overflow: hidden;
 }
 
 .emoji-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(8px, 2.5vw, 14px);
-  width: min(94vw, 360px);
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(4px, 1.5vw, 8px);
+  width: min(96vw, 320px);
 }
 
 /* === 이모지 셀 === */
 .emoji-cell {
   aspect-ratio: 1;
   cursor: pointer;
-  border-radius: 18px;
+  border-radius: 12px;
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(2rem, 7vw, 3rem);
+  font-size: clamp(1.3rem, 4.5vw, 1.8rem);
   box-shadow: var(--shadow-card);
-  border: 4px solid transparent;
+  border: 3px solid transparent;
   transition: transform 0.12s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   -webkit-tap-highlight-color: transparent;
   position: relative;
-  min-height: 80px;
+  min-height: 52px;
 }
 
 .emoji-cell:active {
   transform: scale(0.92);
 }
 
-/* Selected state — border in current player's color (set via JS) */
+/* Selected state */
 .emoji-cell.selected {
   box-shadow: var(--shadow-card-hover);
   transform: scale(1.06);
@@ -324,23 +407,33 @@ body {
   100% { transform: translateX(0); }
 }
 
+/* Timeout flash */
+.emoji-cell.timeout-flash {
+  animation: timeoutFlash 0.5s ease;
+}
+
+@keyframes timeoutFlash {
+  0%, 100% { background: #fff; }
+  50%       { background: #FFCDD2; }
+}
+
 /* Solved (dimmed after match found) */
 .emoji-cell.solved {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: default;
   transform: scale(1);
 }
 
 /* === 피드백 메시지 === */
 .feedback-msg {
-  height: 36px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text);
-  margin-top: var(--space-xs);
+  margin-top: 2px;
   opacity: 0;
   transition: opacity 0.2s ease;
   flex-shrink: 0;
@@ -356,6 +449,11 @@ body {
 
 .feedback-msg.wrong-msg {
   color: #C62828;
+}
+
+.feedback-msg.timeout-msg {
+  color: #E53935;
+  font-size: 1.1rem;
 }
 
 /* === 결과 화면 === */

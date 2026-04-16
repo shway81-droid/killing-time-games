@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <p class="intro-text">9개 이모지 중 같은 그림 2개를 찾으세요!</p>
+      <p class="intro-text">25개 이모지 중 같은 그림 2개를 찾으세요!</p>
       <p class="intro-subtext">같은 이모지 2개를 찾으면 점수 +1, 내 차례 계속!<br>틀리면 다음 플레이어 차례. 10라운드 후 최고 점수가 이겨요!</p>
 
       <div class="player-select-area">
@@ -41,6 +41,15 @@
           <button class="player-btn active" data-count="2">2명</button>
           <button class="player-btn" data-count="3">3명</button>
           <button class="player-btn" data-count="4">4명</button>
+        </div>
+      </div>
+
+      <div class="difficulty-select-area">
+        <p class="player-select-label">난이도 선택</p>
+        <div class="difficulty-btns">
+          <button class="difficulty-btn" data-seconds="12">쉬움<br><span class="diff-time">12초</span></button>
+          <button class="difficulty-btn active" data-seconds="10">보통<br><span class="diff-time">10초</span></button>
+          <button class="difficulty-btn" data-seconds="8">어려움<br><span class="diff-time">8초</span></button>
         </div>
       </div>
     </div>
@@ -58,6 +67,14 @@
       </div>
       <button class="sound-toggle" id="soundToggleGame" aria-label="사운드 토글">🔇</button>
     </header>
+
+    <!-- 라운드 타이머 바 -->
+    <div class="round-timer-wrap">
+      <div class="round-timer-bar-track">
+        <div class="round-timer-bar-fill" id="timerBarFill"></div>
+      </div>
+      <div class="round-timer-number" id="timerNumber">10</div>
+    </div>
 
     <!-- 라운드 + 점수판 -->
     <div class="game-info-bar">
