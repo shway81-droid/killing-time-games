@@ -184,9 +184,9 @@ document.querySelectorAll('.player-btn').forEach(btn => {
 });
 
 // ── Navigation ───────────────────────────────────────────────
-onTap(backBtn,  () => goHome());
+onTap(backBtn,  () => { clearTimers(); goHome(); });
 onTap(closeBtn, () => { clearTimers(); goHome(); });
-onTap(homeBtn,  () => goHome());
+onTap(homeBtn,  () => { clearTimers(); goHome(); });
 onTap(retryBtn, () => startGame());
 onTap(playBtn,  () => startGame());
 
@@ -292,7 +292,10 @@ function handleTap(playerIdx, answer, btn) {
   if (dqSet.has(playerIdx)) return;
 
   const zone    = getZone(playerIdx);
-  spawnRipple(zone, event);
+  const rect    = btn.getBoundingClientRect();
+  const zoneRect = zone.getBoundingClientRect();
+  const syntheticE = { clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 };
+  spawnRipple(zone, syntheticE);
 
   const isEven   = currentNumber % 2 === 0;
   const correct  = (answer === 'even' && isEven) || (answer === 'odd' && !isEven);
@@ -354,6 +357,7 @@ function resolveRound(winnerIdx, winBtn) {
 
 // ── Round flow ───────────────────────────────────────────────
 function startGame() {
+  clearTimers();
   scores    = new Array(playerCount).fill(0);
   roundLog  = [];
   roundIdx  = 0;
