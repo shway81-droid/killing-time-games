@@ -739,12 +739,13 @@
   });
 
   document.getElementById('backBtn').addEventListener('click', function () {
+    clearAllTimers();
     goHome();
   });
 
   document.getElementById('closeBtn').addEventListener('click', function () {
     clearAllTimers();
-    showScreen('intro');
+    goHome();
   });
 
 })();
