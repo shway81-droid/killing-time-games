@@ -1,8 +1,8 @@
 {
   "name": "두더지 잡기",
-  "description": "나타나는 두더지를 빠르게 터치하세요!",
+  "description": "내 영역의 두더지를 빠르게 잡으세요!",
   "icon": "🔨",
   "color": "#81C784",
   "grades": [1, 2, 3, 4, 5, 6],
-  "playTime": "1~2분"
+  "playTime": "30초"
 }
