@@ -127,14 +127,6 @@
   </header>
 
   <div class="filter-section">
-    <div class="filter-label">학년</div>
-    <nav class="filter-bar" id="gradeFilter">
-      <button class="filter-btn active" data-filter="all">전체</button>
-      <button class="filter-btn" data-filter="low">저학년</button>
-      <button class="filter-btn" data-filter="high">고학년</button>
-    </nav>
-
-    <div class="filter-label">카테고리</div>
     <nav class="filter-bar" id="catFilter">
       <button class="filter-btn cat-btn active" data-cat="all">전체</button>
       <button class="filter-btn cat-btn" data-cat="speed">⚡ 반응속도</button>
@@ -203,11 +195,9 @@
     ];
 
     const grid = document.getElementById('gameGrid');
-    const gradeBtns = document.querySelectorAll('#gradeFilter .filter-btn');
     const catBtns = document.querySelectorAll('#catFilter .cat-btn');
     const soundToggle = document.getElementById('soundToggle');
     let allGames = [];
-    let currentGrade = 'all';
     let currentCat = 'all';
 
     // --- 사운드 토글 ---
@@ -245,35 +235,15 @@
       applyFilters();
     }
 
-    // --- 필터 적용 (학년 + 카테고리 조합) ---
+    // --- 필터 적용 (카테고리) ---
     function applyFilters() {
       var cards = grid.querySelectorAll('.game-card');
       cards.forEach(function(card) {
-        var grades = JSON.parse(card.dataset.grades);
         var cat = card.dataset.cat;
-
-        var gradeOk = true;
-        if (currentGrade === 'low') {
-          gradeOk = grades.some(function(g) { return g >= 1 && g <= 3; });
-        } else if (currentGrade === 'high') {
-          gradeOk = grades.some(function(g) { return g >= 4 && g <= 6; });
-        }
-
         var catOk = (currentCat === 'all') || (cat === currentCat);
-
-        card.classList.toggle('hidden', !(gradeOk && catOk));
+        card.classList.toggle('hidden', !catOk);
       });
     }
-
-    // --- 학년 필터 ---
-    gradeBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        gradeBtns.forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        currentGrade = btn.dataset.filter;
-        applyFilters();
-      });
-    });
 
     // --- 카테고리 필터 ---
     catBtns.forEach(function(btn) {
