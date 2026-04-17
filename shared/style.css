@@ -136,3 +136,160 @@ html {
   border-radius: 6px;
   transition: width 1s linear;
 }
+
+/* === Glassmorphism HUD === */
+.hud-glass {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.hud-glass .hud-score-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.08);
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+.hud-glass .hud-score-badge .score-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #FFD54F;
+}
+
+.hud-glass .hud-timer-wrap {
+  flex: 1;
+}
+
+.hud-glass .hud-timer-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.hud-glass .hud-timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #66BB6A, #FFEE58);
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.hud-glass .hud-timer-text {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* === Score Animations === */
+@keyframes scoreBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+@keyframes scoreFloatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-24px); }
+}
+
+.score-bounce {
+  animation: scoreBounce 0.3s ease;
+}
+
+.score-float {
+  position: absolute;
+  font-size: 1.2rem;
+  font-weight: 900;
+  pointer-events: none;
+  animation: scoreFloatUp 0.8s ease-out forwards;
+}
+
+.score-float.plus { color: #66BB6A; }
+.score-float.minus { color: #EF5350; }
+
+/* === Result Screen (new design) === */
+.result-modern {
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-modern .result-score-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 12px 28px;
+  backdrop-filter: blur(4px);
+  text-align: center;
+}
+
+.result-modern .result-score-label {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  color: #fff;
+}
+
+.result-modern .result-score-value {
+  font-size: 2.2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FFD54F, #FF8F00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Confetti pieces */
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  opacity: 0.7;
+  animation: confettiFall 2.5s ease-in infinite;
+}
+
+/* === SVG Icon Buttons === */
+.btn-icon-svg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-icon-svg svg {
+  flex-shrink: 0;
+}
+
+/* Glass back button */
+.btn-glass-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
