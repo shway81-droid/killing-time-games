@@ -615,14 +615,8 @@ function populateZoneGrid(playerIdx, items) {
     btn.setAttribute('aria-label', entry.word);
     btn.setAttribute('data-word', entry.word);
 
-    // SVG picture
+    // SVG picture only — no word label
     btn.innerHTML = entry.svgFn();
-
-    // Korean word label below SVG
-    var lbl = document.createElement('div');
-    lbl.className = 'item-btn-label';
-    lbl.textContent = entry.word;
-    btn.appendChild(lbl);
 
     onTap(btn, function(e) {
       e.stopPropagation();

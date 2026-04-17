@@ -240,7 +240,6 @@
   border: 2px solid rgba(255,255,255,0.15);
   transition: transform 0.1s ease, background 0.1s ease, border-color 0.1s ease;
   -webkit-tap-highlight-color: transparent;
-  gap: 2px;
 }
 .item-btn:active {
   transform: scale(0.88);
@@ -248,17 +247,8 @@
 .item-btn svg {
   display: block;
   pointer-events: none;
-  width: 48px;
-  height: 48px;
-}
-.item-btn-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: rgba(255,255,255,0.75);
-  pointer-events: none;
-  text-align: center;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  width: 56px;
+  height: 56px;
 }
 
 /* Zone states */
@@ -500,11 +490,11 @@
   .target-wrap { padding: 10px 14px; }
   .target-choseong-box { min-height: 56px; min-width: 100px; }
   .item-btn { width: 58px; height: 58px; }
-  .item-btn svg { width: 38px; height: 38px; }
+  .item-btn svg { width: 46px; height: 46px; }
   .item-grid { gap: 5px; }
 }
 
 @media (max-width: 360px) {
   .item-btn { width: 62px; height: 62px; }
-  .item-btn svg { width: 42px; height: 42px; }
+  .item-btn svg { width: 50px; height: 50px; }
 }
