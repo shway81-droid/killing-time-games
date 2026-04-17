@@ -108,7 +108,9 @@ let nextRoundTimer = null;
 let roundActive  = false;
 
 // ── DOM references ───────────────────────────────────────────
-const introScreen  = document.getElementById('introScreen');
+const introScreen     = document.getElementById('introScreen');
+const countdownScreen = document.getElementById('countdownScreen');
+const countdownNumber = document.getElementById('countdownNumber');
 const gameScreen   = document.getElementById('gameScreen');
 const resultScreen = document.getElementById('resultScreen');
 
@@ -133,8 +135,28 @@ const totalRow     = document.getElementById('totalRow');
 
 // ── Helpers ──────────────────────────────────────────────────
 function showScreen(screen) {
-  [introScreen, gameScreen, resultScreen].forEach(s => s.classList.remove('active'));
+  [introScreen, countdownScreen, gameScreen, resultScreen].forEach(s => s.classList.remove('active'));
   screen.classList.add('active');
+}
+
+var countdownInterval = null;
+function startCountdown(onDone) {
+  showScreen(countdownScreen);
+  var count = 3;
+  countdownNumber.textContent = count;
+  countdownInterval = setInterval(function() {
+    count--;
+    if (count <= 0) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+      onDone();
+    } else {
+      countdownNumber.textContent = count;
+      countdownNumber.style.animation = 'none';
+      countdownNumber.offsetHeight;
+      countdownNumber.style.animation = '';
+    }
+  }, 1000);
 }
 
 function randBetween(min, max) {
@@ -173,7 +195,7 @@ onTap(homeBtn, () => goHome());
 onTap(retryBtn, () => startGame());
 
 // ── PLAY button ──────────────────────────────────────────────
-onTap(playBtn, () => startGame());
+onTap(playBtn, () => startCountdown(() => startGame()));
 
 // ── Build zone grid ──────────────────────────────────────────
 function buildZones() {
@@ -302,6 +324,10 @@ function startWaitPhase() {
 }
 
 function clearWaitTimer() {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
   if (waitTimer) {
     clearTimeout(waitTimer);
     waitTimer = null;

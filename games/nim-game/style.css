@@ -1,5 +1,24 @@
 /* games/nim-game/style.css */
 
+/* ── Countdown screen ─────────────────────────────────────── */
+.screen-countdown {
+  justify-content: center;
+  align-items: center;
+  background: #ECEFF1;
+}
+.countdown-number {
+  font-size: 8rem;
+  font-weight: 900;
+  color: #607D8B;
+  text-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  animation: countPop 0.5s ease;
+}
+@keyframes countPop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 body {
   background: #ECEFF1;
   overflow: hidden;

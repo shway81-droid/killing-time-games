@@ -13,15 +13,37 @@
 
   // ─── 화면 전환 ────────────────────────────────────────────────────────────
   var screens = {
-    intro:  document.getElementById('introScreen'),
-    game:   document.getElementById('gameScreen'),
-    result: document.getElementById('resultScreen')
+    intro:     document.getElementById('introScreen'),
+    countdown: document.getElementById('countdownScreen'),
+    game:      document.getElementById('gameScreen'),
+    result:    document.getElementById('resultScreen')
   };
 
   function showScreen(name) {
     Object.keys(screens).forEach(function (key) {
       screens[key].classList.toggle('active', key === name);
     });
+  }
+
+  var countdownInterval = null;
+  function startCountdown(onDone) {
+    var countdownNumber = document.getElementById('countdownNumber');
+    showScreen('countdown');
+    var count = 3;
+    countdownNumber.textContent = count;
+    countdownInterval = setInterval(function() {
+      count--;
+      if (count <= 0) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        onDone();
+      } else {
+        countdownNumber.textContent = count;
+        countdownNumber.style.animation = 'none';
+        countdownNumber.offsetHeight;
+        countdownNumber.style.animation = '';
+      }
+    }, 1000);
   }
 
   // ─── 사운드 ──────────────────────────────────────────────────────────────
@@ -699,7 +721,7 @@
 
   // ─── 버튼 이벤트 ──────────────────────────────────────────────────────────
   document.getElementById('playBtn').addEventListener('click', function () {
-    initGame();
+    startCountdown(function() { initGame(); });
   });
 
   document.getElementById('retryBtn').addEventListener('click', function () {
@@ -715,6 +737,7 @@
   });
 
   document.getElementById('closeBtn').addEventListener('click', function () {
+    if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
     showScreen('intro');
   });
 

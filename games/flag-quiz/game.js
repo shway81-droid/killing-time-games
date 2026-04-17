@@ -314,7 +314,9 @@ let timeRemaining = ROUND_TIME;
 let gameRounds    = [];    // 10 selected flags
 
 // ── DOM refs ─────────────────────────────────────────────────
-const introScreen   = document.getElementById('introScreen');
+const introScreen     = document.getElementById('introScreen');
+const countdownScreen = document.getElementById('countdownScreen');
+const countdownNumber = document.getElementById('countdownNumber');
 const gameScreen    = document.getElementById('gameScreen');
 const resultScreen  = document.getElementById('resultScreen');
 
@@ -342,8 +344,28 @@ const totalRow      = document.getElementById('totalRow');
 
 // ── Helpers ──────────────────────────────────────────────────
 function showScreen(s) {
-  [introScreen, gameScreen, resultScreen].forEach(x => x.classList.remove('active'));
+  [introScreen, countdownScreen, gameScreen, resultScreen].forEach(x => x.classList.remove('active'));
   s.classList.add('active');
+}
+
+var countdownInterval = null;
+function startCountdown(onDone) {
+  showScreen(countdownScreen);
+  var count = 3;
+  countdownNumber.textContent = count;
+  countdownInterval = setInterval(function() {
+    count--;
+    if (count <= 0) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+      onDone();
+    } else {
+      countdownNumber.textContent = count;
+      countdownNumber.style.animation = 'none';
+      countdownNumber.offsetHeight;
+      countdownNumber.style.animation = '';
+    }
+  }, 1000);
 }
 
 function shuffle(arr) {
@@ -356,6 +378,7 @@ function shuffle(arr) {
 }
 
 function clearTimers() {
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
   if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
   if (nextHandle)  { clearTimeout(nextHandle);   nextHandle  = null; }
 }
@@ -404,8 +427,8 @@ updateSoundBtn(soundToggleIntro);
 onTap(backBtn,  () => goHome());
 onTap(closeBtn, () => { clearTimers(); goHome(); });
 onTap(homeBtn,  () => goHome());
-onTap(retryBtn, () => startGame());
-onTap(playBtn,  () => startGame());
+onTap(retryBtn, () => startCountdown(() => startGame()));
+onTap(playBtn,  () => startCountdown(() => startGame()));
 
 // ── Build zone grid ──────────────────────────────────────────
 function buildZones() {

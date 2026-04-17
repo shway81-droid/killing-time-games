@@ -84,7 +84,9 @@ let correctTime   = null;   // { hour, minute }
 let nextRoundTimerId = null;
 
 // ── DOM references ───────────────────────────────────────────
-const introScreen  = document.getElementById('introScreen');
+const introScreen     = document.getElementById('introScreen');
+const countdownScreen = document.getElementById('countdownScreen');
+const countdownNumber = document.getElementById('countdownNumber');
 const gameScreen   = document.getElementById('gameScreen');
 const resultScreen = document.getElementById('resultScreen');
 
@@ -110,8 +112,28 @@ const totalRow      = document.getElementById('totalRow');
 
 // ── Helpers ──────────────────────────────────────────────────
 function showScreen(screen) {
-  [introScreen, gameScreen, resultScreen].forEach(s => s.classList.remove('active'));
+  [introScreen, countdownScreen, gameScreen, resultScreen].forEach(s => s.classList.remove('active'));
   screen.classList.add('active');
+}
+
+var countdownInterval = null;
+function startCountdown(onDone) {
+  showScreen(countdownScreen);
+  var count = 3;
+  countdownNumber.textContent = count;
+  countdownInterval = setInterval(function() {
+    count--;
+    if (count <= 0) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+      onDone();
+    } else {
+      countdownNumber.textContent = count;
+      countdownNumber.style.animation = 'none';
+      countdownNumber.offsetHeight;
+      countdownNumber.style.animation = '';
+    }
+  }, 1000);
 }
 
 function updateSoundIcon() {
@@ -327,8 +349,8 @@ onTap(closeBtn, () => {
   goHome();
 });
 onTap(homeBtn, () => { clearNextRoundTimer(); goHome(); });
-onTap(retryBtn, () => startGame());
-onTap(playBtn, () => startGame());
+onTap(retryBtn, () => startCountdown(() => startGame()));
+onTap(playBtn, () => startCountdown(() => startGame()));
 
 // ── Zone building ─────────────────────────────────────────────
 function buildZones() {
@@ -484,6 +506,7 @@ function handleAnswer(playerIdx, isCorrect, e) {
 
 // ── Timer cleanup ─────────────────────────────────────────────
 function clearNextRoundTimer() {
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
   if (nextRoundTimerId) {
     clearTimeout(nextRoundTimerId);
     nextRoundTimerId = null;

@@ -512,6 +512,8 @@ var gameActive    = false;
 // ══════════════════════════════════════════════════════
 
 var introScreen      = document.getElementById('introScreen');
+var countdownScreen  = document.getElementById('countdownScreen');
+var countdownNumber  = document.getElementById('countdownNumber');
 var gameScreen       = document.getElementById('gameScreen');
 var resultScreen     = document.getElementById('resultScreen');
 var backBtn          = document.getElementById('backBtn');
@@ -533,10 +535,30 @@ var resultScoresWrap = document.getElementById('resultScoresWrap');
 // ══════════════════════════════════════════════════════
 
 function showScreen(el) {
-  [introScreen, gameScreen, resultScreen].forEach(function(s) {
+  [introScreen, countdownScreen, gameScreen, resultScreen].forEach(function(s) {
     s.classList.remove('active');
   });
   el.classList.add('active');
+}
+
+var countdownInterval = null;
+function startCountdown(onDone) {
+  showScreen(countdownScreen);
+  var count = 3;
+  countdownNumber.textContent = count;
+  countdownInterval = setInterval(function() {
+    count--;
+    if (count <= 0) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+      onDone();
+    } else {
+      countdownNumber.textContent = count;
+      countdownNumber.style.animation = 'none';
+      countdownNumber.offsetHeight;
+      countdownNumber.style.animation = '';
+    }
+  }, 1000);
 }
 
 function shuffle(arr) {
@@ -567,6 +589,7 @@ function clearNextRoundTimer() {
 }
 
 function cleanup() {
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
   gameActive = false;
   clearNextRoundTimer();
 }
@@ -600,9 +623,9 @@ document.querySelectorAll('.player-btn').forEach(function(btn) {
 // ══════════════════════════════════════════════════════
 
 onTap(backBtn,  function() { cleanup(); goHome(); });
-onTap(playBtn,  function() { startGame(); });
+onTap(playBtn,  function() { startCountdown(function() { startGame(); }); });
 onTap(closeBtn, function() { cleanup(); goHome(); });
-onTap(retryBtn, function() { startGame(); });
+onTap(retryBtn, function() { startCountdown(function() { startGame(); }); });
 onTap(homeBtn,  function() { cleanup(); goHome(); });
 
 // ══════════════════════════════════════════════════════

@@ -18,21 +18,44 @@
   }
 
   function clearAllTimers() {
+    if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
     timers.forEach(function (id) { clearTimeout(id); });
     timers = [];
   }
 
   // ─── 화면 전환 ────────────────────────────────────────────────────────────
   var screens = {
-    intro:  document.getElementById('introScreen'),
-    game:   document.getElementById('gameScreen'),
-    result: document.getElementById('resultScreen')
+    intro:     document.getElementById('introScreen'),
+    countdown: document.getElementById('countdownScreen'),
+    game:      document.getElementById('gameScreen'),
+    result:    document.getElementById('resultScreen')
   };
 
   function showScreen(name) {
     Object.keys(screens).forEach(function (key) {
       screens[key].classList.toggle('active', key === name);
     });
+  }
+
+  var countdownInterval = null;
+  function startCountdown(onDone) {
+    var countdownNumber = document.getElementById('countdownNumber');
+    showScreen('countdown');
+    var count = 3;
+    countdownNumber.textContent = count;
+    countdownInterval = setInterval(function() {
+      count--;
+      if (count <= 0) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        onDone();
+      } else {
+        countdownNumber.textContent = count;
+        countdownNumber.style.animation = 'none';
+        countdownNumber.offsetHeight;
+        countdownNumber.style.animation = '';
+      }
+    }, 1000);
   }
 
   // ─── 사운드 ──────────────────────────────────────────────────────────────
@@ -349,12 +372,12 @@
 
   // PLAY
   onTap(document.getElementById('playBtn'), function () {
-    initGame();
+    startCountdown(function() { initGame(); });
   });
 
   // 다시하기
   onTap(document.getElementById('retryBtn'), function () {
-    initGame();
+    startCountdown(function() { initGame(); });
   });
 
   // 홈으로
