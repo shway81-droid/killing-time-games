@@ -55,6 +55,9 @@ const ALL_PAIRS = [
   { country: '노르웨이',        capital: '오슬로' },
   { country: '스웨덴',          capital: '스톡홀름' },
   { country: '폴란드',          capital: '바르샤바' },
+  { country: '콜롬비아',        capital: '보고타' },
+  { country: '칠레',            capital: '산티아고' },
+  { country: '나이지리아',      capital: '아부자' },
 ];
 
 // ── Sound Manager ─────────────────────────────────────────────

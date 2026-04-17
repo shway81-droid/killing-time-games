@@ -216,6 +216,228 @@ function flagBangladesh() {
   </svg>`;
 }
 
+function flagIndia() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="20" fill="#FF9933"/>
+    <rect y="20" width="90" height="20" fill="#fff"/>
+    <rect y="40" width="90" height="20" fill="#138808"/>
+    <!-- Ashoka Chakra: blue circle with 24 spokes -->
+    <circle cx="45" cy="30" r="8" fill="none" stroke="#000080" stroke-width="1.2"/>
+    <circle cx="45" cy="30" r="1.5" fill="#000080"/>
+    <g stroke="#000080" stroke-width="0.7">
+      <line x1="45" y1="22.2" x2="45" y2="37.8"/>
+      <line x1="37.2" y1="30" x2="52.8" y2="30"/>
+      <line x1="39.3" y1="24.3" x2="50.7" y2="35.7"/>
+      <line x1="39.3" y1="35.7" x2="50.7" y2="24.3"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(15 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(30 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(45 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(60 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(75 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(105 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(120 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(135 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(150 45 30)"/>
+      <line x1="45" y1="22.2" x2="45" y2="37.8" transform="rotate(165 45 30)"/>
+    </g>
+  </svg>`;
+}
+
+function flagRussia() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="20" fill="#fff"/>
+    <rect y="20" width="90" height="20" fill="#0039A6"/>
+    <rect y="40" width="90" height="20" fill="#D52B1E"/>
+  </svg>`;
+}
+
+function flagTurkey() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="60" fill="#E30A17"/>
+    <!-- Crescent moon -->
+    <circle cx="38" cy="30" r="12" fill="#fff"/>
+    <circle cx="42" cy="30" r="9.5" fill="#E30A17"/>
+    <!-- Star -->
+    <polygon points="54,30 56,24 58,30 52,26 60,26" fill="#fff"
+             transform="rotate(0 54 30)"/>
+    <polygon points="55,30 55.9,26.9 58.7,27.9 56.5,30 58.7,32.1 55.9,33.1 55,30 52.1,33.1 53.3,30 52.1,26.9"
+             fill="#fff"/>
+  </svg>`;
+}
+
+function flagVietnam() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="60" fill="#DA251D"/>
+    <polygon points="45,14 47.9,23 57.4,23 49.8,28.5 52.6,37.5 45,32 37.4,37.5 40.2,28.5 32.6,23 42.1,23"
+             fill="#FFCD00"/>
+  </svg>`;
+}
+
+function flagArgentina() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="20" fill="#74ACDF"/>
+    <rect y="20" width="90" height="20" fill="#fff"/>
+    <rect y="40" width="90" height="20" fill="#74ACDF"/>
+    <!-- Sol de Mayo: simplified sun -->
+    <circle cx="45" cy="30" r="7" fill="#F6B40E"/>
+    <g stroke="#F6B40E" stroke-width="2" stroke-linecap="round">
+      <line x1="45" y1="18" x2="45" y2="21"/>
+      <line x1="45" y1="39" x2="45" y2="42"/>
+      <line x1="33" y1="30" x2="36" y2="30"/>
+      <line x1="54" y1="30" x2="57" y2="30"/>
+      <line x1="37" y1="22" x2="39" y2="24"/>
+      <line x1="51" y1="36" x2="53" y2="38"/>
+      <line x1="53" y1="22" x2="51" y2="24"/>
+      <line x1="39" y1="36" x2="37" y2="38"/>
+    </g>
+    <circle cx="45" cy="30" r="4" fill="#843511"/>
+  </svg>`;
+}
+
+function flagGreece() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <!-- 9 alternating stripes -->
+    <rect width="90" height="60" fill="#0D5EAF"/>
+    <rect y="6.67" width="90" height="6.67" fill="#fff"/>
+    <rect y="20" width="90" height="6.67" fill="#fff"/>
+    <rect y="33.33" width="90" height="6.67" fill="#fff"/>
+    <rect y="46.67" width="90" height="6.67" fill="#fff"/>
+    <!-- Blue canton top-left -->
+    <rect width="30" height="33.33" fill="#0D5EAF"/>
+    <!-- White cross in canton -->
+    <rect x="12" y="0" width="6" height="33.33" fill="#fff"/>
+    <rect x="0" y="13.67" width="30" height="6" fill="#fff"/>
+  </svg>`;
+}
+
+function flagNorway() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="60" fill="#EF2B2D"/>
+    <!-- White cross outline -->
+    <rect x="20" y="0" width="16" height="60" fill="#fff"/>
+    <rect y="22" width="90" height="16" fill="#fff"/>
+    <!-- Blue cross -->
+    <rect x="23" y="0" width="10" height="60" fill="#002868"/>
+    <rect y="25" width="90" height="10" fill="#002868"/>
+  </svg>`;
+}
+
+function flagNetherlands() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="20" fill="#AE1C28"/>
+    <rect y="20" width="90" height="20" fill="#fff"/>
+    <rect y="40" width="90" height="20" fill="#21468B"/>
+  </svg>`;
+}
+
+function flagPoland() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="30" fill="#fff"/>
+    <rect y="30" width="90" height="30" fill="#DC143C"/>
+  </svg>`;
+}
+
+function flagMexico() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="30" height="60" fill="#006847"/>
+    <rect x="30" width="30" height="60" fill="#fff"/>
+    <rect x="60" width="30" height="60" fill="#CE1126"/>
+    <!-- Simplified eagle emblem: green circle on white band -->
+    <circle cx="45" cy="30" r="7" fill="#006847" opacity="0.7"/>
+    <circle cx="45" cy="30" r="3.5" fill="#8B4513" opacity="0.8"/>
+  </svg>`;
+}
+
+function flagAustralia() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="60" fill="#00008B"/>
+    <!-- Union Jack top-left (simplified) -->
+    <rect x="0" y="0" width="36" height="24" fill="#00008B"/>
+    <line x1="0" y1="0" x2="36" y2="24" stroke="#fff" stroke-width="5"/>
+    <line x1="36" y1="0" x2="0" y2="24" stroke="#fff" stroke-width="5"/>
+    <line x1="0" y1="0" x2="36" y2="24" stroke="#CC0000" stroke-width="3"/>
+    <line x1="36" y1="0" x2="0" y2="24" stroke="#CC0000" stroke-width="3"/>
+    <rect x="14" y="0" width="8" height="24" fill="#fff"/>
+    <rect x="0" y="8" width="36" height="8" fill="#fff"/>
+    <rect x="15" y="0" width="6" height="24" fill="#CC0000"/>
+    <rect x="0" y="9" width="36" height="6" fill="#CC0000"/>
+    <!-- Large 7-point star (Commonwealth star) below Union Jack -->
+    <polygon points="13,38 14.4,33.5 19,35 16,31 20,28.5 15.5,28.5 13,24 10.5,28.5 6,28.5 10,31 7,35 11.6,33.5"
+             fill="#fff"/>
+    <!-- 4 small stars on right -->
+    <polygon points="68,15 69,12 70,15 67,13 71,13" fill="#fff"/>
+    <polygon points="75,28 76,25 77,28 74,26 78,26" fill="#fff"/>
+    <polygon points="65,35 66,32 67,35 64,33 68,33" fill="#fff"/>
+    <polygon points="78,42 79,39 80,42 77,40 81,40" fill="#fff"/>
+  </svg>`;
+}
+
+function flagColombia() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <!-- Yellow top half, blue and red quarters below -->
+    <rect width="90" height="30" fill="#FCD116"/>
+    <rect y="30" width="90" height="15" fill="#003893"/>
+    <rect y="45" width="90" height="15" fill="#CE1126"/>
+  </svg>`;
+}
+
+function flagEgypt() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="90" height="20" fill="#CE1126"/>
+    <rect y="20" width="90" height="20" fill="#fff"/>
+    <rect y="40" width="90" height="20" fill="#000"/>
+    <!-- Simplified golden eagle emblem -->
+    <circle cx="45" cy="30" r="5" fill="#C09300"/>
+  </svg>`;
+}
+
+function flagPhilippines() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <!-- Blue top half, red bottom half -->
+    <rect width="90" height="30" fill="#0038A8"/>
+    <rect y="30" width="90" height="30" fill="#CE1126"/>
+    <!-- White triangle on left -->
+    <polygon points="0,0 35,30 0,60" fill="#fff"/>
+    <!-- Golden sun in triangle -->
+    <circle cx="14" cy="30" r="6" fill="#FCD116"/>
+    <g stroke="#FCD116" stroke-width="1.5" stroke-linecap="round">
+      <line x1="14" y1="20" x2="14" y2="24"/>
+      <line x1="14" y1="36" x2="14" y2="40"/>
+      <line x1="4" y1="30" x2="8" y2="30"/>
+      <line x1="20" y1="30" x2="24" y2="30"/>
+      <line x1="7" y1="23" x2="10" y2="26"/>
+      <line x1="18" y1="34" x2="21" y2="37"/>
+      <line x1="21" y1="23" x2="18" y2="26"/>
+      <line x1="10" y1="34" x2="7" y2="37"/>
+    </g>
+    <!-- 3 golden stars in triangle corners -->
+    <polygon points="7,12 8,9 9,12 6,10 10,10" fill="#FCD116"/>
+    <polygon points="7,50 8,47 9,50 6,48 10,48" fill="#FCD116"/>
+    <polygon points="27,30 28,27 29,30 26,28 30,28" fill="#FCD116"/>
+  </svg>`;
+}
+
+function flagChile() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <!-- White top-right, red bottom -->
+    <rect width="90" height="30" fill="#fff"/>
+    <rect y="30" width="90" height="30" fill="#D52B1E"/>
+    <!-- Blue square top-left -->
+    <rect width="30" height="30" fill="#0039A6"/>
+    <!-- White star in blue square -->
+    <polygon points="15,7 17,13 23,13 18,17 20,23 15,19 10,23 12,17 7,13 13,13"
+             fill="#fff"/>
+  </svg>`;
+}
+
+function flagNigeria() {
+  return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="30" height="60" fill="#008751"/>
+    <rect x="30" width="30" height="60" fill="#fff"/>
+    <rect x="60" width="30" height="60" fill="#008751"/>
+  </svg>`;
+}
+
 // ── Flag Data ────────────────────────────────────────────────
 const ALL_FLAGS = [
   { name: '일본',     svg: flagJapan },
@@ -232,6 +454,22 @@ const ALL_FLAGS = [
   { name: '스웨덴',   svg: flagSweden },
   { name: '스위스',   svg: flagSwitzerland },
   { name: '방글라데시', svg: flagBangladesh },
+  { name: '인도',       svg: flagIndia },
+  { name: '러시아',     svg: flagRussia },
+  { name: '터키',       svg: flagTurkey },
+  { name: '베트남',     svg: flagVietnam },
+  { name: '아르헨티나', svg: flagArgentina },
+  { name: '그리스',     svg: flagGreece },
+  { name: '노르웨이',   svg: flagNorway },
+  { name: '네덜란드',   svg: flagNetherlands },
+  { name: '폴란드',     svg: flagPoland },
+  { name: '멕시코',     svg: flagMexico },
+  { name: '호주',       svg: flagAustralia },
+  { name: '콜롬비아',   svg: flagColombia },
+  { name: '이집트',     svg: flagEgypt },
+  { name: '필리핀',     svg: flagPhilippines },
+  { name: '칠레',       svg: flagChile },
+  { name: '나이지리아', svg: flagNigeria },
 ];
 
 // ── Sound Manager ────────────────────────────────────────────
