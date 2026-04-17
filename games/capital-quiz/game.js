@@ -175,7 +175,7 @@ function showScreen(s) {
 }
 
 var countdownInterval = null;
-function startCountdown(onDone) {
+function startPreGameCountdown(onDone) {
   showScreen(countdownScreen);
   var count = 3;
   countdownNumber.textContent = count;
@@ -247,8 +247,8 @@ updateSoundIcon();
 onTap(backBtn,  () => goHome());
 onTap(closeBtn, () => { clearTimers(); goHome(); });
 onTap(homeBtn,  () => goHome());
-onTap(retryBtn, () => startCountdown(() => startGame()));
-onTap(playBtn,  () => startCountdown(() => startGame()));
+onTap(retryBtn, () => startPreGameCountdown(() => startGame()));
+onTap(playBtn,  () => startPreGameCountdown(() => startGame()));
 
 // ── Round data builder ────────────────────────────────────────
 // For each round: pick 1 correct pair + 3 random wrong capitals as distractors
