@@ -218,7 +218,6 @@ function flagBangladesh() {
 
 // ── Flag Data ────────────────────────────────────────────────
 const ALL_FLAGS = [
-  { name: '대한민국', svg: flagKorea },
   { name: '일본',     svg: flagJapan },
   { name: '중국',     svg: flagChina },
   { name: '미국',     svg: flagUSA },
