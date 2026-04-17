@@ -9,7 +9,9 @@
       "mcp__Claude_in_Chrome__navigate",
       "mcp__Claude_in_Chrome__computer",
       "Bash(bash .claude/skills/brainstorming/scripts/start-server.sh --project-dir \"C:/Users/User/Desktop/claude\")",
-      "Bash(where node:*)"
+      "Bash(where node:*)",
+      "Bash(git branch *)",
+      "Bash(git worktree *)"
     ]
   }
 }
