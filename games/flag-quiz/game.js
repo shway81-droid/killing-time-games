@@ -21,32 +21,39 @@ const PLAYER_CONFIG = [
 function flagKorea() {
   return `<svg viewBox="0 0 90 60" xmlns="http://www.w3.org/2000/svg">
     <rect width="90" height="60" fill="#fff"/>
-    <!-- Taeguk simplified: red top arc, blue bottom arc -->
+    <defs>
+      <clipPath id="kr-top"><rect x="0" y="0" width="90" height="30"/></clipPath>
+      <clipPath id="kr-bot"><rect x="0" y="30" width="90" height="30"/></clipPath>
+    </defs>
+    <!-- 태극: 빨강 위, 파랑 아래 -->
     <circle cx="45" cy="30" r="13" fill="#CD2E3A"/>
-    <clipPath id="kr-clip">
-      <rect x="32" y="30" width="26" height="13"/>
-    </clipPath>
-    <circle cx="45" cy="30" r="13" fill="#003478" clip-path="url(#kr-clip)"/>
+    <circle cx="45" cy="30" r="13" fill="#0047A0" clip-path="url(#kr-bot)"/>
+    <!-- S자 음양: 작은 원 -->
     <circle cx="45" cy="23.5" r="6.5" fill="#CD2E3A"/>
-    <circle cx="45" cy="36.5" r="6.5" fill="#003478"/>
-    <!-- Simplified trigrams as black bars -->
-    <g fill="#000">
-      <rect x="18" y="18" width="10" height="3"/>
-      <rect x="18" y="23" width="10" height="3"/>
-      <rect x="18" y="28" width="4" height="3"/>
-      <rect x="26" y="28" width="4" height="3"/>
-      <rect x="62" y="18" width="10" height="3"/>
-      <rect x="62" y="23" width="4" height="3"/>
-      <rect x="68" y="23" width="4" height="3"/>
-      <rect x="62" y="28" width="10" height="3"/>
-      <rect x="18" y="36" width="4" height="3"/>
-      <rect x="24" y="36" width="4" height="3"/>
-      <rect x="18" y="41" width="10" height="3"/>
-      <rect x="18" y="46" width="4" height="3"/>
-      <rect x="24" y="46" width="4" height="3"/>
-      <rect x="62" y="36" width="10" height="3"/>
-      <rect x="62" y="41" width="10" height="3"/>
-      <rect x="62" y="46" width="10" height="3"/>
+    <circle cx="45" cy="36.5" r="6.5" fill="#0047A0"/>
+    <!-- 건괘 ☰ 좌상: 3실선 -->
+    <g fill="#000" transform="translate(45,30) rotate(-56)">
+      <rect x="-32" y="-5" width="12" height="2.4" rx=".3"/>
+      <rect x="-32" y="-1.2" width="12" height="2.4" rx=".3"/>
+      <rect x="-32" y="2.6" width="12" height="2.4" rx=".3"/>
+    </g>
+    <!-- 곤괘 ☷ 우하: 3끊긴선 -->
+    <g fill="#000" transform="translate(45,30) rotate(-56)">
+      <rect x="20" y="-5" width="5" height="2.4" rx=".3"/><rect x="27" y="-5" width="5" height="2.4" rx=".3"/>
+      <rect x="20" y="-1.2" width="5" height="2.4" rx=".3"/><rect x="27" y="-1.2" width="5" height="2.4" rx=".3"/>
+      <rect x="20" y="2.6" width="5" height="2.4" rx=".3"/><rect x="27" y="2.6" width="5" height="2.4" rx=".3"/>
+    </g>
+    <!-- 감괘 ☵ 우상: 끊/실/끊 -->
+    <g fill="#000" transform="translate(45,30) rotate(56)">
+      <rect x="20" y="-5" width="5" height="2.4" rx=".3"/><rect x="27" y="-5" width="5" height="2.4" rx=".3"/>
+      <rect x="20" y="-1.2" width="12" height="2.4" rx=".3"/>
+      <rect x="20" y="2.6" width="5" height="2.4" rx=".3"/><rect x="27" y="2.6" width="5" height="2.4" rx=".3"/>
+    </g>
+    <!-- 이괘 ☲ 좌하: 실/끊/실 -->
+    <g fill="#000" transform="translate(45,30) rotate(56)">
+      <rect x="-32" y="-5" width="12" height="2.4" rx=".3"/>
+      <rect x="-32" y="-1.2" width="5" height="2.4" rx=".3"/><rect x="-25" y="-1.2" width="5" height="2.4" rx=".3"/>
+      <rect x="-32" y="2.6" width="12" height="2.4" rx=".3"/>
     </g>
   </svg>`;
 }
