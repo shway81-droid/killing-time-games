@@ -206,13 +206,10 @@ body {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr;
 }
-/* 3인: 2x2 (P3=하단 전체) */
+/* 3인: 3 equal columns */
 .game-zones.layout-3 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-}
-.game-zones.layout-3 .player-zone:nth-child(3) {
-  grid-column: 1 / -1;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 /* 4인: 2x2 사분면 */
 .game-zones.layout-4 {

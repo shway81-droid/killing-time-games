@@ -209,14 +209,10 @@ body {
   grid-template-rows: 1fr;
 }
 
-/* 3P: 상단 두 칸 + 하단 하나 */
+/* 3P: 3 equal columns */
 .zones-container.layout-3p {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-}
-
-.zones-container.layout-3p .player-zone:nth-child(3) {
-  grid-column: 1 / -1;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 
 /* 4P: 사분면 */
@@ -238,14 +234,9 @@ body {
   border-left: 2px solid rgba(0,0,0,0.3);
 }
 
-.zones-container.layout-3p .player-zone:nth-child(3),
 .zones-container.layout-4p .player-zone:nth-child(3),
 .zones-container.layout-4p .player-zone:nth-child(4) {
   border-top: 2px solid rgba(0,0,0,0.3);
-}
-
-.zones-container.layout-3p .player-zone:nth-child(3) {
-  border-left: none;
 }
 
 /* 플레이어 색상 */
