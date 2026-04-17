@@ -604,9 +604,9 @@ document.querySelectorAll('.player-btn').forEach(btn => {
 });
 
 // ── Navigation ───────────────────────────────────────────────
-onTap(backBtn,  () => goHome());
+onTap(backBtn,  () => { clearTimers(); goHome(); });
 onTap(closeBtn, () => { clearTimers(); goHome(); });
-onTap(homeBtn,  () => goHome());
+onTap(homeBtn,  () => { clearTimers(); goHome(); });
 onTap(retryBtn, () => startGame());
 onTap(playBtn,  () => startGame());
 
@@ -852,6 +852,7 @@ function revealCorrect(winnerIdx) {
 
 // ── Game flow ────────────────────────────────────────────────
 function startGame() {
+  clearTimers();
   scores    = new Array(playerCount).fill(0);
   roundLog  = [];
   roundIdx  = 0;
