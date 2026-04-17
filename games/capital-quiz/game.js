@@ -474,7 +474,7 @@ function handleAnswerTap(playerIdx, chosenCapital, wrap) {
   if (dqSet.has(playerIdx)) return;
 
   const zone = getZone(playerIdx);
-  spawnRipple(zone, window.event || null);
+  spawnRipple(zone, null);
 
   const correct = (chosenCapital === currentRound.correctCapital);
 
