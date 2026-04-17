@@ -18,12 +18,24 @@
       font-weight: 700;
     }
 
-    /* 학년 필터 */
+    /* 필터 영역 */
+    .filter-section {
+      padding: 0 var(--space-lg);
+      margin-bottom: var(--space-sm);
+    }
+
+    .filter-label {
+      font-size: var(--font-size-small);
+      color: var(--text-sub);
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
     .filter-bar {
       display: flex;
       gap: var(--space-sm);
-      padding: 0 var(--space-lg);
-      margin-bottom: var(--space-md);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-sm);
     }
 
     .filter-btn {
@@ -44,6 +56,13 @@
       background: var(--primary);
       color: #FFFFFF;
     }
+
+    /* 카테고리 필터 — 각 카테고리별 색상 */
+    .cat-btn[data-cat="speed"].active { border-color: #FF9800; background: #FF9800; }
+    .cat-btn[data-cat="brain"].active { border-color: #9C27B0; background: #9C27B0; }
+    .cat-btn[data-cat="math"].active { border-color: #29B6F6; background: #29B6F6; }
+    .cat-btn[data-cat="knowledge"].active { border-color: #EC407A; background: #EC407A; }
+    .cat-btn[data-cat="strategy"].active { border-color: #78909C; background: #78909C; }
 
     /* 게임 카드 그리드 */
     .game-grid {
@@ -107,11 +126,24 @@
     <button class="sound-toggle" id="soundToggle" aria-label="사운드 토글">🔇</button>
   </header>
 
-  <nav class="filter-bar">
-    <button class="filter-btn active" data-filter="all">전체</button>
-    <button class="filter-btn" data-filter="low">저학년</button>
-    <button class="filter-btn" data-filter="high">고학년</button>
-  </nav>
+  <div class="filter-section">
+    <div class="filter-label">학년</div>
+    <nav class="filter-bar" id="gradeFilter">
+      <button class="filter-btn active" data-filter="all">전체</button>
+      <button class="filter-btn" data-filter="low">저학년</button>
+      <button class="filter-btn" data-filter="high">고학년</button>
+    </nav>
+
+    <div class="filter-label">카테고리</div>
+    <nav class="filter-bar" id="catFilter">
+      <button class="filter-btn cat-btn active" data-cat="all">전체</button>
+      <button class="filter-btn cat-btn" data-cat="speed">⚡ 반응속도</button>
+      <button class="filter-btn cat-btn" data-cat="brain">🧠 두뇌</button>
+      <button class="filter-btn cat-btn" data-cat="math">📐 수학</button>
+      <button class="filter-btn cat-btn" data-cat="knowledge">📚 지식</button>
+      <button class="filter-btn cat-btn" data-cat="strategy">♟️ 전략</button>
+    </nav>
+  </div>
 
   <main class="game-grid" id="gameGrid">
     <!-- JS가 카드를 동적으로 삽입 -->
@@ -119,6 +151,32 @@
 
   <script src="shared/engine.js"></script>
   <script>
+    // 카테고리 매핑
+    var CATEGORY_MAP = {
+      'whack-a-mole': 'speed',
+      'reaction-race': 'speed',
+      'catch-the-fly': 'speed',
+      'balloon-pop': 'speed',
+      'bomb-dodge': 'speed',
+      'color-touch': 'brain',
+      'shape-match': 'brain',
+      'shadow-match': 'brain',
+      'missing-piece': 'brain',
+      'mirror-match': 'brain',
+      'quick-sort': 'brain',
+      'quick-math': 'math',
+      'size-compare': 'math',
+      'even-odd': 'math',
+      'color-count': 'math',
+      'more-or-less': 'math',
+      'number-tap': 'math',
+      'clock-reading': 'math',
+      'ox-quiz': 'knowledge',
+      'initial-quiz': 'knowledge',
+      'dots-and-boxes': 'strategy',
+      'memory-match': 'strategy'
+    };
+
     const FALLBACK_GAMES = [
       { folder:'whack-a-mole', name:'두더지 잡기', description:'내 영역의 두더지를 빠르게 잡으세요!', icon:'🔨', color:'#81C784', grades:[1,2,3,4,5,6], playTime:'30초' },
       { folder:'reaction-race', name:'신호 반응', description:'초록색이 되면 재빨리 터치!', icon:'🚦', color:'#66BB6A', grades:[1,2,3,4,5,6], playTime:'1분' },
@@ -145,11 +203,14 @@
     ];
 
     const grid = document.getElementById('gameGrid');
-    const filterBtns = document.querySelectorAll('.filter-btn');
+    const gradeBtns = document.querySelectorAll('#gradeFilter .filter-btn');
+    const catBtns = document.querySelectorAll('#catFilter .cat-btn');
     const soundToggle = document.getElementById('soundToggle');
     let allGames = [];
+    let currentGrade = 'all';
+    let currentCat = 'all';
 
-    // --- 사운드 토글 (런처에서는 상태만 관리) ---
+    // --- 사운드 토글 ---
     function updateSoundIcon() {
       const muted = sessionStorage.getItem('sound-muted') !== 'false';
       soundToggle.textContent = muted ? '🔇' : '🔊';
@@ -170,6 +231,7 @@
         a.className = 'game-card';
         a.href = 'games/' + game.folder + '/index.html';
         a.dataset.grades = JSON.stringify(game.grades);
+        a.dataset.cat = CATEGORY_MAP[game.folder] || 'brain';
         a.innerHTML =
           '<div class="game-card-thumb" style="background:' + game.color + '">' +
             '<span>' + game.icon + '</span>' +
@@ -180,32 +242,50 @@
           '</div>';
         grid.appendChild(a);
       });
+      applyFilters();
     }
 
-    // --- 학년 필터 ---
-    filterBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        filterBtns.forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        applyFilter(btn.dataset.filter);
-      });
-    });
-
-    function applyFilter(filter) {
+    // --- 필터 적용 (학년 + 카테고리 조합) ---
+    function applyFilters() {
       var cards = grid.querySelectorAll('.game-card');
       cards.forEach(function(card) {
         var grades = JSON.parse(card.dataset.grades);
-        var show = true;
-        if (filter === 'low') {
-          show = grades.some(function(g) { return g >= 1 && g <= 3; });
-        } else if (filter === 'high') {
-          show = grades.some(function(g) { return g >= 4 && g <= 6; });
+        var cat = card.dataset.cat;
+
+        var gradeOk = true;
+        if (currentGrade === 'low') {
+          gradeOk = grades.some(function(g) { return g >= 1 && g <= 3; });
+        } else if (currentGrade === 'high') {
+          gradeOk = grades.some(function(g) { return g >= 4 && g <= 6; });
         }
-        card.classList.toggle('hidden', !show);
+
+        var catOk = (currentCat === 'all') || (cat === currentCat);
+
+        card.classList.toggle('hidden', !(gradeOk && catOk));
       });
     }
 
-    // --- 게임 목록 로딩 (fetch → fallback) ---
+    // --- 학년 필터 ---
+    gradeBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        gradeBtns.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentGrade = btn.dataset.filter;
+        applyFilters();
+      });
+    });
+
+    // --- 카테고리 필터 ---
+    catBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        catBtns.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentCat = btn.dataset.cat;
+        applyFilters();
+      });
+    });
+
+    // --- 게임 목록 로딩 ---
     async function loadGames() {
       try {
         var res = await fetch('games/registry.json');
@@ -219,7 +299,6 @@
         }
         renderCards(games);
       } catch (e) {
-        // file:// 프로토콜 등에서 fetch 실패 시 fallback
         renderCards(FALLBACK_GAMES);
       }
     }
