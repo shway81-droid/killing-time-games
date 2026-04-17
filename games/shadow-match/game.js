@@ -423,7 +423,7 @@ var ITEM_POOL = [
 // ══════════════════════════════════════════════════════
 
 var TOTAL_ROUNDS   = 10;
-var ITEMS_PER_ZONE = 4;  // 2x2 grid per zone
+var ITEMS_PER_ZONE = 6;  // 2x3 grid per zone
 
 var PLAYER_CONFIG = [
   { label: 'P1', hex: '#00BCD4', bgTint: 'rgba(0,188,212,0.14)' },
@@ -638,7 +638,7 @@ function buildZones() {
     header.appendChild(label);
     header.appendChild(scoreEl);
 
-    // Item grid (2x2)
+    // Item grid (2x3)
     var grid = document.createElement('div');
     grid.className = 'item-grid';
     grid.setAttribute('data-grid-for', i);
@@ -659,7 +659,7 @@ function updateZoneScore(idx) {
 }
 
 // ══════════════════════════════════════════════════════
-// ROUND ITEM GENERATION (4 items: 1 correct + 3 wrong)
+// ROUND ITEM GENERATION (6 items: 1 correct + 5 wrong)
 // ══════════════════════════════════════════════════════
 
 function generateRoundItems(correctItem) {

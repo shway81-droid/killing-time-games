@@ -215,11 +215,11 @@
   pointer-events: none;
 }
 
-/* 2x2 item grid — 4 items per zone */
+/* 2x3 item grid — 6 items per zone */
 .item-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: 8px;
   pointer-events: none;
 }
@@ -228,8 +228,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 14px;
   cursor: pointer;
   pointer-events: all;
@@ -243,8 +243,8 @@
 }
 .item-btn svg {
   display: block;
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   pointer-events: none;
 }
 
@@ -484,7 +484,7 @@
   .target-wrap { padding: 10px 14px; }
   .target-svg-box { width: 88px; height: 88px; }
   .target-svg-box svg { width: 88px; height: 88px; }
-  .item-btn { width: 56px; height: 56px; }
-  .item-btn svg { width: 40px; height: 40px; }
+  .item-btn { width: 50px; height: 50px; }
+  .item-btn svg { width: 36px; height: 36px; }
   .item-grid { gap: 5px; }
 }
