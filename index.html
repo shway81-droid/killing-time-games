@@ -109,7 +109,7 @@
       align-items: center;
       justify-content: center;
       font-size: 3.5rem;
-      background: linear-gradient(135deg, var(--thumb-color, #ccc), var(--thumb-color-dark, #999)) !important;
+      background: var(--thumb-color, #ccc) !important;
     }
 
     .game-card-info {
@@ -279,14 +279,15 @@
     });
     updateSoundIcon();
 
-    // --- 썸네일 그라디언트용 색상 어둡게 ---
-    function darkenColor(hex) {
+    // --- 썸네일 파스텔 색상 변환 ---
+    function pastelColor(hex) {
       var r = parseInt(hex.slice(1,3),16);
       var g = parseInt(hex.slice(3,5),16);
       var b = parseInt(hex.slice(5,7),16);
-      r = Math.max(0, Math.floor(r * 0.65));
-      g = Math.max(0, Math.floor(g * 0.65));
-      b = Math.max(0, Math.floor(b * 0.65));
+      // 흰색과 70% 혼합 → 파스텔
+      r = Math.round(r + (255 - r) * 0.55);
+      g = Math.round(g + (255 - g) * 0.55);
+      b = Math.round(b + (255 - b) * 0.55);
       return '#' + [r,g,b].map(function(v){ return v.toString(16).padStart(2,'0'); }).join('');
     }
 
@@ -301,7 +302,7 @@
         a.dataset.grades = JSON.stringify(game.grades);
         a.dataset.cat = CATEGORY_MAP[game.folder] || 'brain';
         a.innerHTML =
-          '<div class="game-card-thumb" style="--thumb-color:' + game.color + ';--thumb-color-dark:' + darkenColor(game.color) + '">' +
+          '<div class="game-card-thumb" style="--thumb-color:' + pastelColor(game.color) + '">' +
             '<span class="card-icon-svg">' + (GAME_ICONS[game.folder] || game.icon) + '</span>' +
           '</div>' +
           '<div class="game-card-info">' +
