@@ -161,9 +161,9 @@ document.querySelectorAll('.player-btn').forEach(btn => {
 });
 
 // ── Navigation ────────────────────────────────────────────────
-onTap(backBtn, () => goHome());
+onTap(backBtn, () => { clearRoundTimers(); goHome(); });
 onTap(closeBtn, () => { clearRoundTimers(); goHome(); });
-onTap(homeBtn,  () => goHome());
+onTap(homeBtn,  () => { clearRoundTimers(); goHome(); });
 onTap(retryBtn, () => startGame());
 onTap(playBtn,  () => startGame());
 
@@ -437,6 +437,7 @@ function clearRoundTimers() {
 
 // ── Game flow ─────────────────────────────────────────────────
 function startGame() {
+  clearRoundTimers();
   scores       = new Array(playerCount).fill(0);
   roundResults = [];
   currentRound = 0;
