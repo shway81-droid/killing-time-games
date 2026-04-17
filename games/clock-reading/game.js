@@ -449,9 +449,20 @@ function handleAnswer(playerIdx, isCorrect, e) {
     sound.play('buzz');
     roundDQ.add(playerIdx);
 
+    // Deduct 1 point (floor at 0)
+    scores[playerIdx] = Math.max(0, scores[playerIdx] - 1);
+
     if (zone) {
       zone.classList.remove('state-wait', 'state-active');
       zone.classList.add('state-dq');
+
+      // Show "-1" flash
+      const penalty = document.createElement('div');
+      penalty.className = 'penalty-flash';
+      penalty.textContent = '-1';
+      zone.style.position = 'relative';
+      zone.appendChild(penalty);
+      penalty.addEventListener('animationend', () => penalty.remove());
     }
 
     // Check if all players are disqualified (or already resolved)

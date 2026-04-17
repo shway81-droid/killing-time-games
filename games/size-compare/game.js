@@ -286,6 +286,18 @@ function disqualifyPlayer(idx, zone) {
   // Disable arrow buttons in this zone
   zone.querySelectorAll('.arrow-btn').forEach(b => b.disabled = true);
 
+  // Deduct 1 point (floor at 0)
+  scores[idx] = Math.max(0, scores[idx] - 1);
+  updateScoreDisplay(idx);
+
+  // Show "-1" flash
+  const penalty = document.createElement('div');
+  penalty.className = 'penalty-flash';
+  penalty.textContent = '-1';
+  zone.style.position = 'relative';
+  zone.appendChild(penalty);
+  penalty.addEventListener('animationend', () => penalty.remove());
+
   // If all players DQ'd, nobody wins
   const remaining = Array.from({ length: playerCount }, (_, i) => i).filter(i => !roundDQ.has(i));
   if (remaining.length === 0) {

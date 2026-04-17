@@ -542,3 +542,18 @@
   .pattern-cell { width: 44px; height: 44px; }
   .answer-btn { width: 62px; height: 62px; }
 }
+
+/* ── Penalty flash ─────────────────────────────────────────── */
+.penalty-flash {
+  position: absolute;
+  color: #EF5350;
+  font-size: 1.5rem;
+  font-weight: 900;
+  pointer-events: none;
+  z-index: 50;
+  animation: penaltyFade 0.8s ease-out forwards;
+}
+@keyframes penaltyFade {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-30px); }
+}

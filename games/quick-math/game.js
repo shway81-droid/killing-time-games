@@ -355,6 +355,22 @@ function disqualifyPlayer(playerIdx) {
   if (dqSet.has(playerIdx)) return;
   dqSet.add(playerIdx);
 
+  // Deduct 1 point (floor at 0)
+  scores[playerIdx] = Math.max(0, scores[playerIdx] - 1);
+  updateScoreChip(playerIdx);
+  updateBarScore(playerIdx);
+
+  // Show "-1" flash
+  const zone = getZone(playerIdx);
+  if (zone) {
+    const penalty = document.createElement('div');
+    penalty.className = 'penalty-flash';
+    penalty.textContent = '-1';
+    zone.style.position = 'relative';
+    zone.appendChild(penalty);
+    penalty.addEventListener('animationend', () => penalty.remove());
+  }
+
   // Disable all this player's buttons
   getAnswerBtns(playerIdx).forEach(b => {
     b.classList.add('state-disabled');

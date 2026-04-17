@@ -540,6 +540,18 @@ function handleAnswerTap(playerIdx, ansIdx, btn, e) {
     sound.play('buzz');
     setDQ(playerIdx);
 
+    // Deduct 1 point (floor at 0)
+    scores[playerIdx] = Math.max(0, scores[playerIdx] - 1);
+    updateZoneScore(playerIdx);
+
+    // Show "-1" flash
+    var penalty = document.createElement('div');
+    penalty.className = 'penalty-flash';
+    penalty.textContent = '-1';
+    zone.style.position = 'relative';
+    zone.appendChild(penalty);
+    penalty.addEventListener('animationend', function() { penalty.remove(); });
+
     btn.classList.add('ans-wrong-flash');
     var timeoutWrongBtn = setTimeout(function() {
       if (gameActive) btn.classList.remove('ans-wrong-flash');
@@ -551,7 +563,7 @@ function handleAnswerTap(playerIdx, ansIdx, btn, e) {
       if (gameActive) zone.classList.remove('state-wrong');
     }, 420);
 
-    roundStatus.textContent = PLAYER_CONFIG[playerIdx].label + ' 오답! 실격';
+    roundStatus.textContent = PLAYER_CONFIG[playerIdx].label + ' 오답! 실격 -1점';
     roundStatus.className   = 'round-status wrong';
 
     var timeoutStatus = setTimeout(function() {

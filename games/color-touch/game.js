@@ -317,13 +317,25 @@ function handleColorTap(playerIdx, colorId, zone, e) {
     sound.play('buzz');
     roundDQ.add(playerIdx);
 
+    // Deduct 1 point (floor at 0)
+    scores[playerIdx] = Math.max(0, scores[playerIdx] - 1);
+    updateZoneScore(playerIdx);
+
+    // Show "-1" flash
+    const penalty = document.createElement('div');
+    penalty.className = 'penalty-flash';
+    penalty.textContent = '-1';
+    zone.style.position = 'relative';
+    zone.appendChild(penalty);
+    penalty.addEventListener('animationend', () => penalty.remove());
+
     zone.classList.remove('state-idle', 'state-active', 'state-correct');
     zone.classList.add('state-dq', 'state-wrong');
 
     // Remove wrong class after animation
     pendingTimers.push(setTimeout(() => zone.classList.remove('state-wrong'), 450));
 
-    roundStatus.textContent = PLAYER_CONFIG[playerIdx].label + ' 오답 실격!';
+    roundStatus.textContent = PLAYER_CONFIG[playerIdx].label + ' 오답 실격! -1점';
     roundStatus.className   = 'round-status wrong';
     // Reset status text shortly
     pendingTimers.push(setTimeout(() => {

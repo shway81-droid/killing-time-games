@@ -681,6 +681,20 @@ function handleAnswerTap(playerIdx, chosenAnswer, btn) {
     }, 400);
 
     dqSet.add(playerIdx);
+
+    // Deduct 1 point (floor at 0)
+    scores[playerIdx] = Math.max(0, scores[playerIdx] - 1);
+    updateScoreChip(playerIdx);
+    updateBarScore(playerIdx);
+
+    // Show "-1" flash
+    const penalty = document.createElement('div');
+    penalty.className = 'penalty-flash';
+    penalty.textContent = '-1';
+    zone.style.position = 'relative';
+    zone.appendChild(penalty);
+    penalty.addEventListener('animationend', () => penalty.remove());
+
     // Disable this player's buttons
     getOXBtns(playerIdx).forEach(b => {
       b.classList.add('state-disabled');
