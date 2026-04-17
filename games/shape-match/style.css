@@ -215,10 +215,10 @@
   pointer-events: none;
 }
 
-/* 2x3 item grid */
+/* 2x4 item grid */
 .item-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 6px;
   pointer-events: none;
@@ -228,8 +228,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
   border-radius: 12px;
   cursor: pointer;
   pointer-events: all;
@@ -480,6 +480,6 @@
   .target-wrap { padding: 10px 14px; }
   .target-svg-box { width: 72px; height: 72px; }
   .target-svg-box svg { width: 72px; height: 72px; }
-  .item-btn { width: 48px; height: 48px; }
+  .item-btn { width: 42px; height: 42px; }
   .item-grid { gap: 4px; }
 }

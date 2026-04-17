@@ -416,7 +416,7 @@ var ITEM_POOL = [
 // ══════════════════════════════════════════════════════
 
 var TOTAL_ROUNDS = 10;
-var ITEMS_PER_ZONE = 6; // 2x3 grid
+var ITEMS_PER_ZONE = 8; // 2x4 grid
 
 var PLAYER_CONFIG = [
   { label: 'P1', hex: '#00BCD4', bgTint: 'rgba(0,188,212,0.14)' },
@@ -661,7 +661,7 @@ function updateZoneScore(idx) {
 // ══════════════════════════════════════════════════════
 
 function generateRoundItems(correctItem) {
-  // Pick 5 wrong items (all different from correct)
+  // Pick 7 wrong items (all different from correct)
   var pool = ITEM_POOL.filter(function(it) { return it.id !== correctItem.id; });
   var wrong = shuffle(pool).slice(0, ITEMS_PER_ZONE - 1);
   // Mix in correct item at a random position
