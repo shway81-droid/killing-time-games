@@ -20,20 +20,6 @@ body {
   background: #fff;
 }
 
-.game-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-.intro-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  flex: 1;
-  justify-content: center;
-}
 .intro-illustration {
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
 }
@@ -65,13 +51,6 @@ body {
   justify-content: center;
   align-items: center;
   background: #E91E63;
-}
-.countdown-number {
-  font-size: 8rem;
-  font-weight: 900;
-  color: #fff;
-  text-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  animation: countPop 0.5s ease;
 }
 /* ===== 게임 화면 ===== */
 .screen-game {
