@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>퍼즐 완성</title>
+  <link rel="stylesheet" href="../../shared/style.css?v=2">
+  <style>
+    /* ===== PUZZLE COMPLETE — inline styles ===== */
+    :root {
+      --teal: #00897B;
+      --teal-light: #4DB6AC;
+      --teal-dark: #00574B;
+      --bg-dark: #0D2B27;
+      --bg-mid: #143D37;
+      --p1: #FF5252;
+      --p2: #40C4FF;
+      --p3: #FFCA28;
+      --p4: #AB47BC;
+    }
+
+    html, body {
+      background: var(--bg-dark);
+      color: #fff;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    /* ─── Intro Screen ─────────────────────────────────────── */
+    .screen-intro {
+      background: linear-gradient(160deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+      justify-content: flex-start;
+    }
+    .screen-intro .game-header { color: #fff; }
+    .screen-intro .game-header .icon-btn {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .screen-intro .game-header .sound-toggle {
+      background: rgba(255,255,255,0.12);
+    }
+    .intro-puzzle-icon {
+      margin: 8px auto 0;
+      display: flex;
+      justify-content: center;
+    }
+    .intro-title-text {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 16px rgba(0,200,150,0.7);
+      text-align: center;
+    }
+    .intro-desc-text {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .intro-rules {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 12px 20px;
+      width: 90%;
+      max-width: 340px;
+    }
+    .intro-rules li {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 5px;
+      list-style: none;
+      padding-left: 1.5em;
+      position: relative;
+    }
+    .intro-rules li::before {
+      content: '🧩';
+      position: absolute;
+      left: 0;
+      font-size: 0.75rem;
+    }
+    .player-select-label { color: rgba(255,255,255,0.55); }
+    .player-btn {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    .player-btn.active {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: #fff;
+    }
+    .btn-play {
+      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+      color: #fff;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 20px rgba(0,137,123,0.5);
+    }
+    .btn-play:active { transform: scale(0.96); }
+
+    /* ─── Countdown Screen ─────────────────────────────────── */
+    .screen-countdown {
+      background: linear-gradient(160deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+    }
+    .screen-countdown .countdown-number {
+      color: var(--teal-light);
+      text-shadow: 0 0 40px rgba(0,200,150,0.8);
+    }
+
+    /* ─── Game Screen ──────────────────────────────────────── */
+    .screen-game {
+      background: var(--bg-dark);
+      position: relative;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* HUD row */
+    .game-hud {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px 4px;
+      flex-shrink: 0;
+      background: rgba(0,0,0,0.3);
+    }
+    .timer-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 5px 10px;
+    }
+    .timer-val {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #fff;
+      min-width: 28px;
+      text-align: center;
+    }
+    .timer-val.danger {
+      color: #FF5252;
+      animation: timerPulse 0.5s infinite alternate;
+    }
+    @keyframes timerPulse {
+      from { opacity: 1; }
+      to   { opacity: 0.4; }
+    }
+    .next-indicator {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .next-label {
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.45);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .next-num {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #FFD740;
+      text-shadow: 0 0 12px rgba(255,215,0,0.8);
+      line-height: 1;
+    }
+    .progress-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .progress-label {
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.45);
+      font-weight: 700;
+    }
+    .progress-val {
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--teal-light);
+    }
+    .btn-close-game {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      z-index: 20;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    /* ─── Puzzle Board ─────────────────────────────────────── */
+    .board-area {
+      flex-shrink: 0;
+      padding: 6px 10px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .board-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .puzzle-board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 5px;
+      width: min(340px, 90vw);
+    }
+    .puzzle-slot {
+      aspect-ratio: 1;
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .puzzle-slot.filled {
+      border-style: solid;
+      border-color: rgba(255,255,255,0.4);
+    }
+    .puzzle-slot svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .slot-num {
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.2);
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+    }
+
+    /* ─── Player Zones ─────────────────────────────────────── */
+    .zones-area {
+      flex: 1;
+      padding: 4px 8px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+    }
+    .zones-grid {
+      display: grid;
+      gap: 6px;
+      flex: 1;
+    }
+    .zones-grid.p2 { grid-template-columns: 1fr 1fr; }
+    .zones-grid.p3 { grid-template-columns: 1fr 1fr 1fr; }
+    .zones-grid.p4 { grid-template-columns: 1fr 1fr; }
+
+    .player-zone {
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.1);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 80px;
+    }
+    .zone-header {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .zone-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .zone-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+    }
+    .zone-pieces {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    /* ─── Puzzle Pieces ────────────────────────────────────── */
+    .piece {
+      width: 54px;
+      height: 54px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+      transition: transform 0.1s, box-shadow 0.1s;
+      user-select: none;
+      -webkit-user-select: none;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .piece:active {
+      transform: scale(0.9);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+    .piece.next-target {
+      box-shadow: 0 0 0 3px #FFD740, 0 0 16px rgba(255,215,0,0.6), 0 3px 8px rgba(0,0,0,0.35);
+      animation: piecePulse 1s ease-in-out infinite;
+    }
+    @keyframes piecePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .piece.wrong {
+      animation: pieceWrong 0.4s ease;
+      box-shadow: 0 0 0 3px #FF5252, 0 0 16px rgba(255,82,82,0.6);
+    }
+    @keyframes pieceWrong {
+      0%  { transform: translateX(0); }
+      15% { transform: translateX(-6px) rotate(-4deg); }
+      30% { transform: translateX(6px) rotate(4deg); }
+      45% { transform: translateX(-5px) rotate(-3deg); }
+      60% { transform: translateX(4px) rotate(3deg); }
+      75% { transform: translateX(-2px); }
+      100%{ transform: translateX(0) rotate(0); }
+    }
+    .piece.placed {
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* Flying piece animation */
+    .piece-fly {
+      position: fixed;
+      width: 54px;
+      height: 54px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      border: 2px solid rgba(255,255,255,0.3);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      z-index: 999;
+      pointer-events: none;
+      transition: left 0.4s cubic-bezier(0.4,0,0.2,1),
+                  top 0.4s cubic-bezier(0.4,0,0.2,1),
+                  transform 0.4s ease,
+                  opacity 0.4s ease;
+    }
+
+    /* ─── Result Screen ────────────────────────────────────── */
+    .screen-result {
+      background: linear-gradient(160deg, var(--bg-dark) 0%, var(--bg-mid) 60%, var(--bg-dark) 100%);
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      padding: 24px;
+    }
+    .result-emoji {
+      font-size: 4rem;
+      animation: bounceIn 0.5s ease;
+    }
+    @keyframes bounceIn {
+      0%  { transform: scale(0.3); opacity: 0; }
+      60% { transform: scale(1.2); }
+      100%{ transform: scale(1); opacity: 1; }
+    }
+    .result-headline {
+      font-size: 2rem;
+      font-weight: 900;
+      text-align: center;
+    }
+    .result-headline.success {
+      color: #69F0AE;
+      text-shadow: 0 0 16px rgba(105,240,174,0.5);
+    }
+    .result-headline.fail {
+      color: #FF5252;
+      text-shadow: 0 0 16px rgba(255,82,82,0.5);
+    }
+    .result-detail {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+    }
+    .result-puzzle-preview {
+      width: min(240px, 70vw);
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 6px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+    .result-slot {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .result-slot svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .result-stats {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 14px 24px;
+      width: 100%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+    .stat-label { color: rgba(255,255,255,0.5); }
+    .stat-val { color: #fff; font-weight: 700; }
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+    }
+    .btn-retry {
+      flex: 1;
+      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,137,123,0.4);
+    }
+    .btn-home {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* Glow slot when piece lands */
+    @keyframes slotGlow {
+      0%   { box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+      30%  { box-shadow: inset 0 0 12px 4px rgba(255,255,255,0.4); }
+      100% { box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+    }
+    .slot-land {
+      animation: slotGlow 0.5s ease-out;
+    }
+
+    /* Wrong flash overlay */
+    .wrong-flash {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,82,82,0.2);
+      pointer-events: none;
+      z-index: 998;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    .wrong-flash.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: Intro -->
+  <section class="screen screen-intro active" id="introScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+      <h1 class="game-title" style="color:#fff;">퍼즐 완성</h1>
+      <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
+    </header>
+    <div class="intro-body">
+      <div class="intro-puzzle-icon">
+        <svg viewBox="0 0 160 120" width="160" height="120" aria-hidden="true">
+          <!-- Rainbow preview -->
+          <rect x="0" y="0" width="160" height="120" rx="10" fill="#143D37"/>
+          <!-- Arcs -->
+          <path d="M20,90 Q80,10 140,90" stroke="#E53935" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path d="M28,90 Q80,20 132,90" stroke="#FB8C00" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path d="M36,90 Q80,30 124,90" stroke="#FDD835" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path d="M44,90 Q80,40 116,90" stroke="#43A047" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path d="M52,90 Q80,50 108,90" stroke="#1E88E5" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path d="M60,90 Q80,60 100,90" stroke="#8E24AA" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <!-- Sun -->
+          <circle cx="130" cy="25" r="12" fill="#FDD835"/>
+          <line x1="130" y1="8" x2="130" y2="3" stroke="#FDD835" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="143" y1="12" x2="147" y2="9" stroke="#FDD835" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="147" y1="25" x2="152" y2="25" stroke="#FDD835" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="143" y1="38" x2="147" y2="41" stroke="#FDD835" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="130" y1="42" x2="130" y2="47" stroke="#FDD835" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Grass -->
+          <rect x="0" y="95" width="160" height="25" fill="#2E7D32" rx="0"/>
+          <!-- Puzzle grid lines overlay -->
+          <line x1="40" y1="0" x2="40" y2="120" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <line x1="80" y1="0" x2="80" y2="120" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <line x1="120" y1="0" x2="120" y2="120" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <line x1="0" y1="40" x2="160" y2="40" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <line x1="0" y1="80" x2="160" y2="80" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        </svg>
+      </div>
+      <p class="intro-title-text">퍼즐 완성</p>
+      <p class="intro-desc-text">순서대로 조각을 탭해 무지개를 완성하세요!<br>90초 안에 12개를 모두 맞춰요</p>
+      <ul class="intro-rules">
+        <li>황금색으로 빛나는 조각이 다음 차례예요</li>
+        <li>올바른 순서로 탭하면 퍼즐에 끼워져요</li>
+        <li>틀리면 빨간 불이 켜져요 — 다시 도전!</li>
+        <li>모두 협력해서 12개를 순서대로!</li>
+      </ul>
+      <div class="player-select-label">인원 선택</div>
+      <div class="player-select" id="playerSelect">
+        <button class="player-btn active" data-count="2">2명</button>
+        <button class="player-btn" data-count="3">3명</button>
+        <button class="player-btn" data-count="4">4명</button>
+      </div>
+    </div>
+    <button class="btn btn-play btn-icon-svg" id="playBtn">
+      🧩 PLAY
+    </button>
+  </section>
+
+  <!-- Screen 1.5: Countdown -->
+  <section class="screen screen-countdown" id="countdownScreen">
+    <div class="countdown-number" id="countdownNumber">3</div>
+  </section>
+
+  <!-- Screen 2: Game -->
+  <section class="screen screen-game" id="gameScreen">
+    <div class="wrong-flash" id="wrongFlash"></div>
+
+    <!-- HUD -->
+    <div class="game-hud">
+      <div class="timer-box">
+        <span>⏱</span>
+        <span class="timer-val" id="timerVal">90</span>
+      </div>
+      <div class="next-indicator">
+        <span class="next-label">다음 순서</span>
+        <span class="next-num" id="nextNum">#1</span>
+      </div>
+      <div class="progress-indicator">
+        <span class="progress-label">완료</span>
+        <span class="progress-val" id="progressVal">0/12</span>
+      </div>
+    </div>
+
+    <!-- Puzzle board -->
+    <div class="board-area">
+      <div class="board-label">퍼즐 보드</div>
+      <div class="puzzle-board" id="puzzleBoard">
+        <!-- 12 slots generated by JS -->
+      </div>
+    </div>
+
+    <!-- Player zones -->
+    <div class="zones-area">
+      <div class="zones-grid" id="zonesGrid"></div>
+    </div>
+
+    <button class="icon-btn btn-close-game" id="closeBtn" aria-label="홈으로">✕</button>
+  </section>
+
+  <!-- Screen 3: Result -->
+  <section class="screen screen-result" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <h2 class="result-headline" id="resultHeadline">퍼즐 완성!</h2>
+    <p class="result-detail" id="resultDetail"></p>
+    <div class="result-puzzle-preview" id="resultPuzzlePreview"></div>
+    <div class="result-stats">
+      <div class="stat-row">
+        <span class="stat-label">완료한 조각</span>
+        <span class="stat-val" id="statPieces">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">남은 시간</span>
+        <span class="stat-val" id="statTime">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">실수 횟수</span>
+        <span class="stat-val" id="statMistakes">-</span>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-retry" id="retryBtn">다시하기</button>
+      <button class="btn btn-home" id="homeBtn">홈으로</button>
+    </div>
+  </section>
+
+  <script src="../../shared/engine.js?v=2"></script>
+  <script src="game.js"></script>
+</body>
+</html>
