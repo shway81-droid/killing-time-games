@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="초등학교 교실용 무료 미니게임 모음. 23개 두뇌, 반응속도, 수학, 지식 게임. 크롬북/태블릿 지원, 오프라인 동작.">
+  <meta name="keywords" content="초등학교, 미니게임, 교실 게임, 두뇌 게임, 반응속도, 수학 게임, 무료 게임">
+  <meta name="author" content="Killing Time Games">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="킬링타임 미니게임 - 초등학교 교실용 무료 게임">
+  <meta property="og:description" content="23개의 두뇌, 반응속도, 수학, 지식 미니게임. 크롬북/태블릿에서 바로 플레이.">
+  <meta property="og:url" content="https://shway81-droid.github.io/killing-time-games/">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="킬링타임 미니게임">
+  <meta name="twitter:description" content="초등학교 교실용 무료 미니게임 모음 (23개)">
   <title>킬링타임 미니게임</title>
   <link rel="stylesheet" href="shared/style.css">
   <style>
@@ -292,6 +306,7 @@
         var a = document.createElement('a');
         a.className = 'game-card';
         a.href = 'games/' + game.folder + '/index.html';
+        a.setAttribute('aria-label', game.name + ' 게임 시작');
         a.dataset.grades = JSON.stringify(game.grades);
         a.dataset.cat = CATEGORY_MAP[game.folder] || 'brain';
         a.innerHTML =
@@ -332,20 +347,46 @@
       try {
         var res = await fetch('games/registry.json');
         var folders = await res.json();
-        var games = [];
-        for (var i = 0; i < folders.length; i++) {
-          var metaRes = await fetch('games/' + folders[i] + '/game.json');
-          var meta = await metaRes.json();
-          meta.folder = folders[i];
-          games.push(meta);
+
+        // Parallel fetch all game.json files
+        var games = await Promise.all(folders.map(function(folder) {
+          return fetch('games/' + folder + '/game.json')
+            .then(function(r) {
+              if (!r.ok) throw new Error(folder);
+              return r.json();
+            })
+            .then(function(meta) {
+              meta.folder = folder;
+              return meta;
+            })
+            .catch(function() {
+              // Per-game error isolation: skip failed games
+              console.warn('Failed to load:', folder);
+              return null;
+            });
+        }));
+
+        // Filter out failed games
+        var validGames = games.filter(function(g) { return g !== null; });
+
+        if (validGames.length === 0) {
+          // All failed → fall back
+          renderCards(FALLBACK_GAMES);
+        } else {
+          renderCards(validGames);
         }
-        renderCards(games);
       } catch (e) {
+        // Registry fetch failed → fallback
         renderCards(FALLBACK_GAMES);
       }
     }
 
-    loadGames();
+    // Verify engine.js loaded
+    if (typeof createTimer !== 'function' || typeof onTap !== 'function') {
+      document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;"><h1>오류</h1><p>게임 엔진을 불러오지 못했습니다.<br>새로고침해주세요.</p><button onclick="location.reload()" style="padding:12px 24px;background:#7c5cfc;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;">새로고침</button></div>';
+    } else {
+      loadGames();
+    }
   </script>
 
 </body>
