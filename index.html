@@ -18,7 +18,10 @@
   <meta name="twitter:title" content="킬링타임 미니게임">
   <meta name="twitter:description" content="초등학교 교실용 무료 미니게임 모음 (23개)">
   <title>킬링타임 미니게임</title>
-  <link rel="stylesheet" href="shared/style.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#7c5cfc">
+  <link rel="stylesheet" href="shared/style.css?v=2">
   <style>
     /* === Launcher page background === */
     body {
@@ -180,10 +183,10 @@
   </div>
 
   <main class="game-grid" id="gameGrid">
-    <!-- JS가 카드를 동적으로 삽입 -->
+    <p style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #888;">불러오는 중...</p>
   </main>
 
-  <script src="shared/engine.js"></script>
+  <script src="shared/engine.js?v=2"></script>
   <script>
     // 3D SVG 아이콘 매핑
     var GAME_ICONS = {
@@ -386,6 +389,15 @@
       document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;"><h1>오류</h1><p>게임 엔진을 불러오지 못했습니다.<br>새로고침해주세요.</p><button onclick="location.reload()" style="padding:12px 24px;background:#7c5cfc;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;">새로고침</button></div>';
     } else {
       loadGames();
+    }
+
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js').catch(function(err) {
+          console.warn('SW registration failed:', err);
+        });
+      });
     }
   </script>
 

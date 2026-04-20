@@ -1,0 +1,20 @@
+{
+  "name": "킬링타임 미니게임",
+  "short_name": "미니게임",
+  "description": "초등학교 교실용 무료 미니게임 모음 (23개)",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FFFFFF",
+  "theme_color": "#7c5cfc",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["education", "games", "kids"]
+}
