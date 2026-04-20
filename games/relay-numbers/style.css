@@ -1,0 +1,305 @@
+/* games/relay-numbers/style.css */
+
+/* ── Screens ──────────────────────────────────────────────── */
+.screen-intro {
+  background: #F3F0FF;
+}
+
+.screen-countdown {
+  background: #1A0533;
+}
+
+.screen-game {
+  background: #0D0221;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.screen-result {
+  background: #0D0221;
+}
+
+/* ── HUD bar ──────────────────────────────────────────────── */
+.game-hud {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 8px;
+  width: 100%;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.progress-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  text-align: right;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7E57C2, #B39DDB);
+  border-radius: 5px;
+  transition: width 0.35s ease;
+}
+
+.turn-timer-badge {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, border-color 0.3s;
+  flex-shrink: 0;
+}
+
+.turn-timer-badge.urgent {
+  background: rgba(239,83,80,0.35);
+  border-color: #EF5350;
+  color: #FF8A80;
+  animation: urgentPulse 0.5s ease infinite alternate;
+}
+
+@keyframes urgentPulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.1); }
+}
+
+/* ── Center announce ──────────────────────────────────────── */
+.center-announce {
+  width: 100%;
+  text-align: center;
+  padding: 4px 12px 2px;
+  flex-shrink: 0;
+  min-height: 32px;
+}
+
+#announceText {
+  font-size: 1rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.02em;
+}
+
+/* ── Zones wrap ───────────────────────────────────────────── */
+.zones-wrap {
+  flex: 1;
+  display: grid;
+  width: 100%;
+  gap: 6px;
+  padding: 6px;
+  overflow: hidden;
+}
+
+/* Grid layouts per player count */
+.zones-wrap.p2 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.zones-wrap.p3 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.zones-wrap.p3 .zone:first-child {
+  grid-column: 1 / -1;
+}
+
+.zones-wrap.p4 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+/* ── Individual zone ──────────────────────────────────────── */
+.zone {
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 0.3s, filter 0.3s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 80px;
+  border: 3px solid transparent;
+}
+
+.zone:active {
+  transform: scale(0.97);
+}
+
+/* Player color themes */
+.zone.p-blue   { background: #1A237E; border-color: #3949AB; }
+.zone.p-red    { background: #7B1FA2; border-color: #9C27B0; }
+.zone.p-orange { background: #BF360C; border-color: #E64A19; }
+.zone.p-green  { background: #1B5E20; border-color: #388E3C; }
+
+/* ── Zone states ──────────────────────────────────────────── */
+
+/* Waiting: dimmed */
+.zone.state-wait {
+  opacity: 0.4;
+  filter: saturate(0.4);
+}
+
+/* Active: this player's turn — glowing */
+.zone.state-active {
+  opacity: 1;
+  filter: none;
+  border-color: #FFD740;
+  box-shadow: 0 0 24px 6px rgba(255,215,64,0.45), inset 0 0 20px rgba(255,215,64,0.08);
+  animation: zonePulse 1.2s ease infinite;
+}
+
+@keyframes zonePulse {
+  0%, 100% { box-shadow: 0 0 24px 6px rgba(255,215,64,0.4), inset 0 0 20px rgba(255,215,64,0.08); }
+  50%       { box-shadow: 0 0 40px 12px rgba(255,215,64,0.7), inset 0 0 30px rgba(255,215,64,0.15); }
+}
+
+/* Correct tap: flash green */
+.zone.state-correct {
+  opacity: 1;
+  filter: none;
+  border-color: #69F0AE;
+  box-shadow: 0 0 30px 10px rgba(105,240,174,0.55);
+  animation: correctFlash 0.5s ease;
+}
+
+@keyframes correctFlash {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+/* Wrong tap: flash red */
+.zone.state-wrong {
+  opacity: 1;
+  filter: none;
+  border-color: #FF5252;
+  box-shadow: 0 0 30px 10px rgba(255,82,82,0.55);
+  animation: wrongShake 0.45s ease;
+}
+
+@keyframes wrongShake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-8px); }
+  40%  { transform: translateX(8px); }
+  60%  { transform: translateX(-6px); }
+  80%  { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Zone label (P1, P2…) ──────────────────────────────────── */
+.zone-player-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Target number (SVG text) ─────────────────────────────── */
+.zone-svg {
+  width: 100%;
+  /* height set dynamically or let it fill */
+  overflow: visible;
+}
+
+.zone-number-text {
+  font-size: 5rem;
+  font-weight: 900;
+  fill: #fff;
+  dominant-baseline: middle;
+  text-anchor: middle;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  transition: font-size 0.2s;
+}
+
+.zone.state-active .zone-number-text {
+  fill: #FFD740;
+  filter: drop-shadow(0 0 12px rgba(255,215,64,0.9));
+  animation: numberGlow 1.2s ease infinite;
+}
+
+@keyframes numberGlow {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(255,215,64,0.8)); }
+  50%       { filter: drop-shadow(0 0 22px rgba(255,215,64,1)); }
+}
+
+.zone-wait-text {
+  font-size: 1rem;
+  font-weight: 700;
+  fill: rgba(255,255,255,0.45);
+  dominant-baseline: middle;
+  text-anchor: middle;
+}
+
+/* ── Ripple ───────────────────────────────────────────────── */
+.zone-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transform: scale(0);
+  animation: rippleAnim 0.55s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to { transform: scale(2.5); opacity: 0; }
+}
+
+/* ── Result screen ────────────────────────────────────────── */
+.result-modern {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.confetti-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.result-icon {
+  position: relative;
+  z-index: 1;
+}
+
+.result-modern .result-title,
+.result-modern .result-sub,
+.result-modern .result-score-card,
+.result-modern .result-actions {
+  position: relative;
+  z-index: 1;
+}
