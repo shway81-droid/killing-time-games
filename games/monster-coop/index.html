@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>몬스터 협공</title>
+  <link rel="stylesheet" href="../../shared/style.css?v=2">
+  <style>
+    /* ===== MONSTER COOP — inline styles ===== */
+    :root {
+      --dungeon-bg: #1a1025;
+      --dungeon-mid: #251535;
+      --p1: #FF5252;
+      --p2: #40C4FF;
+      --p3: #69F0AE;
+      --p4: #FFD740;
+      --hp-red: #EF5350;
+      --combo-glow: rgba(255,215,0,0.35);
+    }
+
+    html, body {
+      background: var(--dungeon-bg);
+      color: #fff;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    /* --- Intro screen --- */
+    .screen-intro {
+      background: linear-gradient(160deg, #1a1025 0%, #2d1b4e 100%);
+      justify-content: flex-start;
+    }
+    .screen-intro .game-header {
+      color: #fff;
+    }
+    .screen-intro .game-header .icon-btn {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .screen-intro .game-header .sound-toggle {
+      background: rgba(255,255,255,0.12);
+    }
+    .intro-monster {
+      margin: 8px auto 4px;
+      display: flex;
+      justify-content: center;
+    }
+    .intro-monster svg {
+      filter: drop-shadow(0 0 24px rgba(124,77,255,0.6));
+    }
+    .intro-title-text {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 12px rgba(124,77,255,0.8);
+      text-align: center;
+    }
+    .intro-desc-text {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .intro-rules {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 12px 20px;
+      width: 90%;
+      max-width: 340px;
+    }
+    .intro-rules li {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 4px;
+      list-style: none;
+      padding-left: 1.2em;
+      position: relative;
+    }
+    .intro-rules li::before {
+      content: '⚔️';
+      position: absolute;
+      left: 0;
+      font-size: 0.75rem;
+    }
+    .player-select-label {
+      color: rgba(255,255,255,0.55);
+    }
+    .player-btn {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    .player-btn.active {
+      background: #7C4DFF;
+      border-color: #7C4DFF;
+      color: #fff;
+    }
+    .btn-play {
+      background: linear-gradient(135deg, #7C4DFF, #512DA8);
+      color: #fff;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 20px rgba(124,77,255,0.5);
+    }
+    .btn-play:active { transform: scale(0.96); }
+
+    /* --- Countdown screen --- */
+    .screen-countdown {
+      background: linear-gradient(160deg, #1a1025 0%, #2d1b4e 100%);
+    }
+    .screen-countdown .countdown-number {
+      color: #7C4DFF;
+      text-shadow: 0 0 40px rgba(124,77,255,0.8);
+    }
+
+    /* --- Game screen --- */
+    .screen-game {
+      background: var(--dungeon-bg);
+      position: relative;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* HP Bar area */
+    .hp-area {
+      width: 100%;
+      padding: 10px 14px 6px;
+      background: rgba(0,0,0,0.4);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+    .hp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .hp-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .hp-numbers {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #FF8A80;
+    }
+    .hp-bar-track {
+      width: 100%;
+      height: 16px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hp-bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #B71C1C, #EF5350, #FF8A80);
+      transform-origin: left;
+      transition: width 0.15s ease-out;
+    }
+
+    /* Timer + Combo row */
+    .game-hud {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 14px 6px;
+      flex-shrink: 0;
+    }
+    .timer-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 4px 10px;
+      flex: 1;
+    }
+    .timer-icon {
+      font-size: 0.9rem;
+    }
+    .timer-val {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #fff;
+      min-width: 28px;
+      text-align: center;
+    }
+    .timer-val.danger {
+      color: #FF5252;
+      animation: timerPulse 0.5s infinite alternate;
+    }
+    @keyframes timerPulse {
+      from { opacity: 1; }
+      to { opacity: 0.5; }
+    }
+
+    .combo-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,215,0,0.12);
+      border: 1px solid rgba(255,215,0,0.25);
+      border-radius: 10px;
+      padding: 4px 12px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .combo-box.active {
+      background: rgba(255,215,0,0.25);
+      border-color: rgba(255,215,0,0.6);
+      box-shadow: 0 0 12px rgba(255,215,0,0.3);
+    }
+    .combo-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: rgba(255,215,0,0.6);
+      letter-spacing: 0.05em;
+    }
+    .combo-val {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #FFD740;
+      text-shadow: 0 0 8px rgba(255,215,0,0.6);
+      min-width: 24px;
+      text-align: center;
+    }
+    .combo-x {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgba(255,215,0,0.7);
+    }
+
+    /* Monster area */
+    .monster-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 140px;
+    }
+    .monster-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    .monster-wrap svg {
+      display: block;
+      filter: drop-shadow(0 0 20px rgba(124,77,255,0.5));
+      transition: filter 0.2s;
+    }
+    .monster-wrap.hit {
+      animation: monsterShake 0.35s ease;
+    }
+    @keyframes monsterShake {
+      0%   { transform: translate(0,0) rotate(0deg); }
+      15%  { transform: translate(-6px,-3px) rotate(-3deg); }
+      30%  { transform: translate(6px,2px) rotate(3deg); }
+      45%  { transform: translate(-5px,3px) rotate(-2deg); }
+      60%  { transform: translate(5px,-2px) rotate(2deg); }
+      75%  { transform: translate(-3px,1px) rotate(-1deg); }
+      100% { transform: translate(0,0) rotate(0deg); }
+    }
+
+    /* Damage float numbers */
+    .damage-float {
+      position: absolute;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #FF5252;
+      text-shadow: 0 0 8px rgba(255,82,82,0.8), 0 2px 4px rgba(0,0,0,0.5);
+      pointer-events: none;
+      animation: floatDmg 0.9s ease-out forwards;
+      z-index: 50;
+      white-space: nowrap;
+    }
+    .damage-float.combo {
+      color: #FFD740;
+      text-shadow: 0 0 12px rgba(255,215,0,0.9), 0 2px 4px rgba(0,0,0,0.5);
+      font-size: 2rem;
+    }
+    @keyframes floatDmg {
+      0%   { opacity: 1; transform: translateY(0) scale(1); }
+      20%  { transform: translateY(-12px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+    }
+
+    /* Combo flash overlay */
+    .combo-flash {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background: var(--combo-glow);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .combo-flash.show {
+      opacity: 1;
+    }
+
+    /* Player attack zones */
+    .zones-grid {
+      display: grid;
+      gap: 8px;
+      padding: 8px 10px 10px;
+      flex-shrink: 0;
+      width: 100%;
+    }
+    .zones-grid.p2 { grid-template-columns: 1fr 1fr; }
+    .zones-grid.p3 { grid-template-columns: 1fr 1fr 1fr; }
+    .zones-grid.p4 { grid-template-columns: 1fr 1fr; }
+
+    .player-zone {
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 10px 6px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      border: 2px solid rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+      min-height: 80px;
+      transition: filter 0.1s;
+    }
+    .player-zone:active, .player-zone.tapped {
+      filter: brightness(1.4);
+    }
+    .zones-grid.p4 .player-zone {
+      min-height: 68px;
+    }
+
+    .zone-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.05em;
+    }
+    .zone-attack-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      border: 3px solid rgba(255,255,255,0.25);
+      transition: transform 0.1s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .zones-grid.p4 .zone-attack-btn {
+      width: 44px;
+      height: 44px;
+      font-size: 1.2rem;
+    }
+    .player-zone:active .zone-attack-btn {
+      transform: scale(0.88);
+    }
+
+    /* Zone ripple */
+    .zone-ripple {
+      position: absolute;
+      border-radius: 50%;
+      width: 10px;
+      height: 10px;
+      background: rgba(255,255,255,0.4);
+      animation: rippleOut 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes rippleOut {
+      0%   { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(12); opacity: 0; }
+    }
+
+    /* Close/home button */
+    .close-btn-game {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 20;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    /* --- Result screen --- */
+    .screen-result {
+      background: linear-gradient(160deg, #1a1025 0%, #2d1b4e 60%, #1a1025 100%);
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      padding: 24px;
+    }
+    .result-emoji {
+      font-size: 4rem;
+      animation: bounceIn 0.5s ease;
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .result-headline {
+      font-size: 2rem;
+      font-weight: 900;
+      text-align: center;
+    }
+    .result-headline.success { color: #69F0AE; text-shadow: 0 0 16px rgba(105,240,174,0.5); }
+    .result-headline.fail { color: #FF5252; text-shadow: 0 0 16px rgba(255,82,82,0.5); }
+    .result-detail {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+    }
+    .result-stats {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 16px 28px;
+      width: 100%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+    .stat-label { color: rgba(255,255,255,0.5); }
+    .stat-val { color: #fff; font-weight: 700; }
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+    }
+    .btn-retry {
+      flex: 1;
+      background: linear-gradient(135deg, #7C4DFF, #512DA8);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(124,77,255,0.4);
+    }
+    .btn-home {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* Confetti */
+    .confetti-piece {
+      animation: confettiFall 2s ease-in forwards;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: Intro -->
+  <section class="screen screen-intro active" id="introScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+      <h1 class="game-title" style="color:#fff;">몬스터 협공</h1>
+      <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
+    </header>
+    <div class="intro-body">
+      <div class="intro-monster">
+        <svg viewBox="0 0 200 200" width="160" height="160" aria-hidden="true">
+          <defs>
+            <radialGradient id="introMonsterGrad" cx="40%" cy="35%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.2)"/>
+              <stop offset="100%" stop-color="rgba(0,0,0,0.15)"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="100" cy="180" rx="80" ry="12" fill="rgba(0,0,0,0.3)"/>
+          <ellipse cx="100" cy="100" rx="70" ry="80" fill="#7C4DFF"/>
+          <ellipse cx="100" cy="100" rx="70" ry="80" fill="url(#introMonsterGrad)"/>
+          <circle cx="100" cy="70" r="25" fill="#fff"/>
+          <circle cx="100" cy="75" r="15" fill="#1A237E"/>
+          <circle cx="100" cy="75" r="8" fill="#000"/>
+          <circle cx="105" cy="70" r="3" fill="#fff"/>
+          <rect x="70" y="130" width="60" height="20" fill="#1A237E"/>
+          <polygon points="75,130 80,148 85,130" fill="#fff"/>
+          <polygon points="88,130 93,148 98,130" fill="#fff"/>
+          <polygon points="102,130 107,148 112,130" fill="#fff"/>
+          <polygon points="115,130 120,148 125,130" fill="#fff"/>
+          <ellipse cx="30" cy="120" rx="20" ry="35" fill="#7C4DFF" transform="rotate(-20 30 120)"/>
+          <ellipse cx="170" cy="120" rx="20" ry="35" fill="#7C4DFF" transform="rotate(20 170 120)"/>
+        </svg>
+      </div>
+
+      <p class="intro-title-text">몬스터 협공</p>
+      <p class="intro-desc-text">힘을 합쳐 몬스터를 물리쳐요!<br>60초 안에 HP를 0으로 만드세요</p>
+
+      <ul class="intro-rules">
+        <li>버튼을 탭하면 몬스터에 1 데미지</li>
+        <li>콤보 유지 시 데미지 최대 x5</li>
+        <li>1.5초 이상 쉬면 콤보 끊김!</li>
+      </ul>
+
+      <div class="player-select-label">인원 선택</div>
+      <div class="player-select" id="playerSelect">
+        <button class="player-btn active" data-count="2">2명</button>
+        <button class="player-btn" data-count="3">3명</button>
+        <button class="player-btn" data-count="4">4명</button>
+      </div>
+    </div>
+    <button class="btn btn-play" id="playBtn">⚔️ PLAY</button>
+  </section>
+
+  <!-- Screen 1.5: Countdown -->
+  <section class="screen screen-countdown" id="countdownScreen">
+    <div class="countdown-number" id="countdownNumber">3</div>
+  </section>
+
+  <!-- Screen 2: Game -->
+  <section class="screen screen-game" id="gameScreen">
+    <!-- Combo flash overlay -->
+    <div class="combo-flash" id="comboFlash"></div>
+
+    <!-- HP Bar -->
+    <div class="hp-area">
+      <div class="hp-header">
+        <span class="hp-label">👾 몬스터 HP</span>
+        <span class="hp-numbers" id="hpNumbers">400 / 400</span>
+      </div>
+      <div class="hp-bar-track">
+        <div class="hp-bar-fill" id="hpBarFill" style="width:100%"></div>
+      </div>
+    </div>
+
+    <!-- HUD: Timer + Combo -->
+    <div class="game-hud">
+      <div class="timer-box">
+        <span class="timer-icon">⏱</span>
+        <span class="timer-val" id="timerVal">60</span>
+      </div>
+      <div class="combo-box" id="comboBox">
+        <span class="combo-label">COMBO</span>
+        <span class="combo-val" id="comboVal">0</span>
+        <span class="combo-x" id="comboMult"></span>
+      </div>
+    </div>
+
+    <!-- Monster -->
+    <div class="monster-area" id="monsterArea">
+      <div class="monster-wrap" id="monsterWrap">
+        <svg id="monsterSvg" viewBox="0 0 200 200" width="180" height="180" aria-label="몬스터">
+          <defs>
+            <radialGradient id="monsterGrad" cx="40%" cy="35%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.2)"/>
+              <stop offset="100%" stop-color="rgba(0,0,0,0.15)"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="100" cy="180" rx="80" ry="12" fill="rgba(0,0,0,0.3)"/>
+          <!-- body — color changes with HP -->
+          <ellipse id="monsterBody" cx="100" cy="100" rx="70" ry="80" fill="#7C4DFF"/>
+          <ellipse cx="100" cy="100" rx="70" ry="80" fill="url(#monsterGrad)"/>
+          <!-- eye white -->
+          <circle cx="100" cy="70" r="25" fill="#fff"/>
+          <!-- pupil -->
+          <circle id="monsterPupil" cx="100" cy="75" r="15" fill="#1A237E"/>
+          <circle cx="100" cy="75" r="8" fill="#000"/>
+          <circle cx="105" cy="70" r="3" fill="#fff"/>
+          <!-- mouth background -->
+          <rect id="monsterMouth" x="70" y="130" width="60" height="20" fill="#1A237E"/>
+          <!-- teeth -->
+          <polygon points="75,130 80,148 85,130" fill="#fff"/>
+          <polygon points="88,130 93,148 98,130" fill="#fff"/>
+          <polygon points="102,130 107,148 112,130" fill="#fff"/>
+          <polygon points="115,130 120,148 125,130" fill="#fff"/>
+          <!-- arms -->
+          <ellipse id="armL" cx="30" cy="120" rx="20" ry="35" fill="#7C4DFF" transform="rotate(-20 30 120)"/>
+          <ellipse id="armR" cx="170" cy="120" rx="20" ry="35" fill="#7C4DFF" transform="rotate(20 170 120)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Player zones (dynamic) -->
+    <div class="zones-grid" id="zonesGrid"></div>
+
+    <!-- Close button -->
+    <button class="icon-btn close-btn-game" id="closeBtn" aria-label="홈으로">✕</button>
+  </section>
+
+  <!-- Screen 3: Result -->
+  <section class="screen screen-result" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <h2 class="result-headline" id="resultHeadline">성공!</h2>
+    <p class="result-detail" id="resultDetail">몬스터를 물리쳤습니다!</p>
+    <div class="result-stats" id="resultStats">
+      <div class="stat-row">
+        <span class="stat-label">남은 시간</span>
+        <span class="stat-val" id="statTime">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">최대 콤보</span>
+        <span class="stat-val" id="statCombo">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">총 공격 횟수</span>
+        <span class="stat-val" id="statTaps">-</span>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-retry" id="retryBtn">다시하기</button>
+      <button class="btn btn-home" id="homeBtn">홈으로</button>
+    </div>
+  </section>
+
+  <script src="../../shared/engine.js?v=2"></script>
+  <script src="game.js"></script>
+</body>
+</html>
