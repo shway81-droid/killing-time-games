@@ -939,5 +939,4 @@ function showResult() {
 
 // ── Verify question count (dev sanity check) ─────────────────
 if (ALL_QUESTIONS.length !== 300) {
-  console.warn(`[OX 퀴즈] 질문 수: ${ALL_QUESTIONS.length} (300 예상)`);
 }
