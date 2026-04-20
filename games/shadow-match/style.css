@@ -14,6 +14,7 @@
   justify-content: space-between;
   padding: var(--space-md);
   background: rgba(255,255,255,0.92);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   z-index: 10;
   flex-shrink: 0;
@@ -332,6 +333,7 @@
   border-radius: 22px;
   padding: 14px 20px;
   box-shadow: 0 4px 28px rgba(0,0,0,0.7), 0 0 0 1px rgba(84,110,122,0.4);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   border: 2px solid rgba(84,110,122,0.5);
   display: flex;
