@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>같은 답 선택</title>
+  <link rel="stylesheet" href="../../shared/style.css?v=2">
+  <style>
+    /* ===== SAME ANSWER — inline styles ===== */
+    :root {
+      --green-dark: #1B5E20;
+      --green-mid:  #2E7D32;
+      --green-main: #43A047;
+      --green-light:#A5D6A7;
+      --p1: #EF5350;
+      --p2: #42A5F5;
+      --p3: #66BB6A;
+      --p4: #FFA726;
+    }
+
+    html, body {
+      background: #F1F8E9;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    /* ── Intro ────────────────────────────────── */
+    .screen-intro {
+      background: linear-gradient(160deg, #E8F5E9 0%, #C8E6C9 100%);
+      justify-content: flex-start;
+    }
+    .intro-icon-wrap {
+      margin: 8px auto 0;
+      display: flex;
+      justify-content: center;
+    }
+    .intro-title-text {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: var(--green-dark);
+      text-align: center;
+    }
+    .intro-desc-text {
+      font-size: 0.95rem;
+      color: #388E3C;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .intro-rules {
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(67,160,71,0.3);
+      border-radius: 14px;
+      padding: 12px 20px;
+      width: 90%;
+      max-width: 340px;
+    }
+    .intro-rules li {
+      font-size: 0.85rem;
+      color: #2E7D32;
+      margin-bottom: 4px;
+      list-style: none;
+      padding-left: 1.4em;
+      position: relative;
+    }
+    .intro-rules li::before {
+      content: '🤝';
+      position: absolute;
+      left: 0;
+      font-size: 0.75rem;
+    }
+    .player-select-label { color: #388E3C; }
+    .player-btn {
+      background: rgba(255,255,255,0.8);
+      border-color: #A5D6A7;
+      color: var(--green-dark);
+    }
+    .player-btn.active {
+      background: var(--green-main);
+      border-color: var(--green-main);
+      color: #fff;
+    }
+    .btn-play {
+      background: linear-gradient(135deg, #43A047, #1B5E20);
+      color: #fff;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 20px rgba(67,160,71,0.45);
+    }
+    .btn-play:active { transform: scale(0.96); }
+
+    /* ── Countdown ────────────────────────────── */
+    .screen-countdown {
+      background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 100%);
+    }
+    .screen-countdown .countdown-number {
+      color: #A5D6A7;
+      text-shadow: 0 0 40px rgba(165,214,167,0.6);
+    }
+
+    /* ── Game screen ──────────────────────────── */
+    .screen-game {
+      background: #F1F8E9;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* HUD bar */
+    .game-hud {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px 6px;
+      background: var(--green-dark);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+    .hud-close {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .hud-round {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #A5D6A7;
+      flex-shrink: 0;
+      min-width: 48px;
+    }
+    .hud-timer-track {
+      flex: 1;
+      height: 10px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .hud-timer-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #66BB6A, #FFEE58);
+      transition: width 0.25s linear;
+    }
+    .hud-timer-fill.danger {
+      background: linear-gradient(90deg, #FF7043, #EF5350);
+    }
+    .hud-score {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #FFD54F;
+      flex-shrink: 0;
+      min-width: 40px;
+      text-align: right;
+    }
+    .hud-sound {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Center target area */
+    .target-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px 4px;
+      flex-shrink: 0;
+      gap: 6px;
+    }
+    .target-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #388E3C;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .target-svg-wrap {
+      width: 130px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(67,160,71,0.2);
+      border: 2px solid #C8E6C9;
+      transition: transform 0.2s;
+    }
+    .target-svg-wrap.reveal-correct {
+      border-color: #43A047;
+      box-shadow: 0 0 0 4px rgba(67,160,71,0.25), 0 4px 16px rgba(67,160,71,0.3);
+      animation: targetPop 0.4s ease;
+    }
+    .target-svg-wrap.reveal-wrong {
+      border-color: #EF5350;
+      box-shadow: 0 0 0 4px rgba(239,83,80,0.25);
+    }
+    @keyframes targetPop {
+      0%  { transform: scale(1); }
+      40% { transform: scale(1.08); }
+      100%{ transform: scale(1); }
+    }
+
+    /* Result feedback banner */
+    .round-result-banner {
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #388E3C;
+      padding: 2px 12px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .round-result-banner.show { opacity: 1; }
+    .round-result-banner.correct { color: #2E7D32; background: #C8E6C9; }
+    .round-result-banner.wrong   { color: #C62828; background: #FFCDD2; }
+    .round-result-banner.disagree{ color: #E65100; background: #FFE0B2; }
+
+    /* Player zones grid */
+    .zones-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 4px 8px 10px;
+      gap: 6px;
+      overflow: hidden;
+    }
+    .zones-grid {
+      display: grid;
+      gap: 6px;
+      width: 100%;
+    }
+    .zones-grid.p2 { grid-template-columns: 1fr 1fr; }
+    .zones-grid.p3 { grid-template-columns: 1fr 1fr 1fr; }
+    .zones-grid.p4 { grid-template-columns: 1fr 1fr; }
+
+    /* Individual player zone */
+    .player-zone {
+      border-radius: 14px;
+      padding: 8px 6px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      border: 2px solid rgba(0,0,0,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .zone-name {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.05em;
+    }
+
+    /* Answer buttons grid (2x2) */
+    .answer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      width: 100%;
+    }
+    .answer-btn {
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 6px 4px 4px;
+      cursor: pointer;
+      transition: transform 0.1s, border-color 0.15s, box-shadow 0.15s;
+      min-height: 64px;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .answer-btn .ans-letter {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: #999;
+      line-height: 1;
+    }
+    .answer-btn svg {
+      display: block;
+    }
+    .answer-btn:active {
+      transform: scale(0.93);
+    }
+    /* Selected state — per-player color applied via JS */
+    .answer-btn.selected {
+      border-width: 3px;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+    }
+    /* Locked (after reveal) */
+    .answer-btn.locked {
+      pointer-events: none;
+    }
+    .answer-btn.reveal-correct {
+      background: #E8F5E9;
+      border-color: #43A047 !important;
+      box-shadow: 0 0 0 3px rgba(67,160,71,0.2);
+    }
+    .answer-btn.reveal-wrong {
+      background: #FFEBEE;
+      border-color: #EF5350 !important;
+    }
+    .answer-btn.reveal-dim {
+      opacity: 0.4;
+    }
+
+    /* Waiting label under player zone */
+    .zone-waiting {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      min-height: 14px;
+      text-align: center;
+    }
+
+    /* ── Result screen ────────────────────────── */
+    .screen-result {
+      background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 60%, #1B5E20 100%);
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      padding: 24px;
+    }
+    .result-emoji-big {
+      font-size: 4rem;
+      animation: bounceIn 0.5s ease;
+    }
+    @keyframes bounceIn {
+      0%  { transform: scale(0.3); opacity: 0; }
+      60% { transform: scale(1.2); }
+      100%{ transform: scale(1);   opacity: 1; }
+    }
+    .result-headline {
+      font-size: 2rem;
+      font-weight: 900;
+      text-align: center;
+    }
+    .result-headline.success { color: #A5D6A7; text-shadow: 0 0 16px rgba(165,214,167,0.5); }
+    .result-headline.fail    { color: #FF8A65; text-shadow: 0 0 16px rgba(255,138,101,0.5); }
+    .result-sub {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+    }
+    .result-stats {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 16px 28px;
+      width: 100%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+    .stat-label { color: rgba(255,255,255,0.5); }
+    .stat-val   { color: #fff; font-weight: 700; }
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+    }
+    .btn-retry {
+      flex: 1;
+      background: linear-gradient(135deg, #43A047, #1B5E20);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(67,160,71,0.4);
+    }
+    .btn-home-res {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* confetti */
+    .confetti-piece {
+      animation: confettiFall 2.2s ease-in forwards;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ Screen 1: Intro ═══════════════════════════════════════════ -->
+  <section class="screen screen-intro active" id="introScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+      <h1 class="game-title" style="color:#1B5E20;">같은 답 선택</h1>
+      <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
+    </header>
+
+    <div class="intro-body">
+      <div class="intro-icon-wrap">
+        <!-- Handshake SVG -->
+        <svg viewBox="0 0 160 140" width="160" height="140" aria-hidden="true">
+          <defs>
+            <linearGradient id="igGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#81C784"/>
+              <stop offset="100%" stop-color="#2E7D32"/>
+            </linearGradient>
+          </defs>
+          <!-- left arm -->
+          <rect x="8" y="68" width="52" height="22" rx="11" fill="#43A047"/>
+          <!-- right arm -->
+          <rect x="100" y="68" width="52" height="22" rx="11" fill="#1E88E5"/>
+          <!-- left hand -->
+          <ellipse cx="62" cy="79" rx="18" ry="14" fill="#66BB6A"/>
+          <rect x="50" y="66" width="10" height="22" rx="5" fill="#81C784"/>
+          <rect x="62" y="63" width="10" height="22" rx="5" fill="#81C784"/>
+          <rect x="74" y="65" width="9" height="20" rx="4" fill="#81C784"/>
+          <!-- right hand -->
+          <ellipse cx="98" cy="79" rx="18" ry="14" fill="#42A5F5"/>
+          <rect x="100" y="66" width="10" height="22" rx="5" fill="#90CAF9"/>
+          <rect x="88"  y="63" width="10" height="22" rx="5" fill="#90CAF9"/>
+          <rect x="77"  y="65" width="9"  height="20" rx="4" fill="#90CAF9"/>
+          <!-- grip center -->
+          <ellipse cx="80" cy="78" rx="10" ry="9" fill="#FFD54F"/>
+          <!-- sparkles -->
+          <circle cx="80" cy="40" r="5" fill="#FFD54F" opacity="0.8"/>
+          <circle cx="60" cy="30" r="3" fill="#66BB6A" opacity="0.7"/>
+          <circle cx="100" cy="30" r="3" fill="#42A5F5" opacity="0.7"/>
+          <circle cx="46" cy="50" r="3" fill="#FF8A65" opacity="0.7"/>
+          <circle cx="114" cy="50" r="3" fill="#AB47BC" opacity="0.7"/>
+        </svg>
+      </div>
+
+      <p class="intro-title-text">같은 답 선택</p>
+      <p class="intro-desc-text">같은 그림을 골라야 합니다!<br>모두가 같은 답 → 성공!</p>
+
+      <ul class="intro-rules">
+        <li>가운데 그림을 보고 같은 그림 선택</li>
+        <li>모두 같은 답 + 정답 → 1점!</li>
+        <li>다른 답 선택 시 실패 (점수 없음)</li>
+        <li>10라운드, 8점 이상 = 성공!</li>
+      </ul>
+
+      <div class="player-select-label">인원 선택</div>
+      <div class="player-select" id="playerSelect">
+        <button class="player-btn active" data-count="2">2명</button>
+        <button class="player-btn" data-count="3">3명</button>
+        <button class="player-btn" data-count="4">4명</button>
+      </div>
+    </div>
+    <button class="btn btn-play" id="playBtn">🤝 PLAY</button>
+  </section>
+
+  <!-- ═══ Screen 1.5: Countdown ════════════════════════════════════ -->
+  <section class="screen screen-countdown" id="countdownScreen">
+    <div class="countdown-number" id="countdownNumber">3</div>
+  </section>
+
+  <!-- ═══ Screen 2: Game ═══════════════════════════════════════════ -->
+  <section class="screen screen-game" id="gameScreen">
+
+    <!-- HUD -->
+    <div class="game-hud">
+      <button class="hud-close" id="closeBtn" aria-label="홈으로">✕</button>
+      <span class="hud-round" id="hudRound">1/10</span>
+      <div class="hud-timer-track">
+        <div class="hud-timer-fill" id="hudTimerFill" style="width:100%"></div>
+      </div>
+      <span class="hud-score" id="hudScore">0점</span>
+      <button class="hud-sound" id="soundToggleGame" aria-label="사운드 토글">🔇</button>
+    </div>
+
+    <!-- Target area -->
+    <div class="target-area">
+      <div class="target-label">이 그림과 같은 것은?</div>
+      <div class="target-svg-wrap" id="targetSvgWrap">
+        <!-- SVG injected by JS -->
+      </div>
+      <div class="round-result-banner" id="roundResultBanner"></div>
+    </div>
+
+    <!-- Player zones -->
+    <div class="zones-wrapper">
+      <div class="zones-grid" id="zonesGrid"></div>
+    </div>
+
+  </section>
+
+  <!-- ═══ Screen 3: Result ══════════════════════════════════════════ -->
+  <section class="screen screen-result" id="resultScreen">
+    <div class="result-emoji-big" id="resultEmoji">🎉</div>
+    <h2 class="result-headline" id="resultHeadline">성공!</h2>
+    <p class="result-sub" id="resultSub">모두 힘을 합쳤어요!</p>
+    <div class="result-stats">
+      <div class="stat-row">
+        <span class="stat-label">획득 점수</span>
+        <span class="stat-val" id="statScore">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">합의 성공</span>
+        <span class="stat-val" id="statAgree">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">의견 불일치</span>
+        <span class="stat-val" id="statDisagree">-</span>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-retry" id="retryBtn">다시하기</button>
+      <button class="btn btn-home-res" id="homeBtn">홈으로</button>
+    </div>
+  </section>
+
+  <script src="../../shared/engine.js?v=2"></script>
+  <script src="game.js"></script>
+</body>
+</html>
