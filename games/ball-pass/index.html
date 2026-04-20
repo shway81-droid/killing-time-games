@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>공 전달</title>
+  <link rel="stylesheet" href="../../shared/style.css?v=2">
+  <style>
+    /* ===== BALL PASS — inline styles ===== */
+    :root {
+      --field-green: #2E7D32;
+      --field-mid:   #388E3C;
+      --field-light: #43A047;
+      --ball-orange: #FF9800;
+      --ball-dark:   #E65100;
+      --active-glow: rgba(255,152,0,0.55);
+      --p1: #E53935;
+      --p2: #1E88E5;
+      --p3: #8E24AA;
+      --p4: #F9A825;
+    }
+
+    html, body {
+      background: var(--field-green);
+      color: #fff;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    /* ─── Intro ─────────────────────────────────────────────── */
+    .screen-intro {
+      background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 60%, #1B5E20 100%);
+      justify-content: flex-start;
+    }
+    .screen-intro .game-header { color: #fff; }
+    .screen-intro .icon-btn {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .screen-intro .sound-toggle {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .intro-ball-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 4px 0 0;
+      filter: drop-shadow(0 6px 24px rgba(255,152,0,0.6));
+    }
+    .intro-ball-wrap svg {
+      animation: introFloat 2s ease-in-out infinite;
+    }
+    @keyframes introFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .intro-title-text {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+      text-align: center;
+    }
+    .intro-desc-text {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.75);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .intro-rules {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 14px;
+      padding: 12px 20px;
+      width: 90%;
+      max-width: 340px;
+    }
+    .intro-rules li {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 5px;
+      list-style: none;
+      padding-left: 1.4em;
+      position: relative;
+    }
+    .intro-rules li::before {
+      content: '⚽';
+      position: absolute;
+      left: 0;
+      font-size: 0.7rem;
+      top: 2px;
+    }
+    .player-select-label { color: rgba(255,255,255,0.6); }
+    .player-btn {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.25);
+      color: #fff;
+    }
+    .player-btn.active {
+      background: #FF9800;
+      border-color: #FF9800;
+      color: #fff;
+    }
+    .btn-play {
+      background: linear-gradient(135deg, #FF9800, #E65100);
+      color: #fff;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 20px rgba(230,81,0,0.5);
+    }
+    .btn-play:active { transform: scale(0.96); }
+
+    /* ─── Countdown ──────────────────────────────────────────── */
+    .screen-countdown {
+      background: linear-gradient(160deg, #1B5E20, #2E7D32);
+    }
+    .screen-countdown .countdown-number {
+      color: #FF9800;
+      text-shadow: 0 0 40px rgba(255,152,0,0.8);
+    }
+
+    /* ─── Game screen ────────────────────────────────────────── */
+    .screen-game {
+      background: var(--field-green);
+      position: relative;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Field stripes */
+    .screen-game::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        180deg,
+        transparent 0px,
+        transparent 48px,
+        rgba(0,0,0,0.07) 48px,
+        rgba(0,0,0,0.07) 96px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* HUD: pass counter + progress */
+    .game-hud {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px 8px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+    .pass-counter-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 12px;
+      padding: 6px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .pass-icon { font-size: 1.1rem; }
+    .pass-label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.55);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .pass-val {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #FFD54F;
+      text-shadow: 0 0 8px rgba(255,213,79,0.5);
+    }
+    .pass-total {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 700;
+    }
+    .hud-progress-wrap {
+      flex: 1;
+    }
+    .hud-progress-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .hud-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF9800, #FFD54F);
+      border-radius: 5px;
+      transition: width 0.4s ease;
+    }
+
+    /* Close btn */
+    .close-btn-game {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      z-index: 20;
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* ─── Zones grid ─────────────────────────────────────────── */
+    .zones-grid {
+      display: grid;
+      gap: 10px;
+      padding: 10px 10px 12px;
+      flex: 1;
+      width: 100%;
+      position: relative;
+      z-index: 5;
+      align-content: start;
+    }
+    .zones-grid.p2 { grid-template-columns: 1fr 1fr; }
+    .zones-grid.p3 { grid-template-columns: 1fr 1fr 1fr; }
+    .zones-grid.p4 { grid-template-columns: 1fr 1fr; }
+
+    /* ─── Player zone ────────────────────────────────────────── */
+    .player-zone {
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 8px 14px;
+      border: 3px solid transparent;
+      position: relative;
+      overflow: hidden;
+      min-height: 120px;
+      transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s, filter 0.2s;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Waiting (dimmed) */
+    .player-zone.waiting {
+      opacity: 0.5;
+      filter: saturate(0.4);
+    }
+
+    /* Active — ball is here */
+    .player-zone.active-zone {
+      opacity: 1;
+      filter: none;
+      border-color: #FFD54F;
+      box-shadow: 0 0 0 4px rgba(255,213,79,0.35),
+                  0 0 24px var(--active-glow);
+      animation: zonePulse 0.8s ease infinite alternate;
+    }
+    @keyframes zonePulse {
+      from { box-shadow: 0 0 0 4px rgba(255,213,79,0.3), 0 0 20px rgba(255,152,0,0.4); }
+      to   { box-shadow: 0 0 0 6px rgba(255,213,79,0.55), 0 0 32px rgba(255,152,0,0.65); }
+    }
+
+    .zone-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.05em;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+
+    /* Ball container inside zone */
+    .zone-ball-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 90px;
+      height: 90px;
+    }
+    .zones-grid.p4 .zone-ball-wrap {
+      width: 70px;
+      height: 70px;
+    }
+
+    /* The SVG ball */
+    .ball-svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 12px rgba(230,81,0,0.6));
+    }
+    .ball-svg.ball-visible {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .ball-svg.ball-hidden {
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.2s ease-in;
+    }
+
+    /* "Tap!" indicator */
+    .tap-indicator {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #FFD54F;
+      text-shadow: 0 0 8px rgba(255,213,79,0.7);
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transition: opacity 0.2s;
+      animation: tapBlink 0.55s ease infinite alternate;
+    }
+    .active-zone .tap-indicator { opacity: 1; }
+    @keyframes tapBlink {
+      from { opacity: 0.7; }
+      to   { opacity: 1; }
+    }
+
+    /* Timer bar below ball in active zone */
+    .zone-timer-bar-wrap {
+      width: 80%;
+      height: 7px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 4px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .active-zone .zone-timer-bar-wrap { opacity: 1; }
+    .zone-timer-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #FF5252, #FFD54F);
+      border-radius: 4px;
+      width: 100%;
+      /* width animated via JS */
+      transition: width 0.05s linear;
+    }
+    .zone-timer-bar.urgent { background: linear-gradient(90deg, #D50000, #FF5252); }
+
+    /* Zone ripple */
+    .zone-ripple {
+      position: absolute;
+      border-radius: 50%;
+      width: 10px;
+      height: 10px;
+      background: rgba(255,255,255,0.5);
+      animation: rippleOut 0.55s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes rippleOut {
+      0%   { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(14); opacity: 0; }
+    }
+
+    /* ─── Result screen ──────────────────────────────────────── */
+    .screen-result {
+      background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 60%, #1B5E20 100%);
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      padding: 24px;
+    }
+    .result-emoji {
+      font-size: 4.5rem;
+      animation: bounceIn 0.5s ease;
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.2); opacity: 0; }
+      60%  { transform: scale(1.25); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .result-headline {
+      font-size: 2rem;
+      font-weight: 900;
+      text-align: center;
+    }
+    .result-headline.success {
+      color: #FFD54F;
+      text-shadow: 0 0 16px rgba(255,213,79,0.6);
+    }
+    .result-headline.fail {
+      color: #FF5252;
+      text-shadow: 0 0 16px rgba(255,82,82,0.5);
+    }
+    .result-detail {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+    }
+    .result-stats {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 16px 28px;
+      width: 100%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+    .stat-label { color: rgba(255,255,255,0.5); }
+    .stat-val { color: #fff; font-weight: 700; }
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+    }
+    .btn-retry {
+      flex: 1;
+      background: linear-gradient(135deg, #FF9800, #E65100);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(230,81,0,0.4);
+    }
+    .btn-home {
+      flex: 1;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .confetti-piece { animation: confettiFall 2s ease-in forwards; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ Screen 1: Intro ══════════════════════════════════════ -->
+  <section class="screen screen-intro active" id="introScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+      <h1 class="game-title" style="color:#fff;">공 전달</h1>
+      <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
+    </header>
+    <div class="intro-body">
+
+      <!-- Animated ball -->
+      <div class="intro-ball-wrap">
+        <svg viewBox="0 0 100 100" width="110" height="110" aria-hidden="true">
+          <circle cx="50" cy="52" r="40" fill="#E65100"/>
+          <circle cx="50" cy="50" r="40" fill="#FF9800"/>
+          <path d="M50 10 Q30 50 50 90" fill="none" stroke="#E65100" stroke-width="2"/>
+          <path d="M50 10 Q70 50 50 90" fill="none" stroke="#E65100" stroke-width="2"/>
+          <path d="M10 50 L90 50" stroke="#E65100" stroke-width="2"/>
+          <ellipse cx="35" cy="35" rx="12" ry="8" fill="rgba(255,255,255,0.35)"/>
+        </svg>
+      </div>
+
+      <p class="intro-title-text">공 전달</p>
+      <p class="intro-desc-text">공이 내 구역에 나타나면 빠르게 탭하세요!<br>30번 전달하면 성공!</p>
+
+      <ul class="intro-rules">
+        <li>공이 내 구역에 오면 탭해서 전달</li>
+        <li>제한 시간 안에 못 탭하면 게임 오버</li>
+        <li>갈수록 시간이 짧아져요 (2초→1초)</li>
+        <li>30번 전달하면 모두 승리!</li>
+      </ul>
+
+      <div class="player-select-label">인원 선택</div>
+      <div class="player-select" id="playerSelect">
+        <button class="player-btn active" data-count="2">2명</button>
+        <button class="player-btn" data-count="3">3명</button>
+        <button class="player-btn" data-count="4">4명</button>
+      </div>
+    </div>
+    <button class="btn btn-play" id="playBtn">⚽ PLAY</button>
+  </section>
+
+  <!-- ══ Screen 1.5: Countdown ════════════════════════════════ -->
+  <section class="screen screen-countdown" id="countdownScreen">
+    <div class="countdown-number" id="countdownNumber">3</div>
+  </section>
+
+  <!-- ══ Screen 2: Game ═══════════════════════════════════════ -->
+  <section class="screen screen-game" id="gameScreen">
+
+    <!-- HUD -->
+    <div class="game-hud">
+      <div class="pass-counter-box">
+        <span class="pass-icon">⚽</span>
+        <span class="pass-label">PASS</span>
+        <span class="pass-val" id="passVal">0</span>
+        <span class="pass-total" id="passTotal">/30</span>
+      </div>
+      <div class="hud-progress-wrap">
+        <div class="hud-progress-track">
+          <div class="hud-progress-fill" id="hudProgressFill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player zones (built dynamically) -->
+    <div class="zones-grid" id="zonesGrid"></div>
+
+    <!-- Close button -->
+    <button class="icon-btn close-btn-game" id="closeBtn" aria-label="홈으로">✕</button>
+  </section>
+
+  <!-- ══ Screen 3: Result ══════════════════════════════════════ -->
+  <section class="screen screen-result" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <h2 class="result-headline" id="resultHeadline">성공!</h2>
+    <p class="result-detail" id="resultDetail">30번 전달 완료!</p>
+    <div class="result-stats">
+      <div class="stat-row">
+        <span class="stat-label">성공한 패스</span>
+        <span class="stat-val" id="statPasses">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">참여 인원</span>
+        <span class="stat-val" id="statPlayers">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">최대 속도 단계</span>
+        <span class="stat-val" id="statSpeed">-</span>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-retry" id="retryBtn">다시하기</button>
+      <button class="btn btn-home" id="homeBtn">홈으로</button>
+    </div>
+  </section>
+
+  <script src="../../shared/engine.js?v=2"></script>
+  <script src="game.js"></script>
+</body>
+</html>
