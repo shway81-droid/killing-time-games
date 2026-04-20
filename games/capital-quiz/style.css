@@ -37,11 +37,6 @@
 }
 
 .intro-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: var(--space-lg) var(--space-lg);
   gap: var(--space-sm);
   text-align: center;
@@ -546,8 +541,6 @@
 
 /* Actions */
 .result-actions {
-  display: flex;
-  gap: var(--space-md);
   margin-top: var(--space-sm);
   flex-wrap: wrap;
   justify-content: center;

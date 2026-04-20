@@ -27,29 +27,15 @@ body {
   width: 100%;
 }
 .intro-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  flex: 1;
-  justify-content: center;
+  padding: 0;
 }
 .intro-illustration {
   margin-bottom: var(--space-sm);
 }
 .intro-sub {
-  font-size: var(--font-size-small);
-  color: var(--text-sub);
-  text-align: center;
   line-height: 1.5;
 }
 
-.player-select-label {
-  font-size: var(--font-size-small);
-  color: var(--text-sub);
-  font-weight: 600;
-  margin-top: var(--space-sm);
-}
 .player-btn.active {
   background: #F44336;
   border-color: #F44336;
@@ -73,11 +59,7 @@ body {
   background: #1A1A2E;
 }
 .countdown-number {
-  font-size: 8rem;
-  font-weight: 900;
-  color: #fff;
   text-shadow: 0 4px 24px rgba(244,67,54,0.6);
-  animation: countPop 0.5s ease;
 }
 /* ===== 게임 화면 ===== */
 .screen-game {
@@ -359,37 +341,19 @@ body {
 .result-score-row[data-player="4"] .result-score-val { color: #E65100; }
 
 .result-actions {
-  display: flex;
-  gap: var(--space-md);
   width: 100%;
   max-width: 320px;
   justify-content: center;
 }
 /* ===== 공통 버튼 ===== */
 .btn {
-  min-height: var(--btn-min-touch);
-  border-radius: var(--btn-radius);
-  border: none;
-  font-family: var(--font-family);
-  font-weight: 700;
-  cursor: pointer;
   padding: 0 var(--space-xl);
-  font-size: 1rem;
 }
 .btn-primary {
   background: #F44336;
   color: #fff;
 }
 .icon-btn {
-  min-width: var(--btn-min-touch);
-  min-height: var(--btn-min-touch);
-  border: none;
-  background: none;
   font-size: 1.4rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: var(--btn-radius);
-  font-family: var(--font-family);
 }

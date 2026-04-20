@@ -321,39 +321,17 @@ body {
 .result-score-row[data-player="4"] .result-score-val { color: #E65100; }
 
 .result-actions {
-  display: flex;
-  gap: var(--space-md);
   width: 100%;
   max-width: 320px;
   justify-content: center;
 }
 /* ===== 공통 버튼 ===== */
 .btn {
-  min-height: var(--btn-min-touch);
-  border-radius: var(--btn-radius);
-  border: none;
-  font-family: var(--font-family);
-  font-weight: 700;
-  cursor: pointer;
   padding: 0 var(--space-xl);
-  font-size: 1rem;
-}
-.btn-primary {
-  background: var(--secondary);
-  color: #fff;
 }
 .icon-btn {
-  min-width: var(--btn-min-touch);
-  min-height: var(--btn-min-touch);
-  border: none;
-  background: none;
   font-size: 1.4rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: var(--btn-radius);
-  font-family: var(--font-family);
 }
 
 /* ===== HUD 칩 색상 ===== */

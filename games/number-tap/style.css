@@ -19,25 +19,12 @@ body {
   background: var(--bg);
 }
 
-.game-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
 .game-title {
   font-size: 1.25rem;
-  font-weight: 700;
 }
 
 .intro-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: var(--space-lg);
-  flex: 1;
-  justify-content: center;
   width: 100%;
 }
 
@@ -103,13 +90,6 @@ body {
   transform: scale(0.95);
 }
 
-.btn-play {
-  width: 80%;
-  max-width: 300px;
-  padding: var(--space-md) var(--space-xl);
-  font-size: 1.3rem;
-  margin-bottom: var(--space-xl);
-}
 
 /* === 카운트다운 === */
 .screen-countdown {
@@ -119,11 +99,7 @@ body {
 }
 
 .countdown-number {
-  font-size: 8rem;
-  font-weight: 900;
-  color: #FFFFFF;
   text-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  animation: countPop 0.5s ease;
 }
 
 /* === 게임 화면 === */
