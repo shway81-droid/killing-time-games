@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>색 합성</title>
+  <link rel="stylesheet" href="../../shared/style.css?v=2">
+  <style>
+    /* ===== COLOR MIX — inline styles ===== */
+    :root {
+      --cm-bg: #1a0a2e;
+      --cm-mid: #2d1560;
+      --p1: #FF1744;
+      --p2: #2979FF;
+      --p3: #FFD600;
+      --p4: #00E676;
+    }
+
+    html, body {
+      background: var(--cm-bg);
+      color: #fff;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    /* ====== INTRO SCREEN ====== */
+    .screen-intro {
+      background: linear-gradient(160deg, #1a0a2e 0%, #2d1560 100%);
+      justify-content: flex-start;
+    }
+    .screen-intro .game-header { color: #fff; }
+    .screen-intro .game-header .icon-btn {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .screen-intro .game-header .sound-toggle {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .intro-palette {
+      margin: 4px auto 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .intro-title-text {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 12px rgba(216,27,96,0.8);
+      text-align: center;
+    }
+    .intro-desc-text {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .intro-rules {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 12px 20px;
+      width: 90%;
+      max-width: 340px;
+    }
+    .intro-rules li {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 4px;
+      list-style: none;
+      padding-left: 1.4em;
+      position: relative;
+    }
+    .intro-rules li::before {
+      content: '🎨';
+      position: absolute;
+      left: 0;
+      font-size: 0.75rem;
+    }
+
+    .player-select-label { color: rgba(255,255,255,0.55); }
+    .player-btn {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    .player-btn.active {
+      background: #D81B60;
+      border-color: #D81B60;
+      color: #fff;
+    }
+    .btn-play {
+      background: linear-gradient(135deg, #D81B60, #880E4F);
+      color: #fff;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 20px rgba(216,27,96,0.5);
+    }
+    .btn-play:active { transform: scale(0.96); }
+
+    /* ====== COUNTDOWN SCREEN ====== */
+    .screen-countdown {
+      background: linear-gradient(160deg, #1a0a2e 0%, #2d1560 100%);
+    }
+    .screen-countdown .countdown-number {
+      color: #FF4081;
+      text-shadow: 0 0 40px rgba(255,64,129,0.8);
+    }
+
+    /* ====== GAME SCREEN ====== */
+    .screen-game {
+      background: var(--cm-bg);
+      position: relative;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Close button */
+    .close-btn-game {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 20;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    /* ---- Top HUD: round + timer ---- */
+    .game-top-hud {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px 6px;
+      flex-shrink: 0;
+    }
+    .round-badge {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 5px 14px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .timer-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .timer-bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .timer-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #D81B60, #FF4081);
+      border-radius: 4px;
+      transition: width 1s linear;
+    }
+    .timer-bar-fill.danger {
+      background: linear-gradient(90deg, #FF1744, #FF6D00);
+      animation: timerPulse 0.5s infinite alternate;
+    }
+    @keyframes timerPulse {
+      from { opacity: 1; }
+      to { opacity: 0.4; }
+    }
+    .timer-text {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      text-align: right;
+    }
+
+    /* ---- Color display area ---- */
+    .color-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 8px 14px;
+      flex-shrink: 0;
+    }
+
+    .color-circle-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .color-circle-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.04em;
+    }
+    .color-circle {
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.2);
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      transition: background-color 0.3s ease;
+    }
+    .color-circle.target {
+      width: 90px;
+      height: 90px;
+      border-color: rgba(255,255,255,0.4);
+      box-shadow: 0 0 24px rgba(255,255,255,0.2);
+    }
+    .color-circle.result {
+      width: 90px;
+      height: 90px;
+      background: #1a1a1a;
+    }
+
+    /* Arrow between circles */
+    .color-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .match-indicator {
+      font-size: 1.8rem;
+      line-height: 1;
+      transition: opacity 0.3s ease;
+      opacity: 0;
+    }
+    .match-indicator.visible { opacity: 1; }
+
+    /* Round target name */
+    .target-name {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 0 12px rgba(255,255,255,0.3);
+      padding: 0 14px;
+      flex-shrink: 0;
+    }
+
+    /* Instruction */
+    .instruction {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 2px 14px 6px;
+      flex-shrink: 0;
+    }
+
+    /* ---- Player toggle grid ---- */
+    .player-grid {
+      display: grid;
+      gap: 8px;
+      padding: 6px 10px 10px;
+      flex: 1;
+      align-content: start;
+      width: 100%;
+    }
+    .player-grid.p2 { grid-template-columns: 1fr 1fr; }
+    .player-grid.p3 { grid-template-columns: 1fr 1fr 1fr; }
+    .player-grid.p4 { grid-template-columns: 1fr 1fr; }
+
+    .player-toggle-card {
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 8px;
+      cursor: pointer;
+      border: 3px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      position: relative;
+      overflow: hidden;
+      min-height: 90px;
+      transition: border-color 0.2s, background 0.2s, transform 0.1s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .player-grid.p4 .player-toggle-card { min-height: 80px; }
+
+    .player-toggle-card.on {
+      background: rgba(255,255,255,0.08);
+    }
+    .player-toggle-card:active {
+      transform: scale(0.94);
+    }
+
+    /* Player label */
+    .ptcard-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* Toggle circle SVG container */
+    .ptcard-circle-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ON/OFF state text */
+    .ptcard-state {
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.45);
+      transition: color 0.2s;
+    }
+    .player-toggle-card.on .ptcard-state {
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* color name */
+    .ptcard-color-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* Ripple */
+    .ptcard-ripple {
+      position: absolute;
+      border-radius: 50%;
+      width: 10px;
+      height: 10px;
+      background: rgba(255,255,255,0.35);
+      animation: rippleOut 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes rippleOut {
+      0%   { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(14); opacity: 0; }
+    }
+
+    /* Glow overlay when matched */
+    .match-flash {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background: rgba(255,255,255,0.12);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .match-flash.show { opacity: 1; }
+
+    /* ====== RESULT SCREEN ====== */
+    .screen-result {
+      background: linear-gradient(160deg, #1a0a2e 0%, #2d1560 60%, #1a0a2e 100%);
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      padding: 24px;
+    }
+    .result-emoji {
+      font-size: 4rem;
+      animation: bounceIn 0.5s ease;
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .result-headline {
+      font-size: 2rem;
+      font-weight: 900;
+      text-align: center;
+    }
+    .result-headline.success { color: #69F0AE; text-shadow: 0 0 16px rgba(105,240,174,0.5); }
+    .result-headline.fail    { color: #FF5252; text-shadow: 0 0 16px rgba(255,82,82,0.5); }
+    .result-detail {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+    }
+    .result-stats {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 16px 28px;
+      width: 100%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+    .stat-label { color: rgba(255,255,255,0.5); }
+    .stat-val   { color: #fff; font-weight: 700; }
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+    }
+    .btn-retry {
+      flex: 1;
+      background: linear-gradient(135deg, #D81B60, #880E4F);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(216,27,96,0.4);
+    }
+    .btn-home {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* Confetti */
+    .confetti-piece { animation: confettiFall 2s ease-in forwards; }
+
+    /* Steady match countdown ring */
+    @keyframes ringFill {
+      from { stroke-dashoffset: 220; }
+      to   { stroke-dashoffset: 0; }
+    }
+    .steady-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .steady-ring.visible { opacity: 1; }
+    .steady-ring circle {
+      fill: none;
+      stroke: #69F0AE;
+      stroke-width: 5;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 220;
+      stroke-linecap: round;
+      transform-origin: center;
+      transform: rotate(-90deg);
+    }
+    .steady-ring.animating circle {
+      animation: ringFill 1s linear forwards;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== SCREEN 1: Intro ===== -->
+  <section class="screen screen-intro active" id="introScreen">
+    <header class="game-header">
+      <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+      <h1 class="game-title" style="color:#fff;">색 합성</h1>
+      <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
+    </header>
+    <div class="intro-body">
+
+      <!-- Inline SVG palette illustration -->
+      <div class="intro-palette">
+        <svg viewBox="0 0 200 160" width="180" height="140" aria-hidden="true">
+          <defs>
+            <radialGradient id="igR" cx="40%" cy="35%"><stop offset="0%" stop-color="rgba(255,255,255,0.25)"/><stop offset="100%" stop-color="rgba(0,0,0,0.1)"/></radialGradient>
+            <radialGradient id="igB" cx="40%" cy="35%"><stop offset="0%" stop-color="rgba(255,255,255,0.25)"/><stop offset="100%" stop-color="rgba(0,0,0,0.1)"/></radialGradient>
+            <radialGradient id="igY" cx="40%" cy="35%"><stop offset="0%" stop-color="rgba(255,255,255,0.25)"/><stop offset="100%" stop-color="rgba(0,0,0,0.1)"/></radialGradient>
+            <radialGradient id="igG" cx="40%" cy="35%"><stop offset="0%" stop-color="rgba(255,255,255,0.25)"/><stop offset="100%" stop-color="rgba(0,0,0,0.1)"/></radialGradient>
+          </defs>
+          <!-- Overlapping circles showing color mixing -->
+          <circle cx="75" cy="65" r="42" fill="#FF1744" opacity="0.85"/>
+          <circle cx="75" cy="65" r="42" fill="url(#igR)" opacity="0.5"/>
+          <circle cx="125" cy="65" r="42" fill="#2979FF" opacity="0.85"/>
+          <circle cx="125" cy="65" r="42" fill="url(#igB)" opacity="0.5"/>
+          <!-- Overlap = purple -->
+          <ellipse cx="100" cy="62" rx="16" ry="22" fill="#AB47BC" opacity="0.95"/>
+          <!-- Result arrow -->
+          <text x="100" y="128" text-anchor="middle" font-size="13" fill="rgba(255,255,255,0.6)" font-family="sans-serif">🎨 색을 섞어요!</text>
+        </svg>
+      </div>
+
+      <p class="intro-title-text">색 합성</p>
+      <p class="intro-desc-text">각자의 색을 켜고 꺼서<br>목표 색을 만들어요!</p>
+
+      <ul class="intro-rules">
+        <li>목표 색을 보고 필요한 색만 켜세요</li>
+        <li>미리보기가 목표와 같으면 성공!</li>
+        <li>10라운드, 라운드당 20초</li>
+      </ul>
+
+      <div class="player-select-label">인원 선택</div>
+      <div class="player-select" id="playerSelect">
+        <button class="player-btn active" data-count="2">2명</button>
+        <button class="player-btn" data-count="3">3명</button>
+        <button class="player-btn" data-count="4">4명</button>
+      </div>
+    </div>
+    <button class="btn btn-play" id="playBtn">🎨 PLAY</button>
+  </section>
+
+  <!-- ===== SCREEN 1.5: Countdown ===== -->
+  <section class="screen screen-countdown" id="countdownScreen">
+    <div class="countdown-number" id="countdownNumber">3</div>
+  </section>
+
+  <!-- ===== SCREEN 2: Game ===== -->
+  <section class="screen screen-game" id="gameScreen">
+    <!-- Match glow overlay -->
+    <div class="match-flash" id="matchFlash"></div>
+
+    <!-- Top HUD -->
+    <div class="game-top-hud">
+      <div class="round-badge" id="roundBadge">라운드 1 / 10</div>
+      <div class="timer-wrap">
+        <div class="timer-bar-track">
+          <div class="timer-bar-fill" id="timerBarFill" style="width:100%"></div>
+        </div>
+        <div class="timer-text" id="timerText">20초</div>
+      </div>
+    </div>
+
+    <!-- Color display -->
+    <div class="color-display">
+      <!-- Target -->
+      <div class="color-circle-wrap">
+        <div class="color-circle-label">목표</div>
+        <div style="position:relative; width:90px; height:90px;">
+          <div class="color-circle target" id="targetCircle" style="width:90px;height:90px;background:#AB47BC;"></div>
+        </div>
+      </div>
+
+      <!-- Arrow + match indicator -->
+      <div class="color-arrow">
+        <div class="match-indicator" id="matchIndicator">✓</div>
+        <svg viewBox="0 0 40 24" width="40" height="24" aria-hidden="true">
+          <path d="M2 12 H32 M26 6 L32 12 L26 18" stroke="rgba(255,255,255,0.3)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- Mix result -->
+      <div class="color-circle-wrap">
+        <div class="color-circle-label">현재</div>
+        <div style="position:relative; width:90px; height:90px; display:flex; align-items:center; justify-content:center;">
+          <div class="color-circle result" id="resultCircle" style="width:90px;height:90px;background:#1a1a1a;"></div>
+          <!-- Steady match ring SVG overlay -->
+          <svg class="steady-ring" id="steadyRing" width="96" height="96" viewBox="0 0 96 96" aria-hidden="true">
+            <circle cx="48" cy="48" r="44"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Target color name -->
+    <div class="target-name" id="targetName">보라색</div>
+
+    <!-- Instruction -->
+    <div class="instruction">이 색을 만들어 보세요!</div>
+
+    <!-- Player toggle zones (built dynamically) -->
+    <div class="player-grid" id="playerGrid"></div>
+
+    <!-- Close button -->
+    <button class="icon-btn close-btn-game" id="closeBtn" aria-label="홈으로">✕</button>
+  </section>
+
+  <!-- ===== SCREEN 3: Result ===== -->
+  <section class="screen screen-result" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <h2 class="result-headline" id="resultHeadline">완벽해요!</h2>
+    <p class="result-detail" id="resultDetail">모든 라운드를 완성했어요!</p>
+    <div class="result-stats">
+      <div class="stat-row">
+        <span class="stat-label">완료 라운드</span>
+        <span class="stat-val" id="statRounds">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">인원</span>
+        <span class="stat-val" id="statPlayers">-</span>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-retry" id="retryBtn">다시하기</button>
+      <button class="btn btn-home" id="homeBtn">홈으로</button>
+    </div>
+    <div id="confettiContainer" style="position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1;"></div>
+  </section>
+
+  <script src="../../shared/engine.js?v=2"></script>
+  <script src="game.js"></script>
+</body>
+</html>
