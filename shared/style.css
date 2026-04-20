@@ -293,3 +293,121 @@ html {
   cursor: pointer;
   backdrop-filter: blur(4px);
 }
+
+/* === Screen state machine (shared) === */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.screen.active {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === Countdown (shared) === */
+.screen-countdown {
+  justify-content: center;
+  align-items: center;
+  background: #333;
+}
+.countdown-number {
+  font-size: 8rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  animation: countPop 0.5s ease;
+}
+@keyframes countPop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* === Intro screen (shared) === */
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-md);
+}
+.game-title {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+}
+.intro-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 1;
+  justify-content: center;
+  padding: var(--space-md);
+}
+.intro-desc {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+.intro-sub {
+  font-size: var(--font-size-small);
+  color: var(--text-sub);
+  text-align: center;
+}
+.player-select-label {
+  font-size: var(--font-size-small);
+  color: var(--text-sub);
+  font-weight: 600;
+  margin-top: var(--space-sm);
+}
+.player-select {
+  display: flex;
+  gap: var(--space-sm);
+}
+.player-btn {
+  min-width: 64px;
+  min-height: var(--btn-min-touch);
+  padding: 0 var(--space-md);
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: 2px solid #ddd;
+  border-radius: var(--btn-radius);
+  background: #f5f5f5;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-family);
+}
+.player-btn.active {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: #fff;
+}
+.btn-play {
+  width: 80%;
+  max-width: 300px;
+  padding: var(--space-md) var(--space-xl);
+  font-size: 1.3rem;
+  margin-bottom: var(--space-xl);
+}
+
+/* === Result screen common (shared) === */
+.result-title {
+  font-size: 2rem;
+  font-weight: 900;
+}
+.result-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+.btn-secondary {
+  background: #E0E0E0;
+  color: var(--text);
+}

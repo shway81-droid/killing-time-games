@@ -6,40 +6,14 @@
   align-items: center;
   background: #ECEFF1;
 }
+/* Override: countdown-number color is #607D8B (not white) */
 .countdown-number {
-  font-size: 8rem;
-  font-weight: 900;
   color: #607D8B;
-  text-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  animation: countPop 0.5s ease;
-}
-@keyframes countPop {
-  0% { transform: scale(0.4); opacity: 0; }
-  60% { transform: scale(1.2); }
-  100% { transform: scale(1); opacity: 1; }
 }
 
 body {
   background: #ECEFF1;
   overflow: hidden;
-}
-
-/* === 화면 전환 === */
-.screen {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  min-height: 100vh;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.screen.active {
-  display: flex;
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* === 공통 헤더 === */
@@ -56,11 +30,6 @@ body {
 .screen-intro {
   justify-content: space-between;
   background: var(--bg);
-}
-
-.game-title {
-  font-size: var(--font-size-title);
-  font-weight: 700;
 }
 
 .intro-body {
