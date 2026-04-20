@@ -1,0 +1,1 @@
+{ "name": "폭탄 해체", "description": "순서대로 선을 잘라 폭탄을 해체하세요!", "icon": "💣", "color": "#D32F2F", "grades": [2,3,4,5,6], "playTime": "45초" }
