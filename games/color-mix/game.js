@@ -139,12 +139,8 @@ const statPlayers    = document.getElementById('statPlayers');
 function showScreen(screenEl) {
   [introScreen, countdownScreen, gameScreen, resultScreen].forEach(s => {
     s.classList.remove('active');
-    s.style.display = 'none';
   });
-  screenEl.style.display = 'flex';
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => { screenEl.classList.add('active'); });
-  });
+  screenEl.classList.add('active');
 }
 
 // ─── Color computation ────────────────────────────────────────────
