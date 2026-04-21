@@ -170,7 +170,12 @@ document.getElementById('playerSelect').addEventListener('click', e => {
   playerCount = parseInt(btn.dataset.count, 10);
 });
 
-document.getElementById('backBtn').addEventListener('click', goHome);
+document.getElementById('backBtn').addEventListener('click', function() {
+  if (timerRaf) cancelAnimationFrame(timerRaf);
+  allTimeouts.forEach(clearTimeout);
+  allTimeouts = [];
+  goHome();
+});
 
 const soundToggleIntro = document.getElementById('soundToggleIntro');
 soundToggleIntro.addEventListener('click', () => {

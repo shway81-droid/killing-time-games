@@ -225,7 +225,12 @@ document.getElementById('playerSelect').addEventListener('click', e => {
   playerCount = parseInt(btn.dataset.count, 10);
 });
 
-document.getElementById('backBtn').addEventListener('click', goHome);
+document.getElementById('backBtn').addEventListener('click', function() {
+  if (gameTimer) { gameTimer.pause(); gameTimer = null; }
+  allTimeouts.forEach(clearTimeout);
+  allTimeouts = [];
+  goHome();
+});
 
 const soundToggleIntro = document.getElementById('soundToggleIntro');
 soundToggleIntro.addEventListener('click', () => {

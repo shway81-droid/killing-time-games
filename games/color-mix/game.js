@@ -560,7 +560,12 @@ updateSoundBtn();
 onTap(soundToggleIntro, () => { sound.toggleMute(); updateSoundBtn(); });
 
 // Back button
-onTap(document.getElementById('backBtn'), () => goHome());
+onTap(document.getElementById('backBtn'), function() {
+  if (roundTimer) roundTimer.stop();
+  if (matchTimeout) clearTimeout(matchTimeout);
+  isRoundActive = false;
+  goHome();
+});
 
 // Play button
 onTap(document.getElementById('playBtn'), () => {
@@ -578,6 +583,8 @@ onTap(document.getElementById('closeBtn'), () => {
 
 // Retry
 onTap(document.getElementById('retryBtn'), () => {
+  if (roundTimer) roundTimer.stop();
+  isRoundActive = false;
   showScreen(introScreen);
 });
 
