@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>비밀 암호</title>
+<link rel="stylesheet" href="../../shared/style.css?v=2">
+<style>
+  html,body{background:#E8EAF6;overflow:hidden;height:100%;}
+  .screen-intro{background:linear-gradient(160deg,#E8EAF6 0%,#C5CAE9 100%);justify-content:flex-start;}
+  .intro-title-text{font-size:1.7rem;font-weight:900;color:#1A237E;text-align:center;}
+  .intro-desc-text{font-size:.95rem;color:#283593;text-align:center;line-height:1.5;}
+  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(63,81,181,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
+  .intro-rules li{font-size:.85rem;color:#1A237E;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
+  .intro-rules li::before{content:'🔐';position:absolute;left:0;font-size:.75rem;}
+  .player-btn.active{background:#3F51B5;border-color:#3F51B5;color:#fff;}
+  .btn-play{background:linear-gradient(135deg,#3F51B5,#1A237E);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(63,81,181,.45);}
+
+  .screen-countdown{background:linear-gradient(160deg,#1A237E 0%,#283593 100%);}
+  .countdown-number{color:#C5CAE9;text-shadow:0 0 40px rgba(197,202,233,.6);}
+
+  .screen-game{background:#E8EAF6;flex-direction:column;min-height:100vh;overflow:hidden;}
+  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#1A237E;flex-shrink:0;}
+  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+  .hud-round{font-size:.85rem;font-weight:800;color:#C5CAE9;min-width:48px;}
+  .hud-timer-track{flex:1;height:10px;background:rgba(255,255,255,.15);border-radius:5px;overflow:hidden;}
+  .hud-timer-fill{height:100%;background:linear-gradient(90deg,#7986CB,#FFEE58);transition:width .25s linear;}
+  .hud-timer-fill.danger{background:linear-gradient(90deg,#FF7043,#EF5350);}
+  .hud-score{font-size:1rem;font-weight:900;color:#FFD54F;min-width:48px;text-align:right;}
+
+  .boards{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px;overflow:hidden;}
+  .board{border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:hidden;}
+  .board.p1{background:linear-gradient(160deg,#E8EAF6,#9FA8DA);border:2px solid #3F51B5;}
+  .board.p2{background:linear-gradient(160deg,#1A237E,#0D1440);border:2px solid #7986CB;}
+  .board-label{font-size:.8rem;font-weight:900;letter-spacing:.08em;}
+  .p1 .board-label{color:#1A237E;}
+  .p2 .board-label{color:#C5CAE9;}
+  .board-sub{font-size:.7rem;font-weight:600;margin-top:-4px;}
+  .p1 .board-sub{color:#3F51B5;}
+  .p2 .board-sub{color:#9FA8DA;}
+
+  .seq-slots{display:flex;flex-direction:column;gap:6px;align-items:center;}
+  .seq-slot{width:54px;height:40px;border-radius:8px;background:#fff;border:2px dashed #7986CB;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;color:#3F51B5;}
+  .seq-slot.filled{border-style:solid;border-width:3px;}
+
+  .input-row{display:flex;gap:4px;margin-top:4px;min-height:34px;align-items:center;}
+  .input-dot{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.05);}
+  .input-dot.filled{border-style:solid;border-width:3px;}
+
+  .color-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:200px;}
+  .color-btn{aspect-ratio:1;border-radius:12px;border:2px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;transition:transform .1s;}
+  .color-btn:active{transform:scale(.9);}
+  .color-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .banner{min-height:28px;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;padding:4px 12px;border-radius:20px;margin:4px 8px;opacity:0;transition:opacity .2s;}
+  .banner.show{opacity:1;}
+  .banner.ok{color:#1B5E20;background:#C8E6C9;}
+  .banner.ng{color:#B71C1C;background:#FFCDD2;}
+  .banner.info{color:#1A237E;background:#C5CAE9;}
+
+  .screen-result{background:linear-gradient(160deg,#1A237E 0%,#283593 60%,#1A237E 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .result-emoji-big{font-size:4rem;}
+  .result-headline{font-size:2rem;font-weight:900;text-align:center;}
+  .result-headline.success{color:#C5CAE9;}
+  .result-headline.fail{color:#FF8A65;}
+  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
+  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
+  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
+  .stat-label{color:rgba(255,255,255,.5);}
+  .stat-val{color:#fff;font-weight:700;}
+  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
+  .btn-retry{flex:1;background:linear-gradient(135deg,#3F51B5,#1A237E);color:#fff;}
+  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
+</style>
+</head>
+<body>
+
+<section class="screen screen-intro active" id="introScreen">
+  <header class="game-header">
+    <button class="icon-btn" id="backBtn">←</button>
+    <h1 class="game-title" style="color:#1A237E;">비밀 암호</h1>
+    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+  </header>
+  <div class="intro-body">
+    <div style="text-align:center;font-size:4rem;">🔐</div>
+    <p class="intro-title-text">비밀 암호</p>
+    <p class="intro-desc-text">P1이 색 순서를 보고<br>P2에게 <b>말로</b> 알려주세요!</p>
+    <ul class="intro-rules">
+      <li>왼쪽(P1): 색이 순서대로 나타남</li>
+      <li>오른쪽(P2): P1 말을 듣고 색깔 버튼 탭</li>
+      <li>순서 틀리면 실패!</li>
+      <li>5라운드, 3점 이상 성공!</li>
+    </ul>
+  </div>
+  <button class="btn btn-play" id="playBtn">🔐 PLAY</button>
+</section>
+
+<section class="screen screen-countdown" id="countdownScreen">
+  <div class="countdown-number" id="countdownNumber">3</div>
+</section>
+
+<section class="screen screen-game" id="gameScreen">
+  <div class="game-hud">
+    <button class="hud-close" id="closeBtn">✕</button>
+    <span class="hud-round" id="hudRound">1/5</span>
+    <div class="hud-timer-track"><div class="hud-timer-fill" id="hudTimerFill" style="width:100%"></div></div>
+    <span class="hud-score" id="hudScore">0점</span>
+    <button class="hud-sound" id="soundToggleGame">🔇</button>
+  </div>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="boards">
+    <div class="board p1">
+      <div class="board-label">👁 P1 암호</div>
+      <div class="board-sub">P2에게 말해주세요!</div>
+      <div class="seq-slots" id="seqSlots"></div>
+    </div>
+    <div class="board p2">
+      <div class="board-label">🎮 P2 입력</div>
+      <div class="board-sub">색깔 버튼을 탭!</div>
+      <div class="input-row" id="inputRow"></div>
+      <div class="color-grid" id="colorGrid"></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen screen-result" id="resultScreen">
+  <div class="result-emoji-big" id="resultEmoji">🎉</div>
+  <h2 class="result-headline" id="resultHeadline">성공!</h2>
+  <p class="result-sub" id="resultSub">암호 해독 성공!</p>
+  <div class="result-stats">
+    <div class="stat-row"><span class="stat-label">점수</span><span class="stat-val" id="statScore">0/5</span></div>
+    <div class="stat-row"><span class="stat-label">완벽 해독</span><span class="stat-val" id="statPerfect">0회</span></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn btn-retry" id="retryBtn">다시하기</button>
+    <button class="btn btn-home-res" id="homeBtn">홈으로</button>
+  </div>
+</section>
+
+<script src="../../shared/engine.js?v=2"></script>
+<script src="game.js"></script>
+</body>
+</html>

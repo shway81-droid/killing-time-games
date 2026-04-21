@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>지휘관과 탐험가</title>
+<link rel="stylesheet" href="../../shared/style.css?v=2">
+<style>
+  html,body{background:#E8F5E9;overflow:hidden;height:100%;}
+  .screen-intro{background:linear-gradient(160deg,#E8F5E9 0%,#C8E6C9 100%);justify-content:flex-start;}
+  .intro-title-text{font-size:1.7rem;font-weight:900;color:#1B5E20;text-align:center;}
+  .intro-desc-text{font-size:.95rem;color:#2E7D32;text-align:center;line-height:1.5;}
+  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(56,142,60,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
+  .intro-rules li{font-size:.85rem;color:#1B5E20;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
+  .intro-rules li::before{content:'🗺';position:absolute;left:0;font-size:.75rem;}
+  .btn-play{background:linear-gradient(135deg,#43A047,#1B5E20);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(67,160,71,.45);}
+  .screen-countdown{background:linear-gradient(160deg,#1B5E20 0%,#2E7D32 100%);}
+  .countdown-number{color:#A5D6A7;}
+
+  .screen-game{background:#E8F5E9;flex-direction:column;min-height:100vh;overflow:hidden;}
+  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#1B5E20;}
+  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+  .hud-label{font-size:.85rem;font-weight:800;color:#A5D6A7;flex-shrink:0;}
+  .hud-time{font-size:1rem;font-weight:900;color:#fff;flex:1;text-align:center;}
+  .hud-score{font-size:1rem;font-weight:900;color:#FFD54F;min-width:70px;text-align:right;}
+
+  .boards{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px;overflow:hidden;}
+  .board{border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .board.p1{background:linear-gradient(160deg,#F1F8E9,#C8E6C9);border:2px solid #43A047;}
+  .board.p2{background:linear-gradient(160deg,#263238,#102027);border:2px solid #546E7A;}
+  .board-label{font-size:.75rem;font-weight:900;text-align:center;}
+  .p1 .board-label{color:#1B5E20;}
+  .p2 .board-label{color:#B0BEC5;}
+
+  .maze{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;width:100%;max-width:200px;aspect-ratio:1;background:rgba(0,0,0,.1);padding:2px;border-radius:4px;}
+  .cell{background:#FAFAFA;display:flex;align-items:center;justify-content:center;font-size:.7rem;min-height:0;aspect-ratio:1;}
+  .cell.wall{background:#424242;}
+  .cell.trap{background:#FFCDD2;}
+  .cell.goal{background:#FFF9C4;}
+  .cell.player{background:#64B5F6 !important;}
+  .cell.fog{background:#1A1A1A;color:transparent;}
+  .cell.visited{background:#FFE0B2;}
+  .p2 .cell{background:#000;}
+  .p2 .cell.visible{background:#CFD8DC;}
+  .p2 .cell.visible.wall{background:#212121;}
+  .p2 .cell.visible.trap{background:#EF9A9A;}
+  .p2 .cell.visible.goal{background:#FFF59D;}
+  .p2 .cell.visible.player{background:#64B5F6;}
+
+  .controls{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:4px;width:140px;height:140px;margin-top:6px;}
+  .dir-btn{background:#455A64;border:2px solid #607D8B;color:#fff;border-radius:8px;font-size:1.2rem;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .08s;}
+  .dir-btn:active{transform:scale(.9);background:#607D8B;}
+  .dir-up{grid-column:2;grid-row:1;}
+  .dir-left{grid-column:1;grid-row:2;}
+  .dir-right{grid-column:3;grid-row:2;}
+  .dir-down{grid-column:2;grid-row:3;}
+
+  .banner{min-height:28px;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;padding:4px 12px;border-radius:20px;margin:4px 8px;opacity:0;transition:opacity .2s;}
+  .banner.show{opacity:1;}
+  .banner.ok{color:#1B5E20;background:#C8E6C9;}
+  .banner.ng{color:#B71C1C;background:#FFCDD2;}
+
+  .legend{display:flex;gap:10px;font-size:.65rem;color:#2E7D32;flex-wrap:wrap;justify-content:center;}
+  .legend span{display:flex;align-items:center;gap:2px;}
+  .legend i{width:10px;height:10px;display:inline-block;border-radius:2px;}
+
+  .screen-result{background:linear-gradient(160deg,#1B5E20 0%,#2E7D32 60%,#1B5E20 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .result-emoji-big{font-size:4rem;}
+  .result-headline{font-size:2rem;font-weight:900;}
+  .result-headline.success{color:#A5D6A7;}
+  .result-headline.fail{color:#FF8A65;}
+  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
+  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
+  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
+  .stat-label{color:rgba(255,255,255,.5);}
+  .stat-val{color:#fff;font-weight:700;}
+  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
+  .btn-retry{flex:1;background:linear-gradient(135deg,#43A047,#1B5E20);color:#fff;}
+  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
+</style>
+</head>
+<body>
+
+<section class="screen screen-intro active" id="introScreen">
+  <header class="game-header">
+    <button class="icon-btn" id="backBtn">←</button>
+    <h1 class="game-title" style="color:#1B5E20;">지휘관과 탐험가</h1>
+    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+  </header>
+  <div class="intro-body">
+    <div style="text-align:center;font-size:4rem;">🗺️</div>
+    <p class="intro-title-text">지휘관과 탐험가</p>
+    <p class="intro-desc-text">P1은 전체 지도가 보여요<br>P2는 주변만 보여요. 길을 안내해 주세요!</p>
+    <ul class="intro-rules">
+      <li>P1: 지도를 보고 길을 <b>말로</b> 안내</li>
+      <li>P2: 방향키 버튼으로 이동</li>
+      <li>🪤 함정 밟으면 HP 감소 (3개)</li>
+      <li>⭐ 보물 3개 수집 + 🏁 도착!</li>
+    </ul>
+  </div>
+  <button class="btn btn-play" id="playBtn">🗺️ PLAY</button>
+</section>
+
+<section class="screen screen-countdown" id="countdownScreen">
+  <div class="countdown-number" id="countdownNumber">3</div>
+</section>
+
+<section class="screen screen-game" id="gameScreen">
+  <div class="game-hud">
+    <button class="hud-close" id="closeBtn">✕</button>
+    <span class="hud-label" id="hudHp">❤️❤️❤️</span>
+    <span class="hud-time" id="hudTime">⭐ 0/3</span>
+    <span class="hud-score" id="hudScore">90</span>
+    <button class="hud-sound" id="soundToggleGame">🔇</button>
+  </div>
+  <div class="banner" id="banner"></div>
+  <div class="boards">
+    <div class="board p1">
+      <div class="board-label">👁 P1 지도 (전체)</div>
+      <div class="maze" id="mazeP1"></div>
+      <div class="legend">
+        <span><i style="background:#64B5F6"></i>탐험가</span>
+        <span><i style="background:#424242"></i>벽</span>
+        <span><i style="background:#FFCDD2"></i>함정</span>
+        <span><i style="background:#FFF9C4"></i>보물</span>
+      </div>
+    </div>
+    <div class="board p2">
+      <div class="board-label" style="color:#B0BEC5;">🔦 P2 시야 (주변만)</div>
+      <div class="maze" id="mazeP2"></div>
+      <div class="controls">
+        <button class="dir-btn dir-up" id="dirUp">⬆</button>
+        <button class="dir-btn dir-left" id="dirLeft">⬅</button>
+        <button class="dir-btn dir-right" id="dirRight">➡</button>
+        <button class="dir-btn dir-down" id="dirDown">⬇</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen screen-result" id="resultScreen">
+  <div class="result-emoji-big" id="resultEmoji">🏆</div>
+  <h2 class="result-headline" id="resultHeadline">성공!</h2>
+  <p class="result-sub" id="resultSub">훌륭한 팀워크!</p>
+  <div class="result-stats">
+    <div class="stat-row"><span class="stat-label">보물</span><span class="stat-val" id="statTreasure">0/3</span></div>
+    <div class="stat-row"><span class="stat-label">남은 HP</span><span class="stat-val" id="statHp">0</span></div>
+    <div class="stat-row"><span class="stat-label">이동 횟수</span><span class="stat-val" id="statMoves">0</span></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn btn-retry" id="retryBtn">다시하기</button>
+    <button class="btn btn-home-res" id="homeBtn">홈으로</button>
+  </div>
+</section>
+
+<script src="../../shared/engine.js?v=2"></script>
+<script src="game.js"></script>
+</body>
+</html>

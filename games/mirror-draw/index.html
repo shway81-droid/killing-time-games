@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>거울 그리기</title>
+<link rel="stylesheet" href="../../shared/style.css?v=2">
+<style>
+  html,body{background:#FFF3E0;overflow:hidden;height:100%;}
+  .screen-intro{background:linear-gradient(160deg,#FFF3E0 0%,#FFE0B2 100%);justify-content:flex-start;}
+  .intro-title-text{font-size:1.7rem;font-weight:900;color:#E65100;text-align:center;}
+  .intro-desc-text{font-size:.95rem;color:#F57C00;text-align:center;line-height:1.5;}
+  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(251,140,0,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
+  .intro-rules li{font-size:.85rem;color:#E65100;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
+  .intro-rules li::before{content:'🎨';position:absolute;left:0;font-size:.75rem;}
+  .btn-play{background:linear-gradient(135deg,#FB8C00,#E65100);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(251,140,0,.45);}
+  .screen-countdown{background:linear-gradient(160deg,#E65100 0%,#F57C00 100%);}
+  .countdown-number{color:#FFE0B2;}
+
+  .screen-game{background:#FFF3E0;flex-direction:column;min-height:100vh;overflow:hidden;}
+  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#E65100;}
+  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+  .hud-round{font-size:.85rem;font-weight:800;color:#FFE0B2;min-width:48px;}
+  .hud-timer-track{flex:1;height:10px;background:rgba(255,255,255,.15);border-radius:5px;overflow:hidden;}
+  .hud-timer-fill{height:100%;background:linear-gradient(90deg,#FFB74D,#FFEE58);transition:width .25s linear;}
+  .hud-timer-fill.danger{background:linear-gradient(90deg,#FF7043,#EF5350);}
+  .hud-score{font-size:1rem;font-weight:900;color:#FFD54F;min-width:48px;text-align:right;}
+
+  .boards{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px;overflow:hidden;}
+  .board{border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .board.p1{background:linear-gradient(160deg,#FFF8E1,#FFE082);border:2px solid #FB8C00;}
+  .board.p2{background:linear-gradient(160deg,#E0F7FA,#80DEEA);border:2px solid #0097A7;}
+  .board-label{font-size:.8rem;font-weight:900;}
+  .p1 .board-label{color:#E65100;}
+  .p2 .board-label{color:#006064;}
+  .board-sub{font-size:.7rem;font-weight:600;margin-top:-4px;}
+  .p1 .board-sub{color:#F57C00;}
+  .p2 .board-sub{color:#00838F;}
+
+  .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;width:100%;max-width:200px;aspect-ratio:1;}
+  .cell{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#999;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .08s;}
+  .cell:active{transform:scale(.9);}
+  .cell.filled-target{background:#EF5350;border-color:#B71C1C;}
+  .cell.filled{background:#FB8C00;border-color:#E65100;}
+  .cell.reveal-hit{background:#43A047;border-color:#1B5E20;}
+  .cell.reveal-miss{background:#EF5350;border-color:#B71C1C;}
+  .cell.reveal-extra{background:#FFEE58;border-color:#F9A825;}
+  .p2 .cell.locked{pointer-events:none;}
+
+  .banner{min-height:28px;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;padding:4px 12px;border-radius:20px;margin:4px 8px;opacity:0;transition:opacity .2s;}
+  .banner.show{opacity:1;}
+  .banner.ok{color:#1B5E20;background:#C8E6C9;}
+  .banner.ng{color:#B71C1C;background:#FFCDD2;}
+  .banner.info{color:#E65100;background:#FFE0B2;}
+
+  .screen-result{background:linear-gradient(160deg,#E65100 0%,#F57C00 60%,#E65100 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .result-emoji-big{font-size:4rem;}
+  .result-headline{font-size:2rem;font-weight:900;}
+  .result-headline.success{color:#FFE0B2;}
+  .result-headline.fail{color:#FF8A65;}
+  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
+  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
+  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
+  .stat-label{color:rgba(255,255,255,.5);}
+  .stat-val{color:#fff;font-weight:700;}
+  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
+  .btn-retry{flex:1;background:linear-gradient(135deg,#FB8C00,#E65100);color:#fff;}
+  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
+</style>
+</head>
+<body>
+
+<section class="screen screen-intro active" id="introScreen">
+  <header class="game-header">
+    <button class="icon-btn" id="backBtn">←</button>
+    <h1 class="game-title" style="color:#E65100;">거울 그리기</h1>
+    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+  </header>
+  <div class="intro-body">
+    <div style="text-align:center;font-size:4rem;">🎨</div>
+    <p class="intro-title-text">거울 그리기</p>
+    <p class="intro-desc-text">P1이 본 그림을 말로 설명하고<br>P2가 격자에 똑같이 그려요!</p>
+    <ul class="intro-rules">
+      <li>왼쪽(P1): 5×5 격자에 빨간 점 위치 확인</li>
+      <li>오른쪽(P2): P1 설명 듣고 같은 칸 탭</li>
+      <li>정확도 80% 이상 = 성공!</li>
+      <li>3라운드, 2라운드 성공 목표!</li>
+    </ul>
+  </div>
+  <button class="btn btn-play" id="playBtn">🎨 PLAY</button>
+</section>
+
+<section class="screen screen-countdown" id="countdownScreen">
+  <div class="countdown-number" id="countdownNumber">3</div>
+</section>
+
+<section class="screen screen-game" id="gameScreen">
+  <div class="game-hud">
+    <button class="hud-close" id="closeBtn">✕</button>
+    <span class="hud-round" id="hudRound">1/3</span>
+    <div class="hud-timer-track"><div class="hud-timer-fill" id="hudTimerFill" style="width:100%"></div></div>
+    <span class="hud-score" id="hudScore">0점</span>
+    <button class="hud-sound" id="soundToggleGame">🔇</button>
+  </div>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="boards">
+    <div class="board p1">
+      <div class="board-label">👁 P1 원본</div>
+      <div class="board-sub">P2에게 설명하세요!</div>
+      <div class="grid5" id="gridTarget"></div>
+    </div>
+    <div class="board p2">
+      <div class="board-label">🎨 P2 그리기</div>
+      <div class="board-sub">탭해서 칸 채우기</div>
+      <div class="grid5" id="gridInput"></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen screen-result" id="resultScreen">
+  <div class="result-emoji-big" id="resultEmoji">🎉</div>
+  <h2 class="result-headline" id="resultHeadline">성공!</h2>
+  <p class="result-sub" id="resultSub">말로 잘 전달했어요!</p>
+  <div class="result-stats">
+    <div class="stat-row"><span class="stat-label">성공 라운드</span><span class="stat-val" id="statScore">0/3</span></div>
+    <div class="stat-row"><span class="stat-label">평균 정확도</span><span class="stat-val" id="statAcc">0%</span></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn btn-retry" id="retryBtn">다시하기</button>
+    <button class="btn btn-home-res" id="homeBtn">홈으로</button>
+  </div>
+</section>
+
+<script src="../../shared/engine.js?v=2"></script>
+<script src="game.js"></script>
+</body>
+</html>

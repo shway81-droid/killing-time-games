@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>불씨 잇기</title>
+<link rel="stylesheet" href="../../shared/style.css?v=2">
+<style>
+  html,body{background:#FBE9E7;overflow:hidden;height:100%;}
+  .screen-intro{background:linear-gradient(160deg,#FBE9E7 0%,#FFCCBC 100%);justify-content:flex-start;}
+  .intro-title-text{font-size:1.7rem;font-weight:900;color:#BF360C;text-align:center;}
+  .intro-desc-text{font-size:.95rem;color:#D84315;text-align:center;line-height:1.5;}
+  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(255,87,34,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
+  .intro-rules li{font-size:.85rem;color:#BF360C;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
+  .intro-rules li::before{content:'🔥';position:absolute;left:0;font-size:.75rem;}
+  .btn-play{background:linear-gradient(135deg,#FF5722,#BF360C);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(255,87,34,.45);}
+  .screen-countdown{background:linear-gradient(160deg,#BF360C 0%,#D84315 100%);}
+  .countdown-number{color:#FFCCBC;}
+
+  .screen-game{background:#FBE9E7;flex-direction:column;min-height:100vh;overflow:hidden;}
+  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#BF360C;}
+  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+  .hud-round{font-size:.85rem;font-weight:800;color:#FFCCBC;min-width:60px;}
+  .hud-status{font-size:1rem;font-weight:900;color:#FFD54F;flex:1;text-align:center;}
+  .hud-time{font-size:1rem;font-weight:900;color:#fff;min-width:40px;text-align:right;}
+
+  .arena{flex:1;display:flex;flex-direction:column;gap:6px;padding:8px;}
+  .panel{flex:1;border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;}
+  .panel.p1{background:linear-gradient(180deg,#FFAB91,#FF7043);border:3px solid #E64A19;}
+  .panel.p2{background:linear-gradient(180deg,#B3E5FC,#4FC3F7);border:3px solid #0288D1;}
+  .panel.armed{box-shadow:0 0 24px rgba(255,235,59,.6);}
+  .panel.dim{opacity:.5;}
+  .panel-label{font-size:.85rem;font-weight:900;letter-spacing:.08em;}
+  .p1 .panel-label{color:#BF360C;}
+  .p2 .panel-label{color:#01579B;}
+
+  .fire{font-size:3rem;transition:transform .15s,filter .15s;}
+  .ice{font-size:3rem;}
+
+  .meter{width:80%;max-width:260px;height:28px;background:rgba(0,0,0,.2);border-radius:14px;overflow:hidden;position:relative;}
+  .meter-fill{height:100%;background:linear-gradient(90deg,#FFEB3B,#FF5722);transition:width .15s;}
+  .meter-fill.ice{background:linear-gradient(90deg,#81D4FA,#FFF);}
+  .meter-goal{position:absolute;top:-4px;bottom:-4px;right:10%;width:3px;background:#FFEB3B;box-shadow:0 0 10px #FFEB3B;}
+
+  .tap-btn{padding:16px 28px;border-radius:14px;font-size:1.2rem;font-weight:900;border:3px solid;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .tap-btn:active{transform:scale(.95);}
+  .p1 .tap-btn{background:#FF5722;border-color:#BF360C;color:#fff;}
+  .p2 .tap-btn{background:#0288D1;border-color:#01579B;color:#fff;}
+  .tap-btn:disabled{opacity:.4;}
+
+  .countdown-badge{position:absolute;top:8px;right:10px;font-size:1.4rem;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.5);}
+
+  .fb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;font-weight:900;pointer-events:none;opacity:0;}
+  .fb.show{animation:fbPop .6s;opacity:1;}
+  @keyframes fbPop{0%{transform:translate(-50%,0) scale(.7);opacity:0;}30%{transform:translate(-50%,-50%) scale(1.2);opacity:1;}100%{transform:translate(-50%,-80%) scale(1);opacity:0;}}
+
+  .screen-result{background:linear-gradient(160deg,#BF360C 0%,#D84315 60%,#BF360C 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .result-emoji-big{font-size:4rem;}
+  .result-headline{font-size:2rem;font-weight:900;}
+  .result-headline.success{color:#FFCCBC;}
+  .result-headline.fail{color:#FF8A65;}
+  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
+  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
+  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
+  .stat-label{color:rgba(255,255,255,.5);}
+  .stat-val{color:#fff;font-weight:700;}
+  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
+  .btn-retry{flex:1;background:linear-gradient(135deg,#FF5722,#BF360C);color:#fff;}
+  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
+</style>
+</head>
+<body>
+
+<section class="screen screen-intro active" id="introScreen">
+  <header class="game-header">
+    <button class="icon-btn" id="backBtn">←</button>
+    <h1 class="game-title" style="color:#BF360C;">불씨 잇기</h1>
+    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+  </header>
+  <div class="intro-body">
+    <div style="text-align:center;font-size:4rem;">🔥</div>
+    <p class="intro-title-text">불씨 잇기</p>
+    <p class="intro-desc-text">P1이 빠르게 탭해서 불씨 키우고<br>P2가 얼음을 녹여요!</p>
+    <ul class="intro-rules">
+      <li>P1: 3초 안에 불씨 노란 선까지 키우기</li>
+      <li>성공 시 P2에게 불씨 전달</li>
+      <li>P2: 3초 안에 얼음 블록 다 녹이기</li>
+      <li>60초, 최대한 많이 성공!</li>
+    </ul>
+  </div>
+  <button class="btn btn-play" id="playBtn">🔥 PLAY</button>
+</section>
+
+<section class="screen screen-countdown" id="countdownScreen">
+  <div class="countdown-number" id="countdownNumber">3</div>
+</section>
+
+<section class="screen screen-game" id="gameScreen">
+  <div class="game-hud">
+    <button class="hud-close" id="closeBtn">✕</button>
+    <span class="hud-round" id="hudRound">0점</span>
+    <span class="hud-status" id="hudStatus">P1: 불씨 키우기</span>
+    <span class="hud-time" id="hudTime">60</span>
+    <button class="hud-sound" id="soundToggleGame">🔇</button>
+  </div>
+  <div class="arena">
+    <div class="panel p1 armed" id="panelP1">
+      <span class="countdown-badge" id="badgeP1"></span>
+      <div class="panel-label">🔥 P1 — 불씨 키우기</div>
+      <div class="fire" id="fire">🔥</div>
+      <div class="meter"><div class="meter-fill" id="fireFill" style="width:0"></div><div class="meter-goal"></div></div>
+      <button class="tap-btn" id="btnP1">빠르게 탭!</button>
+      <div class="fb" id="fbP1"></div>
+    </div>
+    <div class="panel p2 dim" id="panelP2">
+      <span class="countdown-badge" id="badgeP2"></span>
+      <div class="panel-label">❄️ P2 — 얼음 녹이기</div>
+      <div class="ice" id="ice">🧊</div>
+      <div class="meter"><div class="meter-fill ice" id="iceFill" style="width:100%"></div></div>
+      <button class="tap-btn" id="btnP2" disabled>녹이기!</button>
+      <div class="fb" id="fbP2"></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen screen-result" id="resultScreen">
+  <div class="result-emoji-big" id="resultEmoji">🏆</div>
+  <h2 class="result-headline" id="resultHeadline">훌륭해요!</h2>
+  <p class="result-sub" id="resultSub">멋진 팀워크!</p>
+  <div class="result-stats">
+    <div class="stat-row"><span class="stat-label">성공 체인</span><span class="stat-val" id="statChains">0회</span></div>
+    <div class="stat-row"><span class="stat-label">최고 연속</span><span class="stat-val" id="statStreak">0회</span></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn btn-retry" id="retryBtn">다시하기</button>
+    <button class="btn btn-home-res" id="homeBtn">홈으로</button>
+  </div>
+</section>
+
+<script src="../../shared/engine.js?v=2"></script>
+<script src="game.js"></script>
+</body>
+</html>

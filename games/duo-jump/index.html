@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>2인 점프</title>
+<link rel="stylesheet" href="../../shared/style.css?v=2">
+<style>
+  html,body{background:#FFF3E0;overflow:hidden;height:100%;}
+  .screen-intro{background:linear-gradient(160deg,#FFE0B2 0%,#FFCCBC 100%);justify-content:flex-start;}
+  .intro-title-text{font-size:1.7rem;font-weight:900;color:#BF360C;text-align:center;}
+  .intro-desc-text{font-size:.95rem;color:#D84315;text-align:center;line-height:1.5;}
+  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(239,83,80,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
+  .intro-rules li{font-size:.85rem;color:#BF360C;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
+  .intro-rules li::before{content:'🦘';position:absolute;left:0;font-size:.75rem;}
+  .player-btn.active{background:#E53935;border-color:#E53935;color:#fff;}
+  .btn-play{background:linear-gradient(135deg,#EF5350,#B71C1C);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(229,57,53,.45);}
+
+  .screen-countdown{background:linear-gradient(160deg,#B71C1C 0%,#D32F2F 100%);}
+  .countdown-number{color:#FFCDD2;text-shadow:0 0 40px rgba(255,205,210,.6);}
+
+  .screen-game{background:#FFF3E0;flex-direction:column;min-height:100vh;overflow:hidden;}
+  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#B71C1C;flex-shrink:0;}
+  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .hud-label{font-size:.8rem;font-weight:800;color:#FFCDD2;flex-shrink:0;}
+  .hud-score{font-size:1rem;font-weight:900;color:#FFD54F;flex-shrink:0;min-width:60px;text-align:right;}
+  .hud-time{font-size:1rem;font-weight:900;color:#fff;flex:1;text-align:center;}
+
+  .play-area{flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+  .track-area{flex:1;position:relative;background:linear-gradient(180deg,#FFF8E1 0%,#FFECB3 70%,#8D6E63 70%,#6D4C41 100%);border-bottom:4px solid #5D4037;overflow:hidden;}
+  .character{position:absolute;left:50%;transform:translateX(-50%);bottom:25%;width:80px;height:80px;display:flex;align-items:center;justify-content:center;transition:bottom .2s cubic-bezier(.2,.8,.4,1);}
+  .character.jumping{bottom:60%;}
+  .character svg{width:100%;height:100%;}
+  .obstacle{position:absolute;bottom:25%;height:48px;width:36px;background:linear-gradient(135deg,#424242,#212121);border:2px solid #000;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+  .zones{display:flex;height:40%;gap:4px;padding:4px;background:#5D4037;flex-shrink:0;}
+  .tap-zone{flex:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:#fff;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer;gap:6px;transition:transform .08s,background .15s;position:relative;}
+  .tap-zone:active{transform:scale(.97);}
+  .tap-zone.p1{background:linear-gradient(135deg,#EF5350,#B71C1C);}
+  .tap-zone.p2{background:linear-gradient(135deg,#42A5F5,#0D47A1);}
+  .tap-zone.armed{box-shadow:0 0 0 4px rgba(255,213,79,.6);}
+  .tap-zone.tapped{background:#FFD54F !important;color:#B71C1C;}
+  .zone-label{font-size:1rem;letter-spacing:.1em;}
+  .zone-hint{font-size:.75rem;opacity:.8;}
+  .feedback{position:absolute;top:40%;left:50%;transform:translateX(-50%);font-size:2rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);pointer-events:none;opacity:0;transition:opacity .2s;}
+  .feedback.show{opacity:1;animation:fbPop .6s ease forwards;}
+  @keyframes fbPop{0%{transform:translate(-50%,10px) scale(.8);opacity:0;}30%{transform:translate(-50%,0) scale(1.1);opacity:1;}100%{transform:translate(-50%,-10px) scale(1);opacity:0;}}
+
+  .screen-result{background:linear-gradient(160deg,#B71C1C 0%,#D32F2F 60%,#B71C1C 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .result-emoji-big{font-size:4rem;}
+  .result-headline{font-size:2rem;font-weight:900;text-align:center;}
+  .result-headline.success{color:#FFCDD2;}
+  .result-headline.fail{color:#FF8A65;}
+  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
+  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
+  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
+  .stat-label{color:rgba(255,255,255,.5);}
+  .stat-val{color:#fff;font-weight:700;}
+  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
+  .btn-retry{flex:1;background:linear-gradient(135deg,#EF5350,#B71C1C);color:#fff;}
+  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
+</style>
+</head>
+<body>
+
+<section class="screen screen-intro active" id="introScreen">
+  <header class="game-header">
+    <button class="icon-btn" id="backBtn">←</button>
+    <h1 class="game-title" style="color:#BF360C;">2인 점프</h1>
+    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+  </header>
+  <div class="intro-body">
+    <div style="text-align:center;font-size:4rem;margin:8px 0;">🦘</div>
+    <p class="intro-title-text">2인 점프</p>
+    <p class="intro-desc-text">장애물이 올 때 P1, P2가<br>동시에 탭해야 점프 성공!</p>
+    <ul class="intro-rules">
+      <li>장애물이 화면 가운데 올 때 점프</li>
+      <li>두 명 모두 0.3초 이내에 탭해야 성공</li>
+      <li>한 명만 탭하면 실패 (HP 감소)</li>
+      <li>HP 3개, 최대한 많이 성공시켜요!</li>
+    </ul>
+  </div>
+  <button class="btn btn-play" id="playBtn">🦘 PLAY</button>
+</section>
+
+<section class="screen screen-countdown" id="countdownScreen">
+  <div class="countdown-number" id="countdownNumber">3</div>
+</section>
+
+<section class="screen screen-game" id="gameScreen">
+  <div class="game-hud">
+    <button class="hud-close" id="closeBtn">✕</button>
+    <span class="hud-label" id="hudHp">❤❤❤</span>
+    <span class="hud-time" id="hudTime">30</span>
+    <span class="hud-score" id="hudScore">0점</span>
+    <button class="hud-sound" id="soundToggleGame">🔇</button>
+  </div>
+
+  <div class="play-area">
+    <div class="track-area" id="trackArea">
+      <div class="character" id="character">
+        <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="#FFB74D"/><circle cx="40" cy="38" r="30" fill="#FFCA28"/><circle cx="32" cy="34" r="4" fill="#fff"/><circle cx="48" cy="34" r="4" fill="#fff"/><circle cx="32" cy="35" r="2" fill="#000"/><circle cx="48" cy="35" r="2" fill="#000"/><path d="M30 48 Q40 56 50 48" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="zones">
+      <div class="tap-zone p1" id="zone1">
+        <div class="zone-label">P1</div>
+        <div class="zone-hint">탭해서 점프!</div>
+      </div>
+      <div class="tap-zone p2" id="zone2">
+        <div class="zone-label">P2</div>
+        <div class="zone-hint">탭해서 점프!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen screen-result" id="resultScreen">
+  <div class="result-emoji-big" id="resultEmoji">🎉</div>
+  <h2 class="result-headline" id="resultHeadline">성공!</h2>
+  <p class="result-sub" id="resultSub">호흡이 딱 맞았어요!</p>
+  <div class="result-stats">
+    <div class="stat-row"><span class="stat-label">성공</span><span class="stat-val" id="statSuccess">0회</span></div>
+    <div class="stat-row"><span class="stat-label">실패</span><span class="stat-val" id="statFail">0회</span></div>
+    <div class="stat-row"><span class="stat-label">점수</span><span class="stat-val" id="statScore">0점</span></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn btn-retry" id="retryBtn">다시하기</button>
+    <button class="btn btn-home-res" id="homeBtn">홈으로</button>
+  </div>
+</section>
+
+<script src="../../shared/engine.js?v=2"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>릴레이 운반</title>
+<link rel="stylesheet" href="../../shared/style.css?v=2">
+<style>
+  html,body{background:#FFF3E0;overflow:hidden;height:100%;}
+  .screen-intro{background:linear-gradient(160deg,#FFF3E0 0%,#FFE0B2 100%);justify-content:flex-start;}
+  .intro-title-text{font-size:1.7rem;font-weight:900;color:#E65100;text-align:center;}
+  .intro-desc-text{font-size:.95rem;color:#F57C00;text-align:center;line-height:1.5;}
+  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(251,140,0,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
+  .intro-rules li{font-size:.85rem;color:#E65100;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
+  .intro-rules li::before{content:'🏃';position:absolute;left:0;font-size:.75rem;}
+  .btn-play{background:linear-gradient(135deg,#FB8C00,#E65100);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(251,140,0,.45);}
+  .screen-countdown{background:linear-gradient(160deg,#E65100 0%,#F57C00 100%);}
+  .countdown-number{color:#FFE0B2;}
+
+  .screen-game{background:#FFF8E1;flex-direction:column;min-height:100vh;overflow:hidden;}
+  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#E65100;}
+  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+  .hud-round{font-size:.85rem;font-weight:800;color:#FFE0B2;min-width:54px;}
+  .hud-status{font-size:1rem;font-weight:900;color:#FFD54F;flex:1;text-align:center;}
+  .hud-time{font-size:1rem;font-weight:900;color:#fff;min-width:40px;text-align:right;}
+
+  .arena{flex:1;display:flex;flex-direction:column;gap:6px;padding:8px;}
+  .lane{flex:1;position:relative;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;overflow:hidden;}
+  .lane.p1{background:linear-gradient(180deg,#FFE0B2,#FFCC80);border:3px solid #FB8C00;}
+  .lane.p2{background:linear-gradient(180deg,#BBDEFB,#90CAF9);border:3px solid #1E88E5;}
+  .lane.armed{box-shadow:0 0 18px rgba(255,235,59,.6);}
+  .lane-label{font-size:.8rem;font-weight:900;}
+  .p1 .lane-label{color:#E65100;}
+  .p2 .lane-label{color:#0D47A1;}
+
+  .track{flex:1;position:relative;background:rgba(0,0,0,.1);border-radius:10px;border:2px dashed rgba(0,0,0,.15);overflow:hidden;}
+  .goal-zone{position:absolute;right:0;top:0;bottom:0;width:25%;background:linear-gradient(90deg,transparent,rgba(76,175,80,.3));border-right:4px solid #43A047;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:1.5rem;}
+  .ball{position:absolute;top:50%;left:0;transform:translateY(-50%);font-size:2rem;transition:opacity .2s;}
+
+  .tap-btn{padding:14px;border-radius:14px;font-size:1.1rem;font-weight:900;border:3px solid;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .tap-btn:active{transform:scale(.96);}
+  .p1 .tap-btn{background:#FB8C00;border-color:#E65100;color:#fff;}
+  .p2 .tap-btn{background:#1E88E5;border-color:#0D47A1;color:#fff;}
+  .tap-btn:disabled{opacity:.4;}
+
+  .fb{position:absolute;top:10px;right:10px;font-size:1.3rem;font-weight:900;pointer-events:none;opacity:0;transition:opacity .2s;}
+  .fb.show{opacity:1;animation:fbPop .5s;}
+  @keyframes fbPop{0%{transform:translateY(10px);opacity:0;}30%{opacity:1;transform:translateY(0);}100%{transform:translateY(-20px);opacity:0;}}
+
+  .screen-result{background:linear-gradient(160deg,#E65100 0%,#F57C00 60%,#E65100 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .result-emoji-big{font-size:4rem;}
+  .result-headline{font-size:2rem;font-weight:900;}
+  .result-headline.success{color:#FFE0B2;}
+  .result-headline.fail{color:#FF8A65;}
+  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
+  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
+  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
+  .stat-label{color:rgba(255,255,255,.5);}
+  .stat-val{color:#fff;font-weight:700;}
+  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
+  .btn-retry{flex:1;background:linear-gradient(135deg,#FB8C00,#E65100);color:#fff;}
+  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
+</style>
+</head>
+<body>
+
+<section class="screen screen-intro active" id="introScreen">
+  <header class="game-header">
+    <button class="icon-btn" id="backBtn">←</button>
+    <h1 class="game-title" style="color:#E65100;">릴레이 운반</h1>
+    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+  </header>
+  <div class="intro-body">
+    <div style="text-align:center;font-size:4rem;">🏃</div>
+    <p class="intro-title-text">릴레이 운반</p>
+    <p class="intro-desc-text">공이 오른쪽 끝에 도착하는 순간 탭!<br>P1 → P2로 이어서 골인!</p>
+    <ul class="intro-rules">
+      <li>P1: 공이 초록 구간에 있을 때 탭</li>
+      <li>성공 시 공이 P2에게 전달됨</li>
+      <li>P2도 초록 구간에서 탭 → 1점</li>
+      <li>60초, 최대한 많이 골인!</li>
+    </ul>
+  </div>
+  <button class="btn btn-play" id="playBtn">🏃 PLAY</button>
+</section>
+
+<section class="screen screen-countdown" id="countdownScreen">
+  <div class="countdown-number" id="countdownNumber">3</div>
+</section>
+
+<section class="screen screen-game" id="gameScreen">
+  <div class="game-hud">
+    <button class="hud-close" id="closeBtn">✕</button>
+    <span class="hud-round" id="hudRound">0골</span>
+    <span class="hud-status" id="hudStatus">P1 차례!</span>
+    <span class="hud-time" id="hudTime">60</span>
+    <button class="hud-sound" id="soundToggleGame">🔇</button>
+  </div>
+  <div class="arena">
+    <div class="lane p1" id="laneP1">
+      <div class="lane-label">🏃 P1 — 공 보내기</div>
+      <div class="track">
+        <div class="goal-zone">📮</div>
+        <div class="ball" id="ballP1">⚽</div>
+        <div class="fb" id="fbP1"></div>
+      </div>
+      <button class="tap-btn" id="btnP1">P1 탭!</button>
+    </div>
+    <div class="lane p2" id="laneP2">
+      <div class="lane-label">🥅 P2 — 골인</div>
+      <div class="track">
+        <div class="goal-zone">🥅</div>
+        <div class="ball" id="ballP2" style="opacity:0">⚽</div>
+        <div class="fb" id="fbP2"></div>
+      </div>
+      <button class="tap-btn" id="btnP2" disabled>P2 탭!</button>
+    </div>
+  </div>
+</section>
+
+<section class="screen screen-result" id="resultScreen">
+  <div class="result-emoji-big" id="resultEmoji">🏆</div>
+  <h2 class="result-headline" id="resultHeadline">멋져요!</h2>
+  <p class="result-sub" id="resultSub">릴레이 성공!</p>
+  <div class="result-stats">
+    <div class="stat-row"><span class="stat-label">골인</span><span class="stat-val" id="statGoals">0개</span></div>
+    <div class="stat-row"><span class="stat-label">실패</span><span class="stat-val" id="statMiss">0번</span></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn btn-retry" id="retryBtn">다시하기</button>
+    <button class="btn btn-home-res" id="homeBtn">홈으로</button>
+  </div>
+</section>
+
+<script src="../../shared/engine.js?v=2"></script>
+<script src="game.js"></script>
+</body>
+</html>

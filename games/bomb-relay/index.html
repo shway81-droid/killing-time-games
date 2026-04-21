@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>폭탄 전달</title>
+<link rel="stylesheet" href="../../shared/style.css?v=2">
+<style>
+  html,body{background:#ECEFF1;overflow:hidden;height:100%;}
+  .screen-intro{background:linear-gradient(160deg,#ECEFF1 0%,#CFD8DC 100%);justify-content:flex-start;}
+  .intro-title-text{font-size:1.7rem;font-weight:900;color:#263238;text-align:center;}
+  .intro-desc-text{font-size:.95rem;color:#455A64;text-align:center;line-height:1.5;}
+  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(69,90,100,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
+  .intro-rules li{font-size:.85rem;color:#263238;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
+  .intro-rules li::before{content:'💣';position:absolute;left:0;font-size:.75rem;}
+  .btn-play{background:linear-gradient(135deg,#546E7A,#263238);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(69,90,100,.45);}
+  .screen-countdown{background:linear-gradient(160deg,#263238 0%,#455A64 100%);}
+  .countdown-number{color:#FF6F00;}
+
+  .screen-game{background:#0D1014;flex-direction:column;min-height:100vh;overflow:hidden;}
+  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#000;}
+  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+  .hud-round{font-size:.85rem;font-weight:800;color:#CFD8DC;}
+  .hud-score{font-size:1rem;font-weight:900;color:#FFD54F;flex:1;text-align:center;}
+  .hud-time{font-size:1rem;font-weight:900;color:#FF7043;min-width:40px;text-align:right;}
+
+  .arena{flex:1;display:flex;flex-direction:column;gap:4px;padding:8px;}
+  .panel{flex:1;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;}
+  .panel.p1{background:linear-gradient(160deg,#37474F,#102027);border:3px solid #546E7A;}
+  .panel.p2{background:linear-gradient(160deg,#4E342E,#1B0000);border:3px solid #6D4C41;}
+  .panel.armed{border-color:#FFEB3B;box-shadow:0 0 24px rgba(255,235,59,.4);}
+  .panel-label{font-size:.9rem;font-weight:900;letter-spacing:.08em;text-align:center;}
+  .p1 .panel-label{color:#B0BEC5;}
+  .p2 .panel-label{color:#FFAB91;}
+
+  .bomb{font-size:3.5rem;text-align:center;transition:transform .2s,filter .2s;}
+  .bomb.active{filter:drop-shadow(0 0 20px #FFEB3B);}
+
+  .fuse-track{position:relative;height:36px;background:#1A1A1A;border-radius:18px;border:2px solid #455A64;overflow:hidden;}
+  .fuse-zone{position:absolute;top:0;bottom:0;background:linear-gradient(180deg,#66BB6A,#2E7D32);}
+  .fuse-cursor{position:absolute;top:-2px;bottom:-2px;width:6px;background:#FFEB3B;box-shadow:0 0 10px #FFEB3B;transition:left .04s linear;border-radius:3px;}
+
+  .tap-btn{padding:18px;border-radius:14px;font-size:1.2rem;font-weight:900;border:3px solid;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .08s;}
+  .tap-btn:active{transform:scale(.96);}
+  .p1 .tap-btn{background:#1976D2;border-color:#0D47A1;color:#fff;}
+  .p2 .tap-btn{background:#D32F2F;border-color:#B71C1C;color:#fff;}
+  .tap-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .feedback{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;font-weight:900;pointer-events:none;opacity:0;transition:opacity .2s;}
+  .feedback.show{opacity:1;animation:fbPop .5s ease;}
+  @keyframes fbPop{0%{transform:translate(-50%,-30%) scale(.8);opacity:0;}30%{opacity:1;transform:translate(-50%,-50%) scale(1.2);}100%{transform:translate(-50%,-70%) scale(1);opacity:0;}}
+
+  .screen-result{background:linear-gradient(160deg,#263238 0%,#455A64 60%,#263238 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .result-emoji-big{font-size:4rem;}
+  .result-headline{font-size:2rem;font-weight:900;}
+  .result-headline.success{color:#FFEB3B;}
+  .result-headline.fail{color:#FF5252;}
+  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
+  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
+  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
+  .stat-label{color:rgba(255,255,255,.5);}
+  .stat-val{color:#fff;font-weight:700;}
+  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
+  .btn-retry{flex:1;background:linear-gradient(135deg,#546E7A,#263238);color:#fff;}
+  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
+</style>
+</head>
+<body>
+
+<section class="screen screen-intro active" id="introScreen">
+  <header class="game-header">
+    <button class="icon-btn" id="backBtn">←</button>
+    <h1 class="game-title" style="color:#263238;">폭탄 전달</h1>
+    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+  </header>
+  <div class="intro-body">
+    <div style="text-align:center;font-size:4rem;">💣</div>
+    <p class="intro-title-text">폭탄 전달</p>
+    <p class="intro-desc-text">심지가 초록 구간에 있을 때<br>정확히 탭해서 전달해요!</p>
+    <ul class="intro-rules">
+      <li>P1: 노란 심지가 초록 구간 지날 때 탭!</li>
+      <li>성공 시 폭탄이 P2에게 전달됨</li>
+      <li>P2: 1초 내에 초록 구간에서 탭!</li>
+      <li>10회 성공 = 승리! 실패 3번 = 폭발</li>
+    </ul>
+  </div>
+  <button class="btn btn-play" id="playBtn">💣 PLAY</button>
+</section>
+
+<section class="screen screen-countdown" id="countdownScreen">
+  <div class="countdown-number" id="countdownNumber">3</div>
+</section>
+
+<section class="screen screen-game" id="gameScreen">
+  <div class="game-hud">
+    <button class="hud-close" id="closeBtn">✕</button>
+    <span class="hud-round" id="hudRound">0/10</span>
+    <span class="hud-score" id="hudScore">❤❤❤</span>
+    <span class="hud-time" id="hudTime">💣</span>
+    <button class="hud-sound" id="soundToggleGame">🔇</button>
+  </div>
+
+  <div class="arena">
+    <div class="panel p1" id="panelP1">
+      <div class="panel-label">👷 P1</div>
+      <div class="bomb" id="bombP1">💣</div>
+      <div class="fuse-track">
+        <div class="fuse-zone" id="zoneP1"></div>
+        <div class="fuse-cursor" id="cursorP1" style="left:0"></div>
+      </div>
+      <button class="tap-btn" id="btnP1">P1 전달!</button>
+      <div class="feedback" id="fbP1"></div>
+    </div>
+    <div class="panel p2" id="panelP2">
+      <div class="panel-label">🧑 P2</div>
+      <div class="bomb" id="bombP2">⚫</div>
+      <div class="fuse-track">
+        <div class="fuse-zone" id="zoneP2"></div>
+        <div class="fuse-cursor" id="cursorP2" style="left:0"></div>
+      </div>
+      <button class="tap-btn" id="btnP2">P2 해제!</button>
+      <div class="feedback" id="fbP2"></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen screen-result" id="resultScreen">
+  <div class="result-emoji-big" id="resultEmoji">🏆</div>
+  <h2 class="result-headline" id="resultHeadline">승리!</h2>
+  <p class="result-sub" id="resultSub">완벽한 호흡!</p>
+  <div class="result-stats">
+    <div class="stat-row"><span class="stat-label">성공</span><span class="stat-val" id="statOk">0회</span></div>
+    <div class="stat-row"><span class="stat-label">실패</span><span class="stat-val" id="statFail">0회</span></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn btn-retry" id="retryBtn">다시하기</button>
+    <button class="btn btn-home-res" id="homeBtn">홈으로</button>
+  </div>
+</section>
+
+<script src="../../shared/engine.js?v=2"></script>
+<script src="game.js"></script>
+</body>
+</html>
