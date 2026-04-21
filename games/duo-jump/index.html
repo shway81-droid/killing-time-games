@@ -19,29 +19,29 @@
   .screen-countdown{background:linear-gradient(160deg,#B71C1C 0%,#D32F2F 100%);}
   .countdown-number{color:#FFCDD2;text-shadow:0 0 40px rgba(255,205,210,.6);}
 
-  .screen-game{background:#FFF3E0;flex-direction:column;min-height:100vh;overflow:hidden;align-items:stretch;}
-  .screen-game>*{width:100%;max-width:560px;margin-left:auto;margin-right:auto;box-sizing:border-box;}
+  .screen-game{background:#FFF3E0;flex-direction:column;height:100vh;overflow:hidden;align-items:stretch;position:relative;}
+  .game-hud{width:100%;box-sizing:border-box;}
   .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#B71C1C;flex-shrink:0;}
   .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .hud-label{font-size:.8rem;font-weight:800;color:#FFCDD2;flex-shrink:0;}
   .hud-score{font-size:1rem;font-weight:900;color:#FFD54F;flex-shrink:0;min-width:60px;text-align:right;}
   .hud-time{font-size:1rem;font-weight:900;color:#fff;flex:1;text-align:center;}
 
-  .play-area{flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;}
-  .track-area{flex:1;position:relative;background:linear-gradient(180deg,#FFF8E1 0%,#FFECB3 70%,#8D6E63 70%,#6D4C41 100%);border-bottom:4px solid #5D4037;overflow:hidden;}
-  .character{position:absolute;left:50%;transform:translateX(-50%);bottom:25%;width:80px;height:80px;display:flex;align-items:center;justify-content:center;transition:bottom .2s cubic-bezier(.2,.8,.4,1);}
+  .play-area{flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;min-height:0;}
+  .track-area{flex:1;position:relative;background:linear-gradient(180deg,#FFF8E1 0%,#FFECB3 70%,#8D6E63 70%,#6D4C41 100%);border-bottom:4px solid #5D4037;overflow:hidden;min-height:0;}
+  .character{position:absolute;left:50%;transform:translateX(-50%);bottom:25%;width:min(18vw,120px);height:min(18vw,120px);display:flex;align-items:center;justify-content:center;transition:bottom .2s cubic-bezier(.2,.8,.4,1);}
   .character.jumping{bottom:60%;}
   .character svg{width:100%;height:100%;}
-  .obstacle{position:absolute;bottom:25%;height:48px;width:36px;background:linear-gradient(135deg,#424242,#212121);border:2px solid #000;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
-  .zones{display:flex;height:40%;gap:4px;padding:4px;background:#5D4037;flex-shrink:0;}
+  .obstacle{position:absolute;bottom:25%;height:min(12vw,60px);width:min(9vw,50px);background:linear-gradient(135deg,#424242,#212121);border:2px solid #000;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:min(6vw,2rem);}
+  .zones{display:flex;height:38%;gap:6px;padding:6px;background:#5D4037;flex-shrink:0;}
   .tap-zone{flex:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:#fff;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer;gap:6px;transition:transform .08s,background .15s;position:relative;}
   .tap-zone:active{transform:scale(.97);}
   .tap-zone.p1{background:linear-gradient(135deg,#EF5350,#B71C1C);}
   .tap-zone.p2{background:linear-gradient(135deg,#42A5F5,#0D47A1);}
   .tap-zone.armed{box-shadow:0 0 0 4px rgba(255,213,79,.6);}
   .tap-zone.tapped{background:#FFD54F !important;color:#B71C1C;}
-  .zone-label{font-size:1rem;letter-spacing:.1em;}
-  .zone-hint{font-size:.75rem;opacity:.8;}
+  .zone-label{font-size:1.6rem;letter-spacing:.1em;}
+  .zone-hint{font-size:.95rem;opacity:.8;}
   .feedback{position:absolute;top:40%;left:50%;transform:translateX(-50%);font-size:2rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);pointer-events:none;opacity:0;transition:opacity .2s;}
   .feedback.show{opacity:1;animation:fbPop .6s ease forwards;}
   @keyframes fbPop{0%{transform:translate(-50%,10px) scale(.8);opacity:0;}30%{transform:translate(-50%,0) scale(1.1);opacity:1;}100%{transform:translate(-50%,-10px) scale(1);opacity:0;}}
