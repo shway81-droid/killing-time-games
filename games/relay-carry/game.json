@@ -1,1 +1,0 @@
-{ "name": "릴레이 운반", "description": "P1이 공을 보내면 P2가 받아서 골인!", "icon": "🏃", "color": "#FB8C00", "grades": [1,2,3,4,5,6], "playTime": "1분" }
