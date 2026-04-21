@@ -1,5 +1,5 @@
 // sw.js - Service worker for offline support
-const CACHE_NAME = 'killing-time-games-v1';
+const CACHE_NAME = 'killing-time-games-v3';
 
 // Install: pre-cache the launcher
 self.addEventListener('install', function(event) {

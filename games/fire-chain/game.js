@@ -35,6 +35,13 @@ onTap($('closeBtn'),()=>{stopAll();goHome();});
 onTap($('btnP1'),()=>handleTap(0));
 onTap($('btnP2'),()=>handleTap(1));
 
+// Pause rAF-based decay when tab hidden; reset lastT on return to prevent dt explosion
+let wasActive=false;
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){wasActive=gameActive;gameActive=false;}
+  else if(wasActive){lastT=performance.now();gameActive=true;wasActive=false;}
+});
+
 function stopAll(){gameActive=false;clearAll();if(gameTimer){gameTimer.stop();gameTimer=null;}if(phaseTimer){phaseTimer.stop();phaseTimer=null;}if(decayAnim){cancelAnimationFrame(decayAnim);decayAnim=null;}}
 
 function startCountdown(){

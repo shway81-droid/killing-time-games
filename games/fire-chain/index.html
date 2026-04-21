@@ -55,7 +55,7 @@
   .fb.show{animation:fbPop .6s;opacity:1;}
   @keyframes fbPop{0%{transform:translate(-50%,0) scale(.7);opacity:0;}30%{transform:translate(-50%,-50%) scale(1.2);opacity:1;}100%{transform:translate(-50%,-80%) scale(1);opacity:0;}}
 
-  .screen-result{background:linear-gradient(160deg,#BF360C 0%,#D84315 60%,#BF360C 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .screen-result{background:linear-gradient(160deg,#BF360C 0%,#D84315 60%,#BF360C 100%);justify-content:center;align-items:center;gap:16px;padding:24px;overflow-y:auto;min-height:100vh;}
   .result-emoji-big{font-size:4rem;}
   .result-headline{font-size:2rem;font-weight:900;}
   .result-headline.success{color:#FFCCBC;}
@@ -81,6 +81,7 @@
   <div class="intro-body">
     <div style="text-align:center;font-size:4rem;">🔥</div>
     <p class="intro-title-text">불씨 잇기</p>
+    <div style="display:inline-block;background:#FF5722;color:#fff;padding:4px 14px;border-radius:20px;font-size:.85rem;font-weight:800;margin:4px auto;">👥 2인 전용</div>
     <p class="intro-desc-text">P1이 빠르게 탭해서 불씨 키우고<br>P2가 얼음을 녹여요!</p>
     <ul class="intro-rules">
       <li>P1: 3초 안에 불씨 노란 선까지 키우기</li>

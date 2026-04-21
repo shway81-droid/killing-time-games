@@ -62,6 +62,13 @@ onTap(document.getElementById('retryBtn'),startCountdown);
 onTap(document.getElementById('homeBtn'),goHome);
 onTap(document.getElementById('closeBtn'),()=>{stop();goHome();});
 
+// Pause rAF-based animation when tab hidden to avoid huge dt jumps on return
+let wasActive=false;
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){wasActive=gameActive;gameActive=false;}
+  else if(wasActive){gameActive=true;wasActive=false;}
+});
+
 function startCountdown(){
   clearAll();stop();showScreen(countdownScreen);
   let n=3;countdownNum.textContent=n;

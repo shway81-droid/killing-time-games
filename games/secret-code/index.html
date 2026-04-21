@@ -58,7 +58,7 @@
   .banner.ng{color:#B71C1C;background:#FFCDD2;}
   .banner.info{color:#1A237E;background:#C5CAE9;}
 
-  .screen-result{background:linear-gradient(160deg,#1A237E 0%,#283593 60%,#1A237E 100%);justify-content:center;align-items:center;gap:16px;padding:24px;}
+  .screen-result{background:linear-gradient(160deg,#1A237E 0%,#283593 60%,#1A237E 100%);justify-content:center;align-items:center;gap:16px;padding:24px;overflow-y:auto;min-height:100vh;}
   .result-emoji-big{font-size:4rem;}
   .result-headline{font-size:2rem;font-weight:900;text-align:center;}
   .result-headline.success{color:#C5CAE9;}
@@ -84,6 +84,7 @@
   <div class="intro-body">
     <div style="text-align:center;font-size:4rem;">🔐</div>
     <p class="intro-title-text">비밀 암호</p>
+    <div style="display:inline-block;background:#3F51B5;color:#fff;padding:4px 14px;border-radius:20px;font-size:.85rem;font-weight:800;margin:4px auto;">👥 2인 전용</div>
     <p class="intro-desc-text">P1이 색 순서를 보고<br>P2에게 <b>말로</b> 알려주세요!</p>
     <ul class="intro-rules">
       <li>왼쪽(P1): 색이 순서대로 나타남</li>
