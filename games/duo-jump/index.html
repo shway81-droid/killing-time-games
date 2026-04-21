@@ -5,75 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>2인 점프</title>
 <link rel="stylesheet" href="../../shared/style.css?v=2">
-<style>
-  html,body{background:#FFF3E0;overflow:hidden;height:100%;}
-  .screen-intro{background:linear-gradient(160deg,#FFE0B2 0%,#FFCCBC 100%);justify-content:flex-start;}
-  .intro-title-text{font-size:1.7rem;font-weight:900;color:#BF360C;text-align:center;}
-  .intro-desc-text{font-size:.95rem;color:#D84315;text-align:center;line-height:1.5;}
-  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(239,83,80,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
-  .intro-rules li{font-size:.85rem;color:#BF360C;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
-  .intro-rules li::before{content:'🦘';position:absolute;left:0;font-size:.75rem;}
-  .player-btn.active{background:#E53935;border-color:#E53935;color:#fff;}
-  .btn-play{background:linear-gradient(135deg,#EF5350,#B71C1C);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(229,57,53,.45);}
-
-  .screen-countdown{background:linear-gradient(160deg,#B71C1C 0%,#D32F2F 100%);}
-  .countdown-number{color:#FFCDD2;text-shadow:0 0 40px rgba(255,205,210,.6);}
-
-  .screen-game{background:#FFF3E0;flex-direction:column;height:100vh;overflow:hidden;align-items:stretch;position:relative;}
-  .game-hud{width:100%;box-sizing:border-box;}
-  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#B71C1C;flex-shrink:0;}
-  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .hud-label{font-size:.8rem;font-weight:800;color:#FFCDD2;flex-shrink:0;}
-  .hud-score{font-size:1rem;font-weight:900;color:#FFD54F;flex-shrink:0;min-width:60px;text-align:right;}
-  .hud-time{font-size:1rem;font-weight:900;color:#fff;flex:1;text-align:center;}
-
-  .play-area{flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;min-height:0;}
-  .track-area{flex:1;position:relative;background:linear-gradient(180deg,#FFF8E1 0%,#FFECB3 70%,#8D6E63 70%,#6D4C41 100%);border-bottom:4px solid #5D4037;overflow:hidden;min-height:0;}
-  .character{position:absolute;left:50%;transform:translateX(-50%);bottom:25%;width:min(18vw,120px);height:min(18vw,120px);display:flex;align-items:center;justify-content:center;transition:bottom .2s cubic-bezier(.2,.8,.4,1);}
-  .character.jumping{bottom:60%;}
-  .character svg{width:100%;height:100%;}
-  .obstacle{position:absolute;bottom:25%;height:min(12vw,60px);width:min(9vw,50px);background:linear-gradient(135deg,#424242,#212121);border:2px solid #000;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:min(6vw,2rem);}
-  .zones{display:flex;height:38%;gap:6px;padding:6px;background:#5D4037;flex-shrink:0;}
-  .tap-zone{flex:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:#fff;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer;gap:6px;transition:transform .08s,background .15s;position:relative;}
-  .tap-zone:active{transform:scale(.97);}
-  .tap-zone.p1{background:linear-gradient(135deg,#EF5350,#B71C1C);}
-  .tap-zone.p2{background:linear-gradient(135deg,#42A5F5,#0D47A1);}
-  .tap-zone.armed{box-shadow:0 0 0 4px rgba(255,213,79,.6);}
-  .tap-zone.tapped{background:#FFD54F !important;color:#B71C1C;}
-  .zone-label{font-size:1.6rem;letter-spacing:.1em;}
-  .zone-hint{font-size:.95rem;opacity:.8;}
-  .feedback{position:absolute;top:40%;left:50%;transform:translateX(-50%);font-size:2rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.4);pointer-events:none;opacity:0;transition:opacity .2s;}
-  .feedback.show{opacity:1;animation:fbPop .6s ease forwards;}
-  @keyframes fbPop{0%{transform:translate(-50%,10px) scale(.8);opacity:0;}30%{transform:translate(-50%,0) scale(1.1);opacity:1;}100%{transform:translate(-50%,-10px) scale(1);opacity:0;}}
-
-  .screen-result{background:linear-gradient(160deg,#B71C1C 0%,#D32F2F 60%,#B71C1C 100%);justify-content:center;align-items:center;gap:16px;padding:24px;overflow-y:auto;min-height:100vh;}
-  .result-emoji-big{font-size:4rem;}
-  .result-headline{font-size:2rem;font-weight:900;text-align:center;}
-  .result-headline.success{color:#FFCDD2;}
-  .result-headline.fail{color:#FF8A65;}
-  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
-  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
-  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
-  .stat-label{color:rgba(255,255,255,.5);}
-  .stat-val{color:#fff;font-weight:700;}
-  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
-  .btn-retry{flex:1;background:linear-gradient(135deg,#EF5350,#B71C1C);color:#fff;}
-  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <section class="screen screen-intro active" id="introScreen">
   <header class="game-header">
-    <button class="icon-btn" id="backBtn">←</button>
-    <h1 class="game-title" style="color:#BF360C;">2인 점프</h1>
-    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+    <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+    <h1 class="game-title">2인 점프</h1>
+    <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
   </header>
   <div class="intro-body">
-    <div style="text-align:center;font-size:4rem;margin:8px 0;">🦘</div>
-    <p class="intro-title-text">2인 점프</p>
-    <div style="display:inline-block;background:#E53935;color:#fff;padding:4px 14px;border-radius:20px;font-size:.85rem;font-weight:800;margin:4px auto;">👥 2인 전용</div>
-    <p class="intro-desc-text">장애물이 올 때 P1, P2가<br>동시에 탭해야 점프 성공!</p>
+    <div class="intro-demo" aria-hidden="true">
+      <!-- P1 character (red) jumping -->
+      <svg viewBox="0 0 60 72" width="58" height="68">
+        <rect x="0" y="56" width="60" height="16" fill="#8D6E63"/>
+        <circle cx="30" cy="22" r="14" fill="#EF5350"/>
+        <circle cx="30" cy="20" r="14" fill="#FF8A80"/>
+        <circle cx="26" cy="18" r="2" fill="#fff"/>
+        <circle cx="34" cy="18" r="2" fill="#fff"/>
+        <circle cx="26" cy="18" r="1" fill="#000"/>
+        <circle cx="34" cy="18" r="1" fill="#000"/>
+        <path d="M30 8 L30 2 M22 5 L38 3" stroke="#FFD54F" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <!-- Obstacle -->
+      <svg viewBox="0 0 40 60" width="30" height="48">
+        <rect x="10" y="10" width="20" height="40" fill="#424242" stroke="#000" stroke-width="2" rx="4"/>
+        <text x="20" y="38" text-anchor="middle" font-size="18">🌵</text>
+      </svg>
+      <!-- P2 character (blue) jumping -->
+      <svg viewBox="0 0 60 72" width="58" height="68">
+        <rect x="0" y="56" width="60" height="16" fill="#8D6E63"/>
+        <circle cx="30" cy="22" r="14" fill="#1E88E5"/>
+        <circle cx="30" cy="20" r="14" fill="#64B5F6"/>
+        <circle cx="26" cy="18" r="2" fill="#fff"/>
+        <circle cx="34" cy="18" r="2" fill="#fff"/>
+        <circle cx="26" cy="18" r="1" fill="#000"/>
+        <circle cx="34" cy="18" r="1" fill="#000"/>
+        <path d="M30 8 L30 2 M22 5 L38 3" stroke="#FFD54F" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="intro-text">둘이 동시에 탭해서 점프!</p>
+    <div class="badge-2p">👥 2인 전용</div>
+    <p class="intro-subtext">장애물이 올 때 P1, P2가<br>동시에 탭해야 점프 성공!</p>
     <ul class="intro-rules">
       <li>장애물이 화면 가운데 올 때 점프</li>
       <li>두 명 모두 0.3초 이내에 탭해야 성공</li>
@@ -90,11 +64,11 @@
 
 <section class="screen screen-game" id="gameScreen">
   <div class="game-hud">
-    <button class="hud-close" id="closeBtn">✕</button>
+    <button class="hud-close" id="closeBtn" aria-label="홈으로">✕</button>
     <span class="hud-label" id="hudHp">❤❤❤</span>
     <span class="hud-time" id="hudTime">30</span>
     <span class="hud-score" id="hudScore">0점</span>
-    <button class="hud-sound" id="soundToggleGame">🔇</button>
+    <button class="hud-sound" id="soundToggleGame" aria-label="사운드 토글">🔇</button>
   </div>
 
   <div class="play-area">

@@ -5,87 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>비밀 암호</title>
 <link rel="stylesheet" href="../../shared/style.css?v=2">
-<style>
-  html,body{background:#E8EAF6;overflow:hidden;height:100%;}
-  .screen-intro{background:linear-gradient(160deg,#E8EAF6 0%,#C5CAE9 100%);justify-content:flex-start;}
-  .intro-title-text{font-size:1.7rem;font-weight:900;color:#1A237E;text-align:center;}
-  .intro-desc-text{font-size:.95rem;color:#283593;text-align:center;line-height:1.5;}
-  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(63,81,181,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
-  .intro-rules li{font-size:.85rem;color:#1A237E;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
-  .intro-rules li::before{content:'🔐';position:absolute;left:0;font-size:.75rem;}
-  .player-btn.active{background:#3F51B5;border-color:#3F51B5;color:#fff;}
-  .btn-play{background:linear-gradient(135deg,#3F51B5,#1A237E);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(63,81,181,.45);}
-
-  .screen-countdown{background:linear-gradient(160deg,#1A237E 0%,#283593 100%);}
-  .countdown-number{color:#C5CAE9;text-shadow:0 0 40px rgba(197,202,233,.6);}
-
-  .screen-game{background:#E8EAF6;flex-direction:column;height:100vh;overflow:hidden;align-items:stretch;position:relative;}
-  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#1A237E;flex-shrink:0;width:100%;box-sizing:border-box;}
-  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
-  .hud-round{font-size:.85rem;font-weight:800;color:#C5CAE9;min-width:48px;}
-  .hud-timer-track{flex:1;height:10px;background:rgba(255,255,255,.15);border-radius:5px;overflow:hidden;}
-  .hud-timer-fill{height:100%;background:linear-gradient(90deg,#7986CB,#FFEE58);transition:width .25s linear;}
-  .hud-timer-fill.danger{background:linear-gradient(90deg,#FF7043,#EF5350);}
-  .hud-score{font-size:1rem;font-weight:900;color:#FFD54F;min-width:48px;text-align:right;}
-
-  .boards{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;overflow:hidden;min-height:0;}
-  .board{border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden;}
-  .board.p1{background:linear-gradient(160deg,#E8EAF6,#9FA8DA);border:2px solid #3F51B5;}
-  .board.p2{background:linear-gradient(160deg,#1A237E,#0D1440);border:2px solid #7986CB;}
-  .board-label{font-size:.8rem;font-weight:900;letter-spacing:.08em;}
-  .p1 .board-label{color:#1A237E;}
-  .p2 .board-label{color:#C5CAE9;}
-  .board-sub{font-size:.7rem;font-weight:600;margin-top:-4px;}
-  .p1 .board-sub{color:#3F51B5;}
-  .p2 .board-sub{color:#9FA8DA;}
-
-  .seq-slots{display:flex;flex-direction:row;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;width:100%;}
-  .seq-slot{width:min(22vw,110px);height:min(22vw,110px);border-radius:14px;background:#fff;border:3px dashed #7986CB;display:flex;align-items:center;justify-content:center;font-size:2.4rem;font-weight:900;color:#3F51B5;flex-shrink:0;}
-  .seq-slot.filled{border-style:solid;border-width:4px;}
-
-  .input-row{display:flex;gap:8px;margin-top:4px;min-height:36px;align-items:center;justify-content:center;flex-wrap:wrap;}
-  .input-dot{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.05);flex-shrink:0;}
-  .input-dot.filled{border-style:solid;border-width:3px;}
-
-  .color-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:min(90%,420px);flex-shrink:0;}
-  .color-btn{aspect-ratio:1;border-radius:16px;border:3px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:2.6rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;transition:transform .1s;min-height:70px;}
-  .color-btn:active{transform:scale(.9);}
-  .color-btn:disabled{opacity:.4;cursor:not-allowed;}
-
-  .banner{min-height:34px;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;padding:6px 16px;border-radius:20px;margin:6px 8px;opacity:0;transition:opacity .2s;flex-shrink:0;box-sizing:border-box;}
-  .banner.show{opacity:1;}
-  .banner.ok{color:#1B5E20;background:#C8E6C9;}
-  .banner.ng{color:#B71C1C;background:#FFCDD2;}
-  .banner.info{color:#1A237E;background:#C5CAE9;}
-
-  .screen-result{background:linear-gradient(160deg,#1A237E 0%,#283593 60%,#1A237E 100%);justify-content:center;align-items:center;gap:16px;padding:24px;overflow-y:auto;min-height:100vh;}
-  .result-emoji-big{font-size:4rem;}
-  .result-headline{font-size:2rem;font-weight:900;text-align:center;}
-  .result-headline.success{color:#C5CAE9;}
-  .result-headline.fail{color:#FF8A65;}
-  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
-  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
-  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
-  .stat-label{color:rgba(255,255,255,.5);}
-  .stat-val{color:#fff;font-weight:700;}
-  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
-  .btn-retry{flex:1;background:linear-gradient(135deg,#3F51B5,#1A237E);color:#fff;}
-  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <section class="screen screen-intro active" id="introScreen">
   <header class="game-header">
-    <button class="icon-btn" id="backBtn">←</button>
-    <h1 class="game-title" style="color:#1A237E;">비밀 암호</h1>
-    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+    <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+    <h1 class="game-title">비밀 암호</h1>
+    <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
   </header>
+
   <div class="intro-body">
-    <div style="text-align:center;font-size:4rem;">🔐</div>
-    <p class="intro-title-text">비밀 암호</p>
-    <div style="display:inline-block;background:#3F51B5;color:#fff;padding:4px 14px;border-radius:20px;font-size:.85rem;font-weight:800;margin:4px auto;">👥 2인 전용</div>
-    <p class="intro-desc-text">P1이 색 순서를 보고<br>P2에게 <b>말로</b> 알려주세요!</p>
+    <div class="intro-demo" aria-hidden="true">
+      <!-- Left: P1 sees sequence -->
+      <svg viewBox="0 0 80 80" width="78" height="78">
+        <rect x="6" y="6" width="68" height="68" rx="8" fill="#fff" stroke="#3F51B5" stroke-width="2"/>
+        <rect x="14" y="14" width="52" height="14" rx="4" fill="#EF5350"/>
+        <rect x="14" y="33" width="52" height="14" rx="4" fill="#42A5F5"/>
+        <rect x="14" y="52" width="52" height="14" rx="4" fill="#FFEE58"/>
+        <circle cx="68" cy="12" r="5" fill="#3F51B5"/>
+        <text x="68" y="15" text-anchor="middle" font-size="7" font-weight="900" fill="#fff">👁</text>
+      </svg>
+      <!-- Speech bubble / arrow -->
+      <svg viewBox="0 0 50 40" width="40" height="32">
+        <path d="M6 20 L38 20 M32 14 L38 20 L32 26" stroke="#3F51B5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="25" y="13" text-anchor="middle" font-size="10" font-weight="800" fill="#3F51B5">🗣</text>
+      </svg>
+      <!-- Right: P2 taps color grid -->
+      <svg viewBox="0 0 80 80" width="78" height="78">
+        <rect x="6" y="6" width="68" height="68" rx="8" fill="#1A237E"/>
+        <rect x="14" y="14" width="24" height="24" rx="4" fill="#EF5350"/>
+        <rect x="42" y="14" width="24" height="24" rx="4" fill="#42A5F5"/>
+        <rect x="14" y="42" width="24" height="24" rx="4" fill="#FFEE58"/>
+        <rect x="42" y="42" width="24" height="24" rx="4" fill="#66BB6A"/>
+        <circle cx="26" cy="26" r="6" fill="none" stroke="#fff" stroke-width="2.5"/>
+      </svg>
+    </div>
+
+    <p class="intro-text">색 순서를 보고 말로 전달!</p>
+    <div class="badge-2p">👥 2인 전용</div>
+    <p class="intro-subtext">P1이 본 색 순서를 P2에게<br><b>말로</b> 알려주세요!</p>
+
     <ul class="intro-rules">
       <li>왼쪽(P1): 색이 순서대로 나타남</li>
       <li>오른쪽(P2): P1 말을 듣고 색깔 버튼 탭</li>
@@ -102,11 +63,11 @@
 
 <section class="screen screen-game" id="gameScreen">
   <div class="game-hud">
-    <button class="hud-close" id="closeBtn">✕</button>
+    <button class="hud-close" id="closeBtn" aria-label="홈으로">✕</button>
     <span class="hud-round" id="hudRound">1/5</span>
     <div class="hud-timer-track"><div class="hud-timer-fill" id="hudTimerFill" style="width:100%"></div></div>
     <span class="hud-score" id="hudScore">0점</span>
-    <button class="hud-sound" id="soundToggleGame">🔇</button>
+    <button class="hud-sound" id="soundToggleGame" aria-label="사운드 토글">🔇</button>
   </div>
 
   <div class="banner" id="banner"></div>

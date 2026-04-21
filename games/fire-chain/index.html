@@ -5,88 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>불씨 잇기</title>
 <link rel="stylesheet" href="../../shared/style.css?v=2">
-<style>
-  html,body{background:#FBE9E7;overflow:hidden;height:100%;}
-  .screen-intro{background:linear-gradient(160deg,#FBE9E7 0%,#FFCCBC 100%);justify-content:flex-start;}
-  .intro-title-text{font-size:1.7rem;font-weight:900;color:#BF360C;text-align:center;}
-  .intro-desc-text{font-size:.95rem;color:#D84315;text-align:center;line-height:1.5;}
-  .intro-rules{background:rgba(255,255,255,.7);border:1px solid rgba(255,87,34,.3);border-radius:14px;padding:12px 20px;width:90%;max-width:340px;}
-  .intro-rules li{font-size:.85rem;color:#BF360C;margin-bottom:4px;list-style:none;padding-left:1.4em;position:relative;}
-  .intro-rules li::before{content:'🔥';position:absolute;left:0;font-size:.75rem;}
-  .btn-play{background:linear-gradient(135deg,#FF5722,#BF360C);color:#fff;font-size:1.25rem;box-shadow:0 4px 20px rgba(255,87,34,.45);}
-  .screen-countdown{background:linear-gradient(160deg,#BF360C 0%,#D84315 100%);}
-  .countdown-number{color:#FFCCBC;}
-
-  .screen-game{background:#FBE9E7;flex-direction:column;height:100vh;overflow:hidden;align-items:stretch;position:relative;}
-  .game-hud{width:100%;box-sizing:border-box;}
-  .game-hud{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#BF360C;}
-  .hud-close,.hud-sound{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
-  .hud-round{font-size:.85rem;font-weight:800;color:#FFCCBC;min-width:60px;}
-  .hud-status{font-size:1rem;font-weight:900;color:#FFD54F;flex:1;text-align:center;}
-  .hud-time{font-size:1rem;font-weight:900;color:#fff;min-width:40px;text-align:right;}
-
-  .arena{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;min-height:0;}
-  .panel{border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;position:relative;overflow:hidden;}
-  .panel.p1{background:linear-gradient(180deg,#FFAB91,#FF7043);border:3px solid #E64A19;}
-  .panel.p2{background:linear-gradient(180deg,#B3E5FC,#4FC3F7);border:3px solid #0288D1;}
-  .panel.armed{box-shadow:0 0 24px rgba(255,235,59,.6);}
-  .panel.dim{opacity:.5;}
-  .panel-label{font-size:.85rem;font-weight:900;letter-spacing:.08em;}
-  .p1 .panel-label{color:#BF360C;}
-  .p2 .panel-label{color:#01579B;}
-
-  .fire{font-size:min(18vw,6rem);transition:transform .15s,filter .15s;}
-  .ice{font-size:min(18vw,6rem);}
-
-  .meter{width:90%;max-width:360px;height:36px;background:rgba(0,0,0,.2);border-radius:18px;overflow:hidden;position:relative;}
-  .meter-fill{height:100%;background:linear-gradient(90deg,#FFEB3B,#FF5722);transition:width .15s;}
-  .meter-fill.ice{background:linear-gradient(90deg,#81D4FA,#FFF);}
-  .meter-goal{position:absolute;top:-4px;bottom:-4px;right:10%;width:3px;background:#FFEB3B;box-shadow:0 0 10px #FFEB3B;}
-
-  .tap-btn{padding:22px 44px;border-radius:16px;font-size:1.5rem;font-weight:900;border:3px solid;cursor:pointer;-webkit-tap-highlight-color:transparent;width:90%;max-width:360px;min-height:72px;}
-  .tap-btn:active{transform:scale(.95);}
-  .p1 .tap-btn{background:#FF5722;border-color:#BF360C;color:#fff;}
-  .p2 .tap-btn{background:#0288D1;border-color:#01579B;color:#fff;}
-  .tap-btn:disabled{opacity:.4;}
-
-  .countdown-badge{position:absolute;top:8px;right:10px;font-size:1.4rem;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.5);}
-
-  .fb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;font-weight:900;pointer-events:none;opacity:0;}
-  .fb.show{animation:fbPop .6s;opacity:1;}
-  @keyframes fbPop{0%{transform:translate(-50%,0) scale(.7);opacity:0;}30%{transform:translate(-50%,-50%) scale(1.2);opacity:1;}100%{transform:translate(-50%,-80%) scale(1);opacity:0;}}
-
-  .screen-result{background:linear-gradient(160deg,#BF360C 0%,#D84315 60%,#BF360C 100%);justify-content:center;align-items:center;gap:16px;padding:24px;overflow-y:auto;min-height:100vh;}
-  .result-emoji-big{font-size:4rem;}
-  .result-headline{font-size:2rem;font-weight:900;}
-  .result-headline.success{color:#FFCCBC;}
-  .result-headline.fail{color:#FF8A65;}
-  .result-sub{font-size:1rem;color:rgba(255,255,255,.7);text-align:center;}
-  .result-stats{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 28px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;}
-  .stat-row{display:flex;justify-content:space-between;font-size:.9rem;}
-  .stat-label{color:rgba(255,255,255,.5);}
-  .stat-val{color:#fff;font-weight:700;}
-  .result-actions{display:flex;gap:12px;width:100%;max-width:300px;}
-  .btn-retry{flex:1;background:linear-gradient(135deg,#FF5722,#BF360C);color:#fff;}
-  .btn-home-res{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <section class="screen screen-intro active" id="introScreen">
   <header class="game-header">
-    <button class="icon-btn" id="backBtn">←</button>
-    <h1 class="game-title" style="color:#BF360C;">불씨 잇기</h1>
-    <button class="sound-toggle" id="soundToggleIntro">🔇</button>
+    <button class="icon-btn" id="backBtn" aria-label="뒤로가기">←</button>
+    <h1 class="game-title">불씨 잇기</h1>
+    <button class="sound-toggle" id="soundToggleIntro" aria-label="사운드 토글">🔇</button>
   </header>
   <div class="intro-body">
-    <div style="text-align:center;font-size:4rem;">🔥</div>
-    <p class="intro-title-text">불씨 잇기</p>
-    <div style="display:inline-block;background:#FF5722;color:#fff;padding:4px 14px;border-radius:20px;font-size:.85rem;font-weight:800;margin:4px auto;">👥 2인 전용</div>
-    <p class="intro-desc-text">P1이 빠르게 탭해서 불씨 키우고<br>P2가 얼음을 녹여요!</p>
+    <div class="intro-demo" aria-hidden="true">
+      <!-- Fire -->
+      <svg viewBox="0 0 60 72" width="54" height="64">
+        <path d="M30 68 Q16 54 22 38 Q28 50 30 38 Q34 46 30 34 Q38 42 36 28 Q44 40 44 52 Q44 66 30 68 Z" fill="#EF5350"/>
+        <path d="M30 64 Q20 52 24 40 Q28 48 30 42 Q34 46 32 38 Q40 46 38 52 Q38 60 30 64 Z" fill="#FFAB00"/>
+        <path d="M30 58 Q24 52 26 44 Q28 48 30 46 Q32 50 30 58 Z" fill="#FFEB3B"/>
+      </svg>
+      <!-- Arrow -->
+      <svg viewBox="0 0 40 40" width="32" height="32">
+        <path d="M6 20 L28 20 M22 14 L28 20 L22 26" stroke="#FF6F00" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="6" cy="20" r="3" fill="#FF6F00"/>
+      </svg>
+      <!-- Ice block -->
+      <svg viewBox="0 0 60 72" width="54" height="64">
+        <rect x="8" y="12" width="44" height="44" rx="4" fill="#81D4FA"/>
+        <path d="M8 12 L52 56 M8 56 L52 12" stroke="#B3E5FC" stroke-width="1.5" opacity="0.7"/>
+        <rect x="8" y="12" width="44" height="44" rx="4" fill="none" stroke="#0288D1" stroke-width="2.5"/>
+        <circle cx="22" cy="26" r="3" fill="#fff" opacity="0.6"/>
+        <circle cx="38" cy="42" r="2" fill="#fff" opacity="0.5"/>
+      </svg>
+    </div>
+    <p class="intro-text">불씨로 얼음을 녹여요!</p>
+    <div class="badge-2p">👥 2인 전용</div>
+    <p class="intro-subtext">P1이 불씨를 키우면<br>P2가 얼음을 녹여요!</p>
     <ul class="intro-rules">
-      <li>P1: 3초 안에 불씨 노란 선까지 키우기</li>
+      <li>P1: 4초 안에 불씨 노란 선까지 키우기</li>
       <li>성공 시 P2에게 불씨 전달</li>
-      <li>P2: 3초 안에 얼음 블록 다 녹이기</li>
+      <li>P2: 4초 안에 얼음 블록 다 녹이기</li>
       <li>60초, 최대한 많이 성공!</li>
     </ul>
   </div>
@@ -99,11 +56,11 @@
 
 <section class="screen screen-game" id="gameScreen">
   <div class="game-hud">
-    <button class="hud-close" id="closeBtn">✕</button>
+    <button class="hud-close" id="closeBtn" aria-label="홈으로">✕</button>
     <span class="hud-round" id="hudRound">0점</span>
     <span class="hud-status" id="hudStatus">P1: 불씨 키우기</span>
     <span class="hud-time" id="hudTime">60</span>
-    <button class="hud-sound" id="soundToggleGame">🔇</button>
+    <button class="hud-sound" id="soundToggleGame" aria-label="사운드 토글">🔇</button>
   </div>
   <div class="arena">
     <div class="panel p1 armed" id="panelP1">
