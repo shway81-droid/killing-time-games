@@ -104,14 +104,39 @@
 /* ── Game screen ──────────────────────────────────────────── */
 .screen-game {
   background: #2C1A10;
+  height: 100vh;
+  overflow: hidden;
   position: relative;
+}
+.screen-game.active {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ── Top bar (flag-quiz 패턴) ────────────────────────────── */
+.top-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 8px;
+  background: rgba(0,0,0,0.45);
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+.top-bar-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* ── Zone grid ────────────────────────────────────────────── */
 .zones-wrap {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  width: 100%; height: 100%;
+  flex: 1;
+  min-height: 0;
   display: grid;
 }
 
@@ -286,12 +311,8 @@
 }
 
 /* ── Proverb center panel ─────────────────────────────────── */
+/* Deprecated — replaced by .top-bar above */
 .proverb-panel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 20;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -312,7 +333,8 @@
 
 /* Proverb SVG display box */
 .proverb-display {
-  width: 100%;
+  width: 300px;
+  max-width: 90%;
 }
 .proverb-display svg {
   width: 100%;
@@ -376,11 +398,7 @@
 
 /* ── Score bar ────────────────────────────────────────────── */
 .score-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 25;
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
   gap: 12px;
@@ -553,8 +571,4 @@
 
 
 /* ── 4-player mode: move center panel to top so middle players aren't blocked ── */
-.screen-game:has(.zones-wrap.p4) .proverb-panel {
-  top: 8px !important;
-  transform: translateX(-50%) !important;
-  max-width: 90%;
-}
+/* No 4P override needed — top-bar is always at top */
