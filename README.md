@@ -4,7 +4,7 @@
 
 ## 개요
 
-- **라이브 URL**: https://shway81-droid.github.io/killing-time-games/
+- **라이브 URL**: https://shway81-droid.github.io/jjamjjami-gyosil/
 - 학교 크롬북/태블릿에서 바로 플레이 가능
 - 오프라인 동작 (`file://` 프로토콜 지원)
 - 무료 (GitHub Pages 호스팅)
@@ -40,15 +40,15 @@
 
 ## 배포
 
-- GitHub repository: `shway81-droid/killing-time-games`
+- GitHub repository: `shway81-droid/jjamjjami-gyosil`
 - GitHub Pages 자동 배포 (master branch)
 - 무료, 월 0원
 
 ## 로컬 개발
 
 ```bash
-git clone https://github.com/shway81-droid/killing-time-games.git
-cd killing-time-games
+git clone https://github.com/shway81-droid/jjamjjami-gyosil.git
+cd jjamjjami-gyosil
 # 정적 사이트라 index.html을 브라우저에서 직접 열어도 됨
 # 또는 로컬 서버 실행
 python -m http.server 8000
@@ -57,7 +57,7 @@ python -m http.server 8000
 ## 프로젝트 구조
 
 ```
-killing-time-games/
+jjamjjami-gyosil/
 ├── index.html              # 런처 (게임 카드 그리드)
 ├── shared/
 │   ├── engine.js           # 공통 엔진 (타이머, 사운드, 점수)
