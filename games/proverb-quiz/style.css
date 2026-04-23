@@ -132,8 +132,8 @@
 
 /* 4P: quadrants */
 .zones-wrap.p4 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 
 /* ── Individual zone ──────────────────────────────────────── */
@@ -544,4 +544,12 @@
   background: #EFEBE9;
   color: #4E342E;
   box-shadow: var(--shadow-card);
+}
+
+
+/* ── 4-player mode: move center panel to top so middle players aren't blocked ── */
+.screen-game:has(.zones-wrap.p4) .proverb-panel {
+  top: 8px !important;
+  transform: translateX(-50%) !important;
+  max-width: 90%;
 }

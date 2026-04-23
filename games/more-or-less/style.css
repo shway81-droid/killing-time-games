@@ -124,8 +124,8 @@
 
 /* 4-player: quadrants */
 .zones-wrap.p4 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 
 /* ── Individual zone ──────────────────────────────────────── */
@@ -435,4 +435,12 @@
 @keyframes penaltyFade {
   0%   { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-30px); }
+}
+
+
+/* ── 4-player mode: move center panel to top so middle players aren't blocked ── */
+.screen-game:has(.zones-wrap.p4) .center-panel {
+  top: 8px !important;
+  transform: translateX(-50%) !important;
+  max-width: 90%;
 }

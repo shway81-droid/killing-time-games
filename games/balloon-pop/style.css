@@ -146,8 +146,8 @@ body {
 }
 /* 4인: 2x2 사분면 */
 .game-zones.layout-4 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 
 /* ===== 플레이어 존 ===== */

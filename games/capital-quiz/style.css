@@ -156,8 +156,8 @@
   grid-column: 1 / 3;
 }
 .zones-wrap.p4 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 
 /* ── Individual zone ─────────────────────────────────────────── */
@@ -563,3 +563,11 @@
   transition: transform 0.15s;
 }
 .btn-secondary:active { transform: scale(0.95); }
+
+
+/* ── 4-player mode: move center panel to top so middle players aren't blocked ── */
+.screen-game:has(.zones-wrap.p4) .problem-panel {
+  top: 8px !important;
+  transform: translateX(-50%) !important;
+  max-width: 90%;
+}

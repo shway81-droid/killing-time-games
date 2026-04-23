@@ -176,8 +176,8 @@ body {
 
 /* 4P: 사분면 */
 .zones-container.layout-4p {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 
 /* === 플레이어 존 === */

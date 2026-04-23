@@ -171,8 +171,8 @@
 
 /* 4P: quadrants */
 .zones-wrap.p4 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 
 /* ── Individual zone ──────────────────────────────────────── */
