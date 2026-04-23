@@ -191,6 +191,11 @@
   padding: 2px 0;
 }
 
+/* 4인 모드: 보기 버튼을 존 하단에 정렬 (가운데 플레이어 방해 방지) */
+.zones-wrap.p4 .answer-list {
+  justify-content: flex-end;
+}
+
 /* Individual answer button — SVG-backed */
 .answer-btn {
   position: relative;
