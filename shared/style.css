@@ -845,3 +845,27 @@ html {
   display: block;
   opacity: 0.85;
 }
+
+
+/* ── Level 3: 결과 화면 버튼 너비 정리 (래핑 방지) ── */
+.screen-result .result-actions {
+  flex-wrap: nowrap !important;
+  gap: 12px !important;
+  width: 100%;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
+}
+.screen-result .btn,
+.screen-result .btn-primary,
+.screen-result .btn-retry,
+.screen-result .btn-home,
+.screen-result .btn-home-res,
+.screen-result .btn-secondary {
+  padding: 14px 24px !important;
+  font-size: 1rem !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  white-space: nowrap;
+}
