@@ -786,3 +786,27 @@ html {
   border: 3px solid #fff !important;
   box-shadow: 2px 2px 0 rgba(0,0,0,0.4) !important;
 }
+
+
+/* ── Level 3: 결과 화면 텍스트 색상 보정 (크림 배경에 맞게) ── */
+.screen-result .result-sub {
+  color: #555 !important;
+  font-weight: 700 !important;
+}
+.screen-result .stat-label {
+  color: #888 !important;
+  font-weight: 700 !important;
+}
+.screen-result .stat-val {
+  color: #2C2C2C !important;
+  font-weight: 900 !important;
+}
+.screen-result .result-stats {
+  background: rgba(255,255,255,0.85) !important;
+  border: 3px solid #2C2C2C !important;
+  border-radius: 18px !important;
+  box-shadow: 5px 5px 0 #2C2C2C !important;
+}
+.screen-result .stat-row {
+  font-weight: 700 !important;
+}
