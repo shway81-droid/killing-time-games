@@ -213,6 +213,164 @@
     .game-card.hidden {
       display: none;
     }
+
+    /* ═══════════════════════════════════════════════════════════
+       LEVEL 3 PREVIEW — 디자인풍 전환 (메인 페이지)
+       복원: 이 블록만 통째로 삭제하면 됨
+       ═══════════════════════════════════════════════════════════ */
+
+    body {
+      background:
+        radial-gradient(circle at 12% 8%, rgba(124,77,255,0.10) 0, transparent 30%),
+        radial-gradient(circle at 88% 92%, rgba(255,193,7,0.10) 0, transparent 35%),
+        #FFF8F0 !important;
+      background-attachment: fixed;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(rgba(0,0,0,0.04) 1.5px, transparent 1.5px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body > * { position: relative; z-index: 1; }
+
+    /* 헤더 */
+    .launcher-header {
+      padding: 20px 24px 8px;
+      align-items: center;
+    }
+    .brand-logo {
+      width: 56px !important;
+      height: 56px !important;
+      filter: drop-shadow(0 6px 14px rgba(124,77,255,0.4));
+    }
+    .launcher-title {
+      font-size: 2.2rem !important;
+      font-weight: 900 !important;
+      letter-spacing: -0.03em !important;
+      -webkit-text-stroke: 0;
+      text-shadow: 0 4px 0 rgba(124,77,255,0.18);
+    }
+
+    /* 사운드 토글 — 청키하게 */
+    .sound-toggle {
+      width: 52px !important;
+      height: 52px !important;
+      border-radius: 50% !important;
+      background: #fff !important;
+      border: 3px solid #2C2C2C !important;
+      box-shadow: 4px 4px 0 #2C2C2C !important;
+      font-size: 1.4rem !important;
+    }
+    .sound-toggle:active {
+      transform: translate(2px,2px);
+      box-shadow: 2px 2px 0 #2C2C2C !important;
+    }
+
+    /* 필터 버튼 — 청키 캡슐 + 검정 테두리 */
+    .filter-section {
+      padding: 0 24px;
+    }
+    .filter-bar {
+      gap: 10px !important;
+      margin-bottom: 20px !important;
+    }
+    .filter-btn {
+      padding: 12px 22px !important;
+      border-radius: 999px !important;
+      background: #fff !important;
+      border: 3px solid #2C2C2C !important;
+      box-shadow: 3px 3px 0 #2C2C2C !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      font-weight: 800 !important;
+      font-size: 0.95rem !important;
+      color: #2C2C2C !important;
+      transition: all 0.1s ease !important;
+    }
+    .filter-btn:active {
+      transform: translate(2px,2px);
+      box-shadow: 1px 1px 0 #2C2C2C !important;
+    }
+    .filter-btn.active {
+      color: #fff !important;
+      box-shadow: 3px 3px 0 #2C2C2C !important;
+    }
+    .cat-btn[data-cat="speed"].active     { background: #FF7043 !important; }
+    .cat-btn[data-cat="brain"].active     { background: #AB47BC !important; }
+    .cat-btn[data-cat="math"].active      { background: #26C6DA !important; }
+    .cat-btn[data-cat="knowledge"].active { background: #EC407A !important; }
+    .cat-btn[data-cat="coop"].active      { background: #66BB6A !important; }
+    .filter-btn[data-cat="all"].active    { background: #7C4DFF !important; }
+
+    /* 게임 카드 — 두꺼운 검정 테두리, 큰 그림자, 라운드 ↑ */
+    .game-grid {
+      gap: 18px !important;
+      padding: 0 24px 100px !important;
+    }
+    .game-card {
+      background: #fff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border: 3px solid #2C2C2C !important;
+      border-radius: 22px !important;
+      box-shadow: 6px 6px 0 #2C2C2C !important;
+      overflow: hidden !important;
+      transition: all 0.12s ease !important;
+    }
+    .game-card:hover {
+      transform: translate(-2px,-2px);
+      box-shadow: 8px 8px 0 #2C2C2C !important;
+    }
+    .game-card:active {
+      transform: translate(3px,3px) !important;
+      box-shadow: 3px 3px 0 #2C2C2C !important;
+    }
+    .game-card-thumb {
+      border-bottom: 3px solid #2C2C2C !important;
+      aspect-ratio: 1.05 !important;
+    }
+    .card-icon-svg svg {
+      width: 70% !important;
+      height: 70% !important;
+      filter: drop-shadow(0 6px 0 rgba(0,0,0,0.18));
+    }
+    .game-card-info {
+      padding: 12px 14px 14px !important;
+    }
+    .game-card-name {
+      font-size: 1.05rem !important;
+      font-weight: 900 !important;
+      letter-spacing: -0.01em !important;
+    }
+    .game-card-time {
+      font-size: 0.78rem !important;
+      font-weight: 700 !important;
+      color: #888 !important;
+      margin-top: 4px !important;
+    }
+
+    /* 피드백 버튼 — 청키 스타일 */
+    .feedback-fab {
+      padding: 14px 22px !important;
+      border-radius: 999px !important;
+      border: 3px solid #2C2C2C !important;
+      background: #FFD54F !important;
+      color: #2C2C2C !important;
+      font-weight: 900 !important;
+      font-size: 1rem !important;
+      box-shadow: 5px 5px 0 #2C2C2C !important;
+    }
+    .feedback-fab:hover {
+      transform: translate(-2px,-2px) !important;
+      box-shadow: 7px 7px 0 #2C2C2C !important;
+    }
+    .feedback-fab:active {
+      transform: translate(2px,2px) !important;
+      box-shadow: 2px 2px 0 #2C2C2C !important;
+    }
   </style>
 </head>
 <body>

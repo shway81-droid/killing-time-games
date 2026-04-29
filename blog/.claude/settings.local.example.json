@@ -1,0 +1,6 @@
+{
+  "_comment": "이 파일을 settings.local.json으로 복사해서 사용. settings.local.json은 gitignored됨.",
+  "permissions": {
+    "allow": []
+  }
+}

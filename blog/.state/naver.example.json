@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "_comment": "v2: 브라우저 자동화 방식. OAuth/API 토큰 불필요. Chrome 세션의 로그인 쿠키 사용.",
+  "blog_id": "REPLACE_WITH_NAVER_BLOG_ID",
+  "default_category_no": null,
+  "write_url": "https://blog.naver.com/{blog_id}?Redirect=Write&"
+}
