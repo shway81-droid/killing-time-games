@@ -1,6 +1,4 @@
-.superpowers/
-.DS_Store
-Thumbs.db
-
-# Internal planning docs (not for production)
-docs/
+# Unrelated subdirectories created in same parent folder
+blog/
+kakao/
+rename-to-memo.bat
