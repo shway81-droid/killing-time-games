@@ -759,3 +759,30 @@ html {
   background: #2C2C2C !important;
   color: #fff !important;
 }
+
+
+/* ── Level 3 별칭: 게임별 다른 클래스명 통합 ── */
+.hud-time {
+  color: #fff !important;
+  font-weight: 900 !important;
+  font-size: 1.2rem !important;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.4) !important;
+}
+.progress-bar {
+  border: 2px solid #2C2C2C !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.3) !important;
+  background: rgba(255,255,255,0.18) !important;
+}
+.progress-bar-fill {
+  background: linear-gradient(90deg, #FFD54F, #FF9800) !important;
+  border-radius: 999px !important;
+}
+.close-btn,
+.close-btn-hud {
+  background: #EF5350 !important;
+  color: #fff !important;
+  border: 3px solid #fff !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.4) !important;
+}
