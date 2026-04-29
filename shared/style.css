@@ -901,3 +901,59 @@ html {
   max-width: 45% !important;
   width: max-content !important;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   LEVEL 3: 게임 진행 화면 존 배경색 통일 (OX/국기 퀴즈 패스텔 톤)
+   - P1: 연한 하늘색
+   - P2: 연한 분홍
+   - P3: 연한 초록
+   - P4: 연한 주황
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Pattern 1: .zone.p-blue/p-red/p-orange/p-purple (color-themed) */
+.zone.p-blue   { background: #B3E5FC !important; color: #2C2C2C !important; }
+.zone.p-red    { background: #FFCDD2 !important; color: #2C2C2C !important; }
+.zone.p-orange { background: #FFE0B2 !important; color: #2C2C2C !important; }
+.zone.p-purple { background: #C8E6C9 !important; color: #2C2C2C !important; }
+
+/* Pattern 2: nth-child for games using .zone (shape-match, color-touch, etc.) */
+.zones-wrap.p2 .zone:nth-child(1),
+.zones-wrap.p3 .zone:nth-child(1),
+.zones-wrap.p4 .zone:nth-child(1) {
+  background: #B3E5FC !important;
+}
+.zones-wrap.p2 .zone:nth-child(2),
+.zones-wrap.p3 .zone:nth-child(2),
+.zones-wrap.p4 .zone:nth-child(2) {
+  background: #FFCDD2 !important;
+}
+.zones-wrap.p3 .zone:nth-child(3),
+.zones-wrap.p4 .zone:nth-child(3) {
+  background: #C8E6C9 !important;
+}
+.zones-wrap.p4 .zone:nth-child(4) {
+  background: #FFE0B2 !important;
+}
+
+/* Pattern 3: .player-zone[data-player="X"] (bomb-dodge) */
+.player-zone[data-player="1"] { background: #B3E5FC !important; }
+.player-zone[data-player="2"] { background: #FFCDD2 !important; }
+.player-zone[data-player="3"] { background: #C8E6C9 !important; }
+.player-zone[data-player="4"] { background: #FFE0B2 !important; }
+
+/* Zone label: 다크 테마에서는 흰색이었던 것을 대비를 위해 어둡게 */
+.zone-label {
+  color: #2C2C2C !important;
+}
+
+/* Zone에 글자/아이콘이 흐릿하게 보이지 않도록 텍스트 색 보정 */
+.zone .zone-icon,
+.zone-score {
+  color: #2C2C2C !important;
+}
+
+/* Screen-game 자체 배경을 밝게 (다크 테마 게임에서) */
+.screen-game {
+  background: #FFF8F0 !important;
+}
