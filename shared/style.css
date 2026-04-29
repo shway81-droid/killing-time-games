@@ -869,3 +869,35 @@ html {
   min-width: 0 !important;
   white-space: nowrap;
 }
+
+
+/* ── Level 3: zone-header가 우상단 X 닫기 버튼과 겹치는 문제 해결 ── */
+/* X 닫기 버튼은 absolute 우상단(top:16, right:16)에 위치
+   가장 오른쪽 존의 zone-score-chip도 그 위치라 겹침
+   해결: 마지막 존의 zone-header 우측에 패딩, 첫 존의 좌측에 패딩 추가 */
+.zones-wrap .player-zone:last-child .zone-header,
+.zones-wrap .zone:last-child .zone-header {
+  padding-right: 56px !important;
+}
+.zones-wrap .player-zone:first-child .zone-header,
+.zones-wrap .zone:first-child .zone-header {
+  padding-left: 8px !important;
+}
+
+
+/* ── Level 3: 4P/3P 모드에서 중앙 패널이 zone 상단을 가리지 않도록 좁게 ── */
+.screen-game:has(.zones-wrap.p4) .problem-panel,
+.screen-game:has(.zones-wrap.p3) .problem-panel,
+.screen-game:has(.zones-wrap.p4) .target-panel,
+.screen-game:has(.zones-wrap.p3) .target-panel,
+.screen-game:has(.zones-wrap.p4) .center-panel,
+.screen-game:has(.zones-wrap.p3) .center-panel,
+.screen-game:has(.zones-wrap.p4) .stroop-panel,
+.screen-game:has(.zones-wrap.p3) .stroop-panel,
+.screen-game:has(.zones-wrap.p4) .clock-panel,
+.screen-game:has(.zones-wrap.p3) .clock-panel,
+.screen-game:has(.zones-wrap.p4) .status-panel,
+.screen-game:has(.zones-wrap.p3) .status-panel {
+  max-width: 45% !important;
+  width: max-content !important;
+}
