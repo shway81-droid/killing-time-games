@@ -810,3 +810,38 @@ html {
 .screen-result .stat-row {
   font-weight: 700 !important;
 }
+
+
+/* ── Level 3: 난이도/옵션 선택 버튼 (diff-btn, option-btn) ── */
+.diff-btn,
+.option-btn {
+  border: 3px solid #2C2C2C !important;
+  background: #fff !important;
+  color: #2C2C2C !important;
+  font-weight: 900 !important;
+  border-radius: 999px !important;
+  box-shadow: 4px 4px 0 #2C2C2C !important;
+  padding: 12px 24px !important;
+  transition: all 0.1s ease !important;
+}
+.diff-btn:active,
+.option-btn:active {
+  transform: translate(2px,2px) !important;
+  box-shadow: 2px 2px 0 #2C2C2C !important;
+}
+.diff-btn.active,
+.option-btn.active,
+.diff-btn.selected,
+.option-btn.selected {
+  background: #7C4DFF !important;
+  color: #fff !important;
+  box-shadow: 4px 4px 0 #2C2C2C !important;
+  transform: scale(1.05) !important;
+}
+.diff-btn .diff-sub,
+.option-btn .option-sub {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  display: block;
+  opacity: 0.85;
+}
